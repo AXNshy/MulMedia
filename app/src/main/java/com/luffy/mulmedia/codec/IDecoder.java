@@ -25,8 +25,6 @@ public interface IDecoder extends Runnable {
 
     long getDuration();
 
-    long getCurrentPosition();
-
     int getRotationAngle();
 
     int getTrack();

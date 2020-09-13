@@ -34,13 +34,20 @@ public abstract class BaseDecoder implements IDecoder {
 
     private boolean mIsEos = false;
 
-    private int videoWidth;
+    private int mVideoWidth;
 
-    private int videoHeight;
+    private int mVideoHeight;
+
+    private long mDuration;
 
     private long mEndPos;
 
     private String mFilePath;
+
+    /**
+     * 从解码开始时系统时间，当解码暂停/恢复时，通过 当前系统时间-当前视频帧的时间戳来重新定位
+     */
+    private long mStartTimeForAsync = -1l;
 
     public BaseDecoder(String mFilePath) {
         this.mFilePath = mFilePath;
@@ -48,17 +55,20 @@ public abstract class BaseDecoder implements IDecoder {
 
     @Override
     public void pause() {
-
+        mState = DecodeState.DECODING;
     }
 
     @Override
     public void goOn() {
-
+        mState = DecodeState.DECODING;
+        notifyDecode();
     }
 
     @Override
     public void stop() {
-
+        mState = DecodeState.STOP;
+        mIsRunning = false;
+        notifyDecode();
     }
 
     @Override
@@ -85,17 +95,17 @@ public abstract class BaseDecoder implements IDecoder {
 
     @Override
     public boolean isDecoding() {
-        return false;
+        return mState == DecodeState.DECODING;
     }
 
     @Override
     public boolean isSeeking() {
-        return false;
+        return mState == DecodeState.SEEKING;
     }
 
     @Override
     public boolean isStop() {
-        return false;
+        return mState == DecodeState.STOP;
     }
 
     @Override
@@ -105,22 +115,25 @@ public abstract class BaseDecoder implements IDecoder {
 
     @Override
     public int getWidth() {
-        return 0;
+        return mVideoWidth;
     }
 
     @Override
     public int getHeight() {
-        return 0;
+        return mVideoHeight;
     }
 
     @Override
     public long getDuration() {
-        return 0;
+        return mDuration;
     }
 
-    @Override
-    public long getCurrentPosition() {
-        return 0;
+
+    /**
+     * @return 当前帧需要渲染的时间戳
+     */
+    public long getCurrentTimestamp() {
+        return mBufferInfo.presentationTimeUs / 1000;
     }
 
     @Override
@@ -135,7 +148,7 @@ public abstract class BaseDecoder implements IDecoder {
 
     @Override
     public String getFilePath() {
-        return null;
+        return mFilePath;
     }
 
     @Override
@@ -151,12 +164,18 @@ public abstract class BaseDecoder implements IDecoder {
                     mState != DecodeState.SEEKING) {
                 Log.d(TAG, "decoder wait");
                 waitDecode();
+
+                mStartTimeForAsync = System.currentTimeMillis() - getCurrentTimestamp();
             }
 
             if (!mIsRunning || mState == DecodeState.STOP) {
                 mIsRunning = false;
                 Log.d(TAG, "decoder end");
                 break;
+            }
+
+            if (mStartTimeForAsync == -1l) {
+                mStartTimeForAsync = System.currentTimeMillis();
             }
 
             if (!mIsEos) {
@@ -166,6 +185,9 @@ public abstract class BaseDecoder implements IDecoder {
 
             int index = pullBufferFromDecoder();
             if (index >= 0) {
+                if (mState == DecodeState.DECODING) {
+                    sleepRender();
+                }
                 ByteBuffer byteBuffer = mOutputBuffer[index];
                 if (byteBuffer != null) {
                     render(byteBuffer, mBufferInfo);
@@ -173,9 +195,9 @@ public abstract class BaseDecoder implements IDecoder {
                     if (mCodec != null) {
                         mCodec.releaseOutputBuffer(index, true);
                     }
-//                    if (mState == DecodeState.START) {
-//                        mState = DecodeState.PAUSE;
-//                    }
+                    if (mState == DecodeState.START) {
+                        mState = DecodeState.PAUSE;
+                    }
                 }
             }
 
@@ -189,6 +211,23 @@ public abstract class BaseDecoder implements IDecoder {
         }
         doneDecode();
         release();
+    }
+
+    /**
+     *
+     */
+    private void sleepRender() {
+        try {
+            //计算当前系统流逝的时间
+            long passTime = System.currentTimeMillis() - mStartTimeForAsync;
+            //获取当前帧时间戳
+            long curTime = getCurrentTimestamp();
+            if (curTime > passTime) {
+                Thread.sleep(curTime - passTime);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     protected int pullBufferFromDecoder() {

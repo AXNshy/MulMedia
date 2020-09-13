@@ -7,7 +7,7 @@ public class DecoderStateListener implements IDecoderStateListener {
 
     @Override
     public void decoderPrepared(IDecoder baseDecoder) {
-
+        baseDecoder.goOn();
     }
 
     @Override
