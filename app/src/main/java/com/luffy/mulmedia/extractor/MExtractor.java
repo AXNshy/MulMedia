@@ -23,6 +23,8 @@ public class MExtractor {
 
     private long mCurrentSampleTimestamp = 0;
 
+    private int mSimpleFlag = 0;
+
     private long mStartPos = 0;
 
     public void init() {
@@ -71,6 +73,7 @@ public class MExtractor {
         int readSampleCount = mExtractor.readSampleData(buffer, 0);
         if (readSampleCount < 0) return -1;
         mCurrentSampleTimestamp = mExtractor.getSampleTime();
+        mSimpleFlag = mExtractor.getSampleFlags();
         mExtractor.advance();
         return readSampleCount;
     }
@@ -114,5 +117,9 @@ public class MExtractor {
 
     public long getCurrentSampleTimestamp() {
         return mCurrentSampleTimestamp;
+    }
+
+    public int getSimpleFlag() {
+        return mSimpleFlag;
     }
 }

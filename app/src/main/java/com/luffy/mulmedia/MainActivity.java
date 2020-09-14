@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private Button selectFileButton;
+    private Button repackButton;
     private TextView fileTv;
     private SurfaceView view;
     private Surface mSurface;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         selectFileButton = findViewById(R.id.btn_file);
+        repackButton = findViewById(R.id.btn_repack);
         fileTv = findViewById(R.id.tv_file);
         selectFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
 //                intent.addCategory(Intent.CATEGORY_OPENABLE);
 //                startActivityForResult(intent,1);
                 initPlayer(null);
+            }
+        });
+        repackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebpRepack webpRepack = new WebpRepack(getMp4Path(), getWebpPath());
+                webpRepack.start();
             }
         });
 //        initPlayer(null);
@@ -94,11 +103,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void initPlayer(Uri path) {
-//        String file = findPath(path);
+    private String getMp4Path() {
         File appOwnDic = getExternalFilesDir(null);
         Log.d("tag", "appOwnDic " + appOwnDic.getAbsolutePath());
         String file = appOwnDic.getAbsolutePath() + "/test.mp4";
+        return file;
+    }
+
+    private String getWebpPath() {
+        File appOwnDic = getExternalFilesDir(null);
+        Log.d("tag", "appOwnDic " + appOwnDic.getAbsolutePath());
+        String file = appOwnDic.getAbsolutePath() + "/new.mp4";
+        return file;
+    }
+
+    private void initPlayer(Uri path) {
+        String file = getMp4Path();
         mVideoDecoder = new VideoDecoder(file, view, mSurface);
         mVideoDecoder.setStateListener(new DecoderStateListener());
         mAudioDecoder = new AudioDecoder(file);

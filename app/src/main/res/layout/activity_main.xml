@@ -15,6 +15,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/btn_repack"
+        android:layout_width="wrap_content"
+        android:layout_height="120px"
+        android:gravity="center"
+        android:text="生成webp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_file" />
+
     <TextView
         android:id="@+id/tv_file"
         android:layout_width="wrap_content"

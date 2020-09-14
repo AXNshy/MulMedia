@@ -43,4 +43,9 @@ public class VideoExtractor implements IExtractor {
     public void stop() {
         mExtractor.stop();
     }
+
+    @Override
+    public int getSimpleFlag() {
+        return mExtractor.getSimpleFlag();
+    }
 }

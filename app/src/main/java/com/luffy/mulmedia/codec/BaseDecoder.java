@@ -180,7 +180,6 @@ public abstract class BaseDecoder implements IDecoder {
 
             if (!mIsEos) {
                 mIsEos = pushBufferToDecoder();
-                Log.d(TAG, "decoder isEos");
             }
 
             int index = pullBufferFromDecoder();

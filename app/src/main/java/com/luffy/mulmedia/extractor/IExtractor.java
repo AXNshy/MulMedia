@@ -11,6 +11,8 @@ public interface IExtractor {
 
     long getCurrentTimestamp();
 
+    int getSimpleFlag();
+
     void seek(long position);
 
     void setStartPos(long pos);

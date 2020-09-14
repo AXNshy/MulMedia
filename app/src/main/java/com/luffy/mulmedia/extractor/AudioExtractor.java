@@ -28,6 +28,11 @@ public class AudioExtractor implements IExtractor {
     }
 
     @Override
+    public int getSimpleFlag() {
+        return mExtractor.getSimpleFlag();
+    }
+
+    @Override
     public void seek(long position) {
         mExtractor.seek(position);
     }
