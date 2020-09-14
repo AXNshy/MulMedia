@@ -48,7 +48,6 @@ public class MMuxer {
         if (mMuxer != null) {
             Log.d(TAG, "video mime : " + mediaFormat.getString(MediaFormat.KEY_MIME));
             try {
-                mediaFormat.setLong(MediaFormat.KEY_DURATION, 520000);
                 mVideoTrackIndex = mMuxer.addTrack(mediaFormat);
                 mIsVideoTrackAdd = true;
                 startMuxer();
