@@ -5,13 +5,14 @@ import android.media.MediaFormat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.luffy.mulmedia.IVideoListener;
 import com.luffy.mulmedia.extractor.IExtractor;
 
 import java.io.File;
 import java.nio.ByteBuffer;
 
 public abstract class BaseDecoder implements IDecoder {
-    public static final String TAG = "BaseDecoder";
+    public final String TAG = this.getClass().getSimpleName();
 
     private boolean mIsRunning = true;
 
@@ -31,6 +32,8 @@ public abstract class BaseDecoder implements IDecoder {
     private DecodeState mState = DecodeState.STOP;
 
     protected IDecoderStateListener mStateListener = null;
+
+    protected IVideoListener mVideoListener = null;
 
     private boolean mIsEos = false;
 
@@ -111,6 +114,10 @@ public abstract class BaseDecoder implements IDecoder {
     @Override
     public void setStateListener(IDecoderStateListener listener) {
         this.mStateListener = listener;
+    }
+
+    public void setVideoListener(IVideoListener mVideoListener) {
+        this.mVideoListener = mVideoListener;
     }
 
     @Override

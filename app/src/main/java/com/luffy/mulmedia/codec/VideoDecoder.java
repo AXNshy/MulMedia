@@ -36,6 +36,10 @@ public class VideoDecoder extends BaseDecoder {
 
     }
 
+    public void setSurface(Surface mSurface) {
+        this.mSurface = mSurface;
+    }
+
     @Override
     protected boolean configureCodec(final MediaCodec codec, final MediaFormat format) {
         Log.d(TAG, "configureCodec " + Thread.currentThread().getName());
@@ -78,7 +82,15 @@ public class VideoDecoder extends BaseDecoder {
 
     @Override
     protected void initSpecParams(MediaFormat format) {
-
+        try {
+            int width = format.getInteger(MediaFormat.KEY_WIDTH);
+            int height = format.getInteger(MediaFormat.KEY_HEIGHT);
+            if (mVideoListener != null) {
+                mVideoListener.onVideoSizeChanged(width, height);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

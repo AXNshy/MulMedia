@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private ExecutorService mExecutor = Executors.newFixedThreadPool(2);
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,9 +75,11 @@ public class MainActivity extends AppCompatActivity {
 //                intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
 //                intent.addCategory(Intent.CATEGORY_OPENABLE);
 //                startActivityForResult(intent,1);
-                initPlayer(null);
+//                initPlayer(null);
+
             }
         });
+
         repackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
