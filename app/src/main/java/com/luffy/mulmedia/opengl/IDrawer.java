@@ -3,7 +3,7 @@ package com.luffy.mulmedia.opengl;
 public interface IDrawer {
     void draw();
 
-    void setTextureId(int[] id);
+    void setTextureId(int id);
 
     void release();
 

@@ -30,7 +30,7 @@ public class TriangleDrawer implements IDrawer {
     private FloatBuffer textureBuffer;
 
 
-    private int[] textureId;
+    private int textureId;
 
     public TriangleDrawer() {
         createProgram();
@@ -104,7 +104,7 @@ public class TriangleDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int[] id) {
+    public void setTextureId(int id) {
         textureId = id;
     }
 
@@ -113,7 +113,7 @@ public class TriangleDrawer implements IDrawer {
         GLES20.glDisableVertexAttribArray(vertexHandle);
         GLES20.glDisableVertexAttribArray(textureHandle);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-        GLES20.glDeleteTextures(1, textureId, 0);
+        GLES20.glDeleteTextures(1, new int[]{textureId}, 0);
         GLES20.glDeleteProgram(mProgramId);
     }
 

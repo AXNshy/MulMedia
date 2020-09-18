@@ -35,7 +35,7 @@ public class BitmapDrawer implements IDrawer {
     private FloatBuffer textureBuffer;
 
 
-    private int textureId[];
+    private int textureId;
 
     private Bitmap mBitmap;
 
@@ -136,7 +136,7 @@ public class BitmapDrawer implements IDrawer {
 
     private void activeTexture() {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
         GLES20.glUniform1i(textureHandle, 0);
 
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
@@ -157,7 +157,7 @@ public class BitmapDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int[] id) {
+    public void setTextureId(int id) {
         textureId = id;
     }
 

@@ -56,7 +56,7 @@ public class VideoDrawer implements IDrawer {
         Log.v(TAG, "bottom :" + bottom + ",top :" + top);
     }
 
-    private int textureId[];
+    private int textureId;
 
     private SurfaceTexture surfaceTexture;
 
@@ -184,7 +184,7 @@ public class VideoDrawer implements IDrawer {
 
     private void activeTexture() {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId[0]);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
         GLES20.glUniform1i(textureHandle, 0);
 
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
@@ -208,9 +208,9 @@ public class VideoDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int[] id) {
+    public void setTextureId(int id) {
         textureId = id;
-        surfaceTexture = new SurfaceTexture(textureId[0]);
+        surfaceTexture = new SurfaceTexture(textureId);
         if (callback != null) {
             callback.texture(surfaceTexture);
         }
