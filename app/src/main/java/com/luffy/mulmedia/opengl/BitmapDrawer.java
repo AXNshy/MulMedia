@@ -181,4 +181,14 @@ public class BitmapDrawer implements IDrawer {
     public void setVideoSize(int w, int h) {
 
     }
+
+    @Override
+    public void translate(int translateX, int translateY) {
+
+    }
+
+    @Override
+    public void scale(int scaleX, int scaleY) {
+
+    }
 }

@@ -9,7 +9,6 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 public class VideoDrawer implements IDrawer {
     public static final String TAG = "VideoDrawer";
@@ -42,18 +41,31 @@ public class VideoDrawer implements IDrawer {
 
     private float[] videoSizeChangeMatrix = new float[16];
 
-    private void createMatrix() {
+    private float[] sizeRatio = new float[2];
+
+    private void transformScaleMatrix(float scaleX, float scaleY) {
 
         float top = 1f, bottom = -1f;
         float verScale = (float) mSurfaceHeight / (float) mVideoHeight;
         float horScale = (float) mSurfaceWidth / (float) mVideoWidth;
         if (mVideoHeight / mVideoWidth < mSurfaceHeight / mSurfaceWidth) {
-            top = verScale / horScale;
+            sizeRatio[1] = top = verScale / horScale * scaleY;
             bottom = -top;
         }
-        Matrix.orthoM(videoSizeChangeMatrix, 0, -1, 1, bottom, top, 1, 2);
+        sizeRatio[0] = scaleX;
+        Matrix.orthoM(videoSizeChangeMatrix, 0, -scaleX, scaleX, bottom, top, 1, 2);
 //        Log.d(TAG,"videoSizeChangeMatrix " + Arrays.toString(videoSizeChangeMatrix));
-        Log.v(TAG, "bottom :" + bottom + ",top :" + top);
+        Log.v(TAG, "bottom :" + bottom + ",top :" + top + ",scaleX,scaleY:(" + scaleX + "," + scaleY + ")");
+    }
+
+    private void transformTranslationMatrix(int translationX, int translationY) {
+
+        float dx = (float) translationX / (float) mSurfaceWidth;
+
+        float dy = (float) translationY / (float) mSurfaceHeight;
+
+        Matrix.translateM(videoSizeChangeMatrix, 0, sizeRatio[0] * dx * 2, -sizeRatio[1] * dy * 2, 0);
+        Log.v(TAG, "translation horScale :" + sizeRatio[0] + ",top :" + sizeRatio[1] + ",dx,dy:(" + dx + "," + dy + ")");
     }
 
     private int textureId;
@@ -161,6 +173,16 @@ public class VideoDrawer implements IDrawer {
 
 
     @Override
+    public void translate(int translateX, int translateY) {
+
+    }
+
+    @Override
+    public void scale(int scaleX, int scaleY) {
+
+    }
+
+    @Override
     public void draw() {
 
         initDefMatrix();
@@ -175,7 +197,9 @@ public class VideoDrawer implements IDrawer {
     }
 
     private void initDefMatrix() {
-        createMatrix();
+//        transformScaleMatrix(1f, 1f);
+        transformScaleMatrix(2f, 2f);
+        transformTranslationMatrix(1000, 1100);
     }
 
     private void updateTexture() {
