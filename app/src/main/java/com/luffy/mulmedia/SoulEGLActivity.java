@@ -3,11 +3,9 @@ package com.luffy.mulmedia;
 import android.database.Cursor;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 
@@ -19,7 +17,7 @@ import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.gl.CustomGLRender;
 import com.luffy.mulmedia.opengl.DragSurfaceView;
 import com.luffy.mulmedia.opengl.IDrawer;
-import com.luffy.mulmedia.opengl.SimpleRenderer;
+import com.luffy.mulmedia.opengl.SoulVideoDrawer;
 import com.luffy.mulmedia.opengl.VideoDrawer;
 
 import java.io.File;
@@ -27,7 +25,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class EGLVideoActivity extends AppCompatActivity {
+public class SoulEGLActivity extends AppCompatActivity {
 
     private Button playBtn;
     private DragSurfaceView eglSurfaceView;
@@ -36,7 +34,7 @@ public class EGLVideoActivity extends AppCompatActivity {
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     private CustomGLRender mVideoRender;
-    private VideoDrawer mVideoDrawer;
+    private SoulVideoDrawer mVideoDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +43,7 @@ public class EGLVideoActivity extends AppCompatActivity {
 
         eglSurfaceView = findViewById(R.id.gl_surfaceview);
 
-        mVideoDrawer = new VideoDrawer();
+        mVideoDrawer = new SoulVideoDrawer();
         eglSurfaceView.setDrawer(mVideoDrawer);
         mVideoDrawer.setCallback(new VideoDrawer.TextureCallback() {
             @Override

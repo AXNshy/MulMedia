@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
+import com.luffy.mulmedia.opengl.DragGLSurfaceView;
 import com.luffy.mulmedia.opengl.SimpleRenderer;
 import com.luffy.mulmedia.opengl.VideoDrawer;
 
@@ -27,7 +28,7 @@ import java.util.concurrent.Executors;
 public class GLVideoActivity extends AppCompatActivity {
 
     private Button playBtn;
-    private GLSurfaceView glSurfaceView;
+    private DragGLSurfaceView glSurfaceView;
     private ExecutorService mExecutor = Executors.newFixedThreadPool(2);
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
@@ -47,6 +48,7 @@ public class GLVideoActivity extends AppCompatActivity {
         glSurfaceView.setEGLContextClientVersion(2);
 
         mVideoDrawer = new VideoDrawer();
+        glSurfaceView.setDrawer(mVideoDrawer);
         mVideoDrawer.setCallback(new VideoDrawer.TextureCallback() {
             @Override
             public void texture(SurfaceTexture surface) {

@@ -11,7 +11,7 @@ public interface IDrawer {
 
     void setVideoSize(int w, int h);
 
-    void translate(int translateX, int translateY);
+    void translate(float translateX, float translateY);
 
-    void scale(int scaleX, int scaleY);
+    void scale(float scaleX, float scaleY);
 }

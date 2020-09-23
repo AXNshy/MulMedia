@@ -183,12 +183,12 @@ public class BitmapDrawer implements IDrawer {
     }
 
     @Override
-    public void translate(int translateX, int translateY) {
+    public void translate(float translateX, float translateY) {
 
     }
 
     @Override
-    public void scale(int scaleX, int scaleY) {
+    public void scale(float scaleX, float scaleY) {
 
     }
 }

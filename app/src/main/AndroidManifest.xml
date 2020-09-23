@@ -19,6 +19,9 @@
 
         </activity>
         <activity android:name=".EGLVideoActivity">
+
+        </activity>
+        <activity android:name=".SoulEGLActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
