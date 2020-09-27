@@ -10,7 +10,7 @@ public class OpenGLUtils {
     }
 
 
-    public static int[] createFBOTexture(int width, int height) {
+    public static int createFBOTexture(int width, int height) {
         int[] textureId = new int[1];
         GLES20.glGenTextures(1, textureId, 0);
 
@@ -18,13 +18,13 @@ public class OpenGLUtils {
 
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
 
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST_MIPMAP_NEAREST);
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST_MIPMAP_LINEAR);
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-        return textureId;
+        return textureId[0];
     }
 
     public static int createFrameBuffer() {
@@ -39,11 +39,13 @@ public class OpenGLUtils {
     }
 
     public static void unbindFBO() {
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, GLES20.GL_NONE);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_NONE);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
     public static void deleteFBO(int[] fb, int[] texture) {
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, GLES20.GL_NONE);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_NONE);
         GLES20.glDeleteBuffers(1, fb, 0);
 
