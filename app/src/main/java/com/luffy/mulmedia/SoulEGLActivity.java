@@ -18,7 +18,7 @@ import com.luffy.mulmedia.gl.CustomGLRender;
 import com.luffy.mulmedia.opengl.DragSurfaceView;
 import com.luffy.mulmedia.opengl.IDrawer;
 import com.luffy.mulmedia.opengl.SoulVideoDrawer;
-import com.luffy.mulmedia.opengl.VideoDrawer;
+import com.luffy.mulmedia.opengl.TextureCallback;
 
 import java.io.File;
 import java.util.Arrays;
@@ -45,12 +45,13 @@ public class SoulEGLActivity extends AppCompatActivity {
 
         mVideoDrawer = new SoulVideoDrawer();
         eglSurfaceView.setDrawer(mVideoDrawer);
-        mVideoDrawer.setCallback(new VideoDrawer.TextureCallback() {
+        mVideoDrawer.setCallback(new TextureCallback() {
             @Override
             public void texture(SurfaceTexture surface) {
                 mSurface = new Surface(surface);
             }
         });
+//        mVideoDrawer.setVideoSize(1920, 1080);
         mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer));
         mVideoRender.setSurfaceView(eglSurfaceView);
 
@@ -91,6 +92,7 @@ public class SoulEGLActivity extends AppCompatActivity {
                 mVideoDrawer.setVideoSize(width, height);
             }
         });
+//        mVideoDrawer.setVideoSize(1920, 1080);
 
         mAudioDecoder = new AudioDecoder(file);
         mAudioDecoder.setStateListener(new DecoderStateListener());

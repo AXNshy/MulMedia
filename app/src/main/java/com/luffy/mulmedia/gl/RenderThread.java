@@ -3,7 +3,6 @@ package com.luffy.mulmedia.gl;
 import android.opengl.GLES20;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 import com.luffy.mulmedia.opengl.IDrawer;
 import com.luffy.mulmedia.utils.OpenGLUtils;
@@ -69,8 +68,8 @@ public class RenderThread extends Thread {
         Log.d(TAG, "onSurfaceChanged");
         this.width = width;
         this.height = height;
-        notifyGo();
         mCurrentState = RenderState.SURFACE_CHANGE;
+        notifyGo();
     }
 
 

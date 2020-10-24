@@ -1,16 +1,13 @@
 package com.luffy.mulmedia;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +16,7 @@ import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.opengl.DragGLSurfaceView;
 import com.luffy.mulmedia.opengl.SimpleRenderer;
+import com.luffy.mulmedia.opengl.TextureCallback;
 import com.luffy.mulmedia.opengl.VideoDrawer;
 
 import java.io.File;
@@ -49,7 +47,7 @@ public class GLVideoActivity extends AppCompatActivity {
 
         mVideoDrawer = new VideoDrawer();
         glSurfaceView.setDrawer(mVideoDrawer);
-        mVideoDrawer.setCallback(new VideoDrawer.TextureCallback() {
+        mVideoDrawer.setCallback(new TextureCallback() {
             @Override
             public void texture(SurfaceTexture surface) {
                 mSurface = new Surface(surface);

@@ -11,8 +11,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import javax.microedition.khronos.opengles.GL;
-
 public class VideoDrawer implements IDrawer {
     public static final String TAG = "VideoDrawer";
     private float[] vertexCoordinate = new float[]{
@@ -230,10 +228,6 @@ public class VideoDrawer implements IDrawer {
         if (surfaceTexture != null && callback != null) {
             callback.texture(surfaceTexture);
         }
-    }
-
-    public interface TextureCallback {
-        void texture(SurfaceTexture surface);
     }
 
     @Override

@@ -16,14 +16,29 @@ import java.util.Arrays;
 
 public class SoulVideoDrawer implements IDrawer {
     public static final String TAG = "VideoDrawer";
-    private float[] vertexCoordinate = new float[]{
+
+    private float[] mReverseVertexCoors = new float[]{
+            -1f, 1f,
+            1f, 1f,
+            -1f, -1f,
+            1f, -1f,
+    };
+
+    private float[] mDefaultVertexCoors = new float[]{
             -1f, -1f,
             1f, -1f,
             -1f, 1f,
             1f, 1f,
     };
 
-    private float[] textureCoordinate = new float[]{
+    private float[] mVertexCoors = new float[]{
+            -1f, -1f,
+            1f, -1f,
+            -1f, 1f,
+            1f, 1f,
+    };
+
+    private float[] mTextureCoors = new float[]{
             0f, 1f,
             1f, 1f,
             0f, 0f,
@@ -42,8 +57,8 @@ public class SoulVideoDrawer implements IDrawer {
 
     private int mProgramId = -1;
 
-    private FloatBuffer vertexBuffer;
-    private FloatBuffer textureBuffer;
+    private FloatBuffer mVertexCoorsBuffer;
+    private FloatBuffer mTextureCoorsBuffer;
 
     private float[] mMatrix;
     private float[] projectionMatrix = new float[16];
@@ -59,25 +74,9 @@ public class SoulVideoDrawer implements IDrawer {
     private int mSurfaceWidth = 1;
     private int mSurfaceHeight = 1;
 
-    private int mVideoWidth = 1;
-    private int mVideoHeight = 1;
+    private int mVideoWidth = -1;
+    private int mVideoHeight = -1;
 
-
-    private float[] mReverseVertexCoors = new float[]{
-            -1f, 1f,
-            1f, 1f,
-            -1f, -1f,
-            1f, -1f,
-    };
-
-    private float[] mDefaultVertexCoors = new float[]{
-            -1f, -1f,
-            1f, -1f,
-            -1f, 1f,
-            1f, 1f,
-    };
-
-    private float[] mSoulVertexCoors = mReverseVertexCoors;
     private int mSoulFrameBuffer = -1;
     private int mSoulTextureId = -1;
     private int mSoulTextureHandler;
@@ -89,6 +88,39 @@ public class SoulVideoDrawer implements IDrawer {
 
     public SoulVideoDrawer() {
         initPos();
+    }
+
+    private TextureCallback callback;
+
+    private void initPos() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(mVertexCoors.length * 4);
+        buffer.order(ByteOrder.nativeOrder());
+        mVertexCoorsBuffer = buffer.asFloatBuffer();
+        mVertexCoorsBuffer.put(mVertexCoors);
+        mVertexCoorsBuffer.position(0);
+
+
+        ByteBuffer buffer1 = ByteBuffer.allocateDirect(mTextureCoors.length * 4);
+        buffer1.order(ByteOrder.nativeOrder());
+        mTextureCoorsBuffer = buffer1.asFloatBuffer();
+        mTextureCoorsBuffer.put(mTextureCoors);
+        mTextureCoorsBuffer.position(0);
+    }
+
+    @Override
+    public void setTextureId(int id) {
+        textureId = id;
+        surfaceTexture = new SurfaceTexture(textureId);
+        if (callback != null) {
+            callback.texture(surfaceTexture);
+        }
+    }
+
+    public void setCallback(TextureCallback callback) {
+        this.callback = callback;
+        if (surfaceTexture != null && callback != null) {
+            callback.texture(surfaceTexture);
+        }
     }
 
     @Override
@@ -105,61 +137,6 @@ public class SoulVideoDrawer implements IDrawer {
         mSurfaceHeight = h;
     }
 
-    private void initPos() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(vertexCoordinate.length * 4);
-        buffer.order(ByteOrder.nativeOrder());
-        vertexBuffer = buffer.asFloatBuffer();
-        vertexBuffer.put(vertexCoordinate);
-        vertexBuffer.position(0);
-
-
-        ByteBuffer buffer1 = ByteBuffer.allocateDirect(textureCoordinate.length * 4);
-        buffer1.order(ByteOrder.nativeOrder());
-        textureBuffer = buffer1.asFloatBuffer();
-        textureBuffer.put(textureCoordinate);
-        textureBuffer.position(0);
-    }
-
-    private String getVertexShaderCode() {
-        return "attribute vec4 aPosition;" +
-                "precision mediump float;" +
-                "uniform mat4 uMatrix;" +
-                "attribute vec2 aCoordinate;" +
-                "varying vec2 vCoordinate;" +
-                "attribute float alpha;" +
-                "varying float inAlpha;" +
-                "void main(){" +
-                "    gl_Position = uMatrix*aPosition;" +
-                "    vCoordinate = aCoordinate;" +
-                "    inAlpha = alpha;" +
-                "}";
-
-    }
-
-    private String getFragmentShader() {
-        return "#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;" +
-                "varying vec2 vCoordinate;" +
-                "varying float inAlpha;" +
-                "uniform samplerExternalOES uTexture;" +
-                "uniform float progress;" +
-                "uniform int drawFbo;" +
-                "uniform sampler2D uSoulTexture;" +
-                "void main(){" +
-                "    float alpha = 0.6 * (1.0-progress);" +
-                "    float scale = 1.0 + (1.5 - 1.0) * progress;" +
-                "    float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;" +
-                "    float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;" +
-                "    vec2 soulTextureCoors = vec2(soulX,soulY);" +
-                "    vec4 soulMask = texture2D(uSoulTexture,soulTextureCoors);" +
-                "    vec4 color = texture2D(uTexture,vCoordinate);" +
-                "    if(drawFbo == 0){" +
-                "        gl_FragColor = color * (1.0-alpha) + soulMask * alpha;" +
-                "    }else{" +
-                "        gl_FragColor = vec4(color.r,color.g,color.b,inAlpha);" +
-                "    }" +
-                "}";
-    }
 
     private int createShader(int type, String code) {
         int shader = GLES20.glCreateShader(type);
@@ -228,7 +205,9 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
     private void updateFBO() {
-        if (mSoulTextureId == -1) {
+        if (mSoulTextureId == -1 && mVideoWidth != -1 && mVideoHeight != -1) {
+            Log.d("createFBOTexture", "mVideoWidth," + mVideoWidth + ",mVideoHeight:" + mVideoHeight);
+
             mSoulTextureId = OpenGLUtils.createFBOTexture(mVideoWidth, mVideoHeight);
         }
 
@@ -236,9 +215,13 @@ public class SoulVideoDrawer implements IDrawer {
             mSoulFrameBuffer = OpenGLUtils.createFrameBuffer();
         }
 
-        if (System.currentTimeMillis() - mModifyTime > 500) {
+        if (mSoulTextureId != -1 &&
+                mSoulFrameBuffer != -1 &&
+                System.currentTimeMillis() - mModifyTime > 500) {
             mModifyTime = System.currentTimeMillis();
+
             OpenGLUtils.bindFBO(mSoulFrameBuffer, mSoulTextureId);
+
             configFBOViewport();
 
             activeDefTexture();
@@ -257,9 +240,10 @@ public class SoulVideoDrawer implements IDrawer {
     private void configFBOViewport() {
         mDrawFBO = 1;
         Matrix.setIdentityM(mMatrix, 0);
-        vertexCoordinate = mReverseVertexCoors;
+        mVertexCoors = mReverseVertexCoors;
         initPos();
         GLES20.glViewport(0, 0, mVideoWidth, mVideoHeight);
+        Log.d("configFboViewport", "mVideoWidth," + mVideoWidth + ",mVideoHeight:" + mVideoHeight);
         GLES20.glClearColor(0.0f, 0f, 0f, 0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
     }
@@ -267,7 +251,7 @@ public class SoulVideoDrawer implements IDrawer {
     private void configDefViewport() {
         mDrawFBO = 0;
         mMatrix = null;
-        vertexCoordinate = mDefaultVertexCoors;
+        mVertexCoors = mDefaultVertexCoors;
         initPos();
         initDefMatrix();
         GLES20.glViewport(0, 0, mSurfaceWidth, mSurfaceHeight);
@@ -287,7 +271,7 @@ public class SoulVideoDrawer implements IDrawer {
         GLES20.glBindTexture(type, textureId);
         GLES20.glUniform1i(textureHandler, index);
 
-        GLES20.glTexParameterf(type, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameterf(type, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
         GLES20.glTexParameterf(type, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(type, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
         GLES20.glTexParameteri(type, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
@@ -311,35 +295,12 @@ public class SoulVideoDrawer implements IDrawer {
         GLES20.glUniform1f(mProgressHandler, (System.currentTimeMillis() - mModifyTime) / 500f);
         GLES20.glUniform1i(mDrawFBOHandler, mDrawFBO);
 
-        GLES20.glVertexAttribPointer(mVertexPosHandler, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer);
-        GLES20.glVertexAttribPointer(mCoordinateHandler, 2, GLES20.GL_FLOAT, false, 0, textureBuffer);
+        GLES20.glVertexAttribPointer(mVertexPosHandler, 2, GLES20.GL_FLOAT, false, 0, mVertexCoorsBuffer);
+        GLES20.glVertexAttribPointer(mCoordinateHandler, 2, GLES20.GL_FLOAT, false, 0, mTextureCoorsBuffer);
         GLES20.glVertexAttrib1f(mAlphaHandler, mAlpha);
 
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-    }
-
-    @Override
-    public void setTextureId(int id) {
-        textureId = id;
-        surfaceTexture = new SurfaceTexture(textureId);
-        if (callback != null) {
-            callback.texture(surfaceTexture);
-        }
-    }
-
-    private VideoDrawer.TextureCallback callback;
-
-
-    public void setCallback(VideoDrawer.TextureCallback callback) {
-        this.callback = callback;
-        if (surfaceTexture != null && callback != null) {
-            callback.texture(surfaceTexture);
-        }
-    }
-
-    public interface TextureCallback {
-        void texture(SurfaceTexture surface);
     }
 
     @Override
@@ -397,4 +358,104 @@ public class SoulVideoDrawer implements IDrawer {
 //        Log.d(TAG,"videoSizeChangeMatrix " + Arrays.toString(videoSizeChangeMatrix));
         Log.v(TAG, "transformScaleMatrix :" + Arrays.toString(mMatrix));
     }
+
+    private String getVertexShaderCode() {
+        return "attribute vec4 aPosition;" +
+                "precision mediump float;" +
+                "uniform mat4 uMatrix;" +
+                "attribute vec2 aCoordinate;" +
+                "varying vec2 vCoordinate;" +
+                "attribute float alpha;" +
+                "varying float inAlpha;" +
+                "void main() {" +
+                "    gl_Position = uMatrix*aPosition;" +
+                "    vCoordinate = aCoordinate;" +
+                "    inAlpha = alpha;" +
+                "}";
+
+    }
+
+    private String getFragmentShader() {
+//        return "#extension GL_OES_EGL_image_external : require\n" +
+//                "precision mediump float;" +
+//                "varying vec2 vCoordinate;" +
+//                "varying float inAlpha;" +
+//                "uniform samplerExternalOES uTexture;" +
+//                "uniform float progress;" +
+//                "uniform int drawFbo;" +
+//                "uniform sampler2D uSoulTexture;" +
+//                "void main(){" +
+////                "    float alpha = 0.6 * (1.0-progress);" +
+////                "    float scale = 1.0 + (1.5 - 1.0) * progress;" +
+////                "    float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;" +
+////                "    float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;" +
+////                "    vec2 soulTextureCoors = vec2(soulX,soulY);" +
+////                "    vec4 soulMask = texture2D(uSoulTexture,soulTextureCoors);" +
+////                "    vec4 color = texture2D(uTexture,vCoordinate);" +
+////                "    if(drawFbo == 0){" +
+//////                "        gl_FragColor = color * (1.0-alpha);" +
+////                "        gl_FragColor = soulMask * alpha;" +
+//////                "        gl_FragColor = color * (1.0-alpha) + soulMask * alpha;" +
+////                "    }else{" +
+////                "        gl_FragColor = vec4(color.r,color.g,color.b,inAlpha);" +
+////                "    }" +
+////                "void main() {" +
+//                // 透明度[0,0.4]
+//                "float alpha = 0.6 * (1.0 - progress);" +
+//                // 缩放比例[1.0,1.8]
+//                "float scale = 1.0 + (1.5 - 1.0) * progress;" +
+//
+//                // 放大纹理坐标
+//                // 根据放大比例，得到放大纹理坐标 [0,0],[0,1],[1,1],[1,0]
+//                "float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;\n" +
+//                "float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;\n" +
+//                "vec2 soulTextureCoords = vec2(soulX, soulY);" +
+//                // 获取对应放大纹理坐标下的纹素(颜色值rgba)
+//                "vec4 soulMask = texture2D(uSoulTexture, soulTextureCoords);" +
+//
+//                "vec4 color = texture2D(uTexture, vCoordinate);" +
+//
+//                "if (drawFbo == 0) {" +
+//                // 颜色混合 默认颜色混合方程式 = mask * (1.0-alpha) + weakMask * alpha
+////                "    gl_FragColor = soulMask * alpha;" +
+//                "    gl_FragColor = color * (1.0 - alpha) + soulMask * alpha;" +
+//                "} else {" +
+//                "   gl_FragColor = vec4(color.r, color.g, color.b, inAlpha);" +
+//                "}" +
+//                "}";
+        return "#extension GL_OES_EGL_image_external : require\n" +
+                "precision mediump float;" +
+                "varying vec2 vCoordinate;" +
+                "varying float inAlpha;" +
+                "uniform samplerExternalOES uTexture;" +
+                "uniform float progress;" +
+                "uniform int drawFbo;" +
+                "uniform sampler2D uSoulTexture;" +
+                "void main() {" +
+                // 透明度[0,0.4]
+                "float alpha = 0.6 * (1.0 - progress);" +
+                // 缩放比例[1.0,1.8]
+                "float scale = 1.0 + (1.5 - 1.0) * progress;" +
+
+                // 放大纹理坐标
+                // 根据放大比例，得到放大纹理坐标 [0,0],[0,1],[1,1],[1,0]
+                "float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;\n" +
+                "float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;\n" +
+                "vec2 soulTextureCoords = vec2(soulX, soulY);" +
+                // 获取对应放大纹理坐标下的纹素(颜色值rgba)
+                "vec4 soulMask = texture2D(uSoulTexture, soulTextureCoords);" +
+
+                "vec4 color = texture2D(uTexture, vCoordinate);" +
+
+                "if (drawFbo == 0) {" +
+                // 颜色混合 默认颜色混合方程式 = mask * (1.0-alpha) + weakMask * alpha
+//                "    gl_FragColor = color * (1.0 - alpha);" +
+//                "    gl_FragColor = soulMask * alpha;" +
+                "    gl_FragColor = color * (1.0 - alpha) + soulMask * alpha;" +
+                "} else {" +
+                "   gl_FragColor = vec4(color.r, color.g, color.b, inAlpha);" +
+                "}" +
+                "}";
+    }
+
 }

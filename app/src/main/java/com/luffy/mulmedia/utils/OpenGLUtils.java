@@ -16,7 +16,8 @@ public class OpenGLUtils {
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0]);
 
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height,
+                0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
 
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
@@ -35,7 +36,8 @@ public class OpenGLUtils {
 
     public static void bindFBO(int fb, int texture) {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fb);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, texture, 0);
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
+                GLES20.GL_TEXTURE_2D, texture, 0);
     }
 
     public static void unbindFBO() {
