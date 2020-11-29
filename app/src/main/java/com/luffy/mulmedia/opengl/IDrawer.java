@@ -14,4 +14,6 @@ public interface IDrawer {
     void translate(float translateX, float translateY);
 
     void scale(float scaleX, float scaleY);
+
+    void setShader(IGLShader shader);
 }

@@ -18,6 +18,7 @@ import com.luffy.mulmedia.gl.CustomGLRender;
 import com.luffy.mulmedia.opengl.DragSurfaceView;
 import com.luffy.mulmedia.opengl.IDrawer;
 import com.luffy.mulmedia.opengl.SoulVideoDrawer;
+import com.luffy.mulmedia.opengl.SoulVideoShader;
 import com.luffy.mulmedia.opengl.TextureCallback;
 
 import java.io.File;
@@ -45,6 +46,7 @@ public class SoulEGLActivity extends AppCompatActivity {
 
         mVideoDrawer = new SoulVideoDrawer();
         eglSurfaceView.setDrawer(mVideoDrawer);
+        mVideoDrawer.setShader(new SoulVideoShader(this));
         mVideoDrawer.setCallback(new TextureCallback() {
             @Override
             public void texture(SurfaceTexture surface) {

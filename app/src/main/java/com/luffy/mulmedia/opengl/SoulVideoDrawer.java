@@ -86,6 +86,8 @@ public class SoulVideoDrawer implements IDrawer {
     private long mModifyTime = -1;
     private float mAlpha = 1f;
 
+    private IGLShader mGLShader;
+
     public SoulVideoDrawer() {
         initPos();
     }
@@ -139,6 +141,7 @@ public class SoulVideoDrawer implements IDrawer {
 
 
     private int createShader(int type, String code) {
+        Log.d(TAG, "createShader " + code);
         int shader = GLES20.glCreateShader(type);
         GLES20.glShaderSource(shader, code);
         GLES20.glCompileShader(shader);
@@ -164,6 +167,11 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
     @Override
+    public void setShader(IGLShader shader) {
+        mGLShader = shader;
+    }
+
+    @Override
     public void draw() {
         if (textureId != -1) {
             initDefMatrix();
@@ -185,7 +193,7 @@ public class SoulVideoDrawer implements IDrawer {
     private void createGLPro() {
         if (mProgramId == -1) {
             int vertexShader = createShader(GLES20.GL_VERTEX_SHADER, getVertexShaderCode());
-            int fragShader = createShader(GLES20.GL_FRAGMENT_SHADER, getFragmentShader());
+            int fragShader = createShader(GLES20.GL_FRAGMENT_SHADER, mGLShader.fragmentShader());
 
             mProgramId = GLES20.glCreateProgram();
             GLES20.glAttachShader(mProgramId, vertexShader);

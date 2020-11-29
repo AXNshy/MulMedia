@@ -191,4 +191,9 @@ public class BitmapDrawer implements IDrawer {
     public void scale(float scaleX, float scaleY) {
 
     }
+
+    @Override
+    public void setShader(IGLShader shader) {
+
+    }
 }

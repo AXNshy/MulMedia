@@ -119,6 +119,11 @@ public class TriangleDrawer implements IDrawer {
     }
 
     @Override
+    public void setShader(IGLShader shader) {
+
+    }
+
+    @Override
     public void release() {
         GLES20.glDisableVertexAttribArray(vertexHandle);
         GLES20.glDisableVertexAttribArray(textureHandle);

@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-public class VideoDrawer implements IDrawer {
+public class ReliefVideoDrawer implements IDrawer {
     public static final String TAG = "VideoDrawer";
     private float[] vertexCoordinate = new float[]{
             -1f, -1f,
@@ -35,6 +35,8 @@ public class VideoDrawer implements IDrawer {
 
     private int textureHandle;
 
+    private int texSizeHandle;
+
     private int mProgramId = -1;
 
     private FloatBuffer vertexBuffer;
@@ -45,6 +47,7 @@ public class VideoDrawer implements IDrawer {
     private float[] viewMatrix = new float[16];
 
     private float[] sizeRatio = new float[2];
+    private float[] texSize = new float[]{0.1f, 0.1f};
 
     private boolean istra = false;
 
@@ -65,7 +68,7 @@ public class VideoDrawer implements IDrawer {
 
     IGLShader mGLShader;
 
-    public VideoDrawer() {
+    public ReliefVideoDrawer() {
         createProgram();
     }
 
@@ -112,6 +115,7 @@ public class VideoDrawer implements IDrawer {
             texturePosHandle = GLES20.glGetAttribLocation(mProgramId, "aCoordinate");
             textureHandle = GLES20.glGetUniformLocation(mProgramId, "uTexture");
             mMVPMatrix = GLES20.glGetUniformLocation(mProgramId, "uMatrix");
+            texSizeHandle = GLES20.glGetUniformLocation(mProgramId, "TexSize");
         }
         GLES20.glUseProgram(mProgramId);
     }
@@ -187,7 +191,7 @@ public class VideoDrawer implements IDrawer {
         GLES20.glUniformMatrix4fv(mMVPMatrix, 1, false, mMatrix, 0);
         GLES20.glVertexAttribPointer(vertexPosHandle, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer);
         GLES20.glVertexAttribPointer(texturePosHandle, 2, GLES20.GL_FLOAT, false, 0, textureBuffer);
-
+        GLES20.glUniform2f(texSizeHandle, texSize[0], texSize[1]);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }

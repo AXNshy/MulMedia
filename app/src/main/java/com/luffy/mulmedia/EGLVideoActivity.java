@@ -17,8 +17,11 @@ import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.gl.CustomGLRender;
 import com.luffy.mulmedia.opengl.DragSurfaceView;
 import com.luffy.mulmedia.opengl.IDrawer;
+import com.luffy.mulmedia.opengl.ReliefFilter;
+import com.luffy.mulmedia.opengl.ReliefVideoDrawer;
 import com.luffy.mulmedia.opengl.TextureCallback;
 import com.luffy.mulmedia.opengl.VideoDrawer;
+import com.luffy.mulmedia.opengl.VideoShader;
 
 import java.io.File;
 import java.util.Arrays;
@@ -34,7 +37,7 @@ public class EGLVideoActivity extends AppCompatActivity {
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     private CustomGLRender mVideoRender;
-    private VideoDrawer mVideoDrawer;
+    private ReliefVideoDrawer mVideoDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,8 @@ public class EGLVideoActivity extends AppCompatActivity {
 
         eglSurfaceView = findViewById(R.id.gl_surfaceview);
 
-        mVideoDrawer = new VideoDrawer();
+        mVideoDrawer = new ReliefVideoDrawer();
+        mVideoDrawer.setShader(new ReliefFilter(this));
         eglSurfaceView.setDrawer(mVideoDrawer);
         mVideoDrawer.setCallback(new TextureCallback() {
             @Override
