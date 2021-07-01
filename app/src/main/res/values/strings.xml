@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">MulMedia</string>
+    <string name="path_mediacodec">/surface/mediacodec</string>
+    <string name="path_gl_video">/gl/video</string>
+    <string name="path_egl_video">/egl/video</string>
+    <string name="path_egl_filter_soul">/egl/filter/soul</string>
+
+    <array name="media_lesson_path_collection">
+        <item>@string/path_mediacodec</item>
+        <item>@string/path_gl_video</item>
+        <item>@string/path_egl_video</item>
+        <item>@string/path_egl_filter_soul</item>
+    </array>
 </resources>

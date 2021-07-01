@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+public class MediaCodecTestActivity extends AppCompatActivity {
     private Button selectFileButton;
     private Button repackButton;
     private TextView fileTv;

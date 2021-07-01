@@ -12,20 +12,49 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
 
-        </activity>
-        <activity android:name=".GLVideoActivity">
-
-        </activity>
-        <activity android:name=".EGLVideoActivity">
+        <activity android:name=".NavigationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MediaCodecTestActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_mediacodec"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".GLVideoActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_gl_video"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".EGLVideoActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_egl_video"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".SoulEGLActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_egl_filter_soul"/>
+            </intent-filter>
         </activity>
     </application>
 
