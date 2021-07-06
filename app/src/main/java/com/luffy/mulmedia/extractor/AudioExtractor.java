@@ -2,6 +2,7 @@ package com.luffy.mulmedia.extractor;
 
 import android.media.MediaFormat;
 
+import java.io.FileDescriptor;
 import java.nio.ByteBuffer;
 
 public class AudioExtractor implements IExtractor {
@@ -10,6 +11,10 @@ public class AudioExtractor implements IExtractor {
 
     public AudioExtractor(String path) {
         mExtractor = new MExtractor(path);
+    }
+
+    public AudioExtractor(FileDescriptor descriptor) {
+        mExtractor = new MExtractor(descriptor);
     }
 
     @Override

@@ -10,7 +10,9 @@ import android.util.Log;
 
 import com.luffy.mulmedia.extractor.AudioExtractor;
 import com.luffy.mulmedia.extractor.IExtractor;
+import com.luffy.mulmedia.extractor.VideoExtractor;
 
+import java.io.FileDescriptor;
 import java.nio.ByteBuffer;
 
 public class AudioDecoder extends BaseDecoder {
@@ -28,6 +30,10 @@ public class AudioDecoder extends BaseDecoder {
 
     public AudioDecoder(String mFilePath) {
         super(mFilePath);
+    }
+
+    public AudioDecoder(FileDescriptor descriptor) {
+        super(descriptor);
     }
 
     @Override
@@ -92,6 +98,10 @@ public class AudioDecoder extends BaseDecoder {
         return new AudioExtractor(mFilePath);
     }
 
+    @Override
+    protected IExtractor initExtractor(FileDescriptor descriptor) {
+        return new AudioExtractor(descriptor);
+    }
     @Override
     protected boolean check() {
         return true;

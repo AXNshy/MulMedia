@@ -238,7 +238,7 @@ public class ReliefVideoDrawer implements IDrawer {
             bottom = -top;
         }
         sizeRatio[0] = 2;
-        Matrix.orthoM(projectionMatrix, 0, -2, 2, bottom, top, 3, 5);
+        Matrix.orthoM(projectionMatrix, 0, -1, 1, bottom, top, 3, 5);
 //        Matrix.orthoM(projectionMatrix, 0, -2, 2, bottom, top, 1, 2);
 
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5f, 0f, 0f, 0f, 0f, 1f, 0f);
@@ -251,7 +251,7 @@ public class ReliefVideoDrawer implements IDrawer {
         float dx = translationX / (float) mSurfaceWidth;
         float dy = translationY / (float) mSurfaceHeight;
         Log.v(TAG, "transformTranslationMatrix  dx dy:" + dx + ", " + dy);
-        Matrix.translateM(mMatrix, 0, sizeRatio[0] * dx * 2f, -sizeRatio[1] * dy * 2f, 0);
+        Matrix.translateM(mMatrix, 0, sizeRatio[0] * dx, -sizeRatio[1] * dy * 2f, 0);
         Log.v(TAG, "transformTranslationMatrix :" + Arrays.toString(mMatrix));
         Log.v(TAG, "sizeRatio :" + Arrays.toString(sizeRatio));
     }

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.luffy.mulmedia.extractor.IExtractor;
 import com.luffy.mulmedia.extractor.VideoExtractor;
 
+import java.io.FileDescriptor;
 import java.nio.ByteBuffer;
 
 public class VideoDecoder extends BaseDecoder {
@@ -22,6 +23,13 @@ public class VideoDecoder extends BaseDecoder {
 
     public VideoDecoder(String path, SurfaceView mSurfaceView, Surface mSurface) {
         super(path);
+        this.mSurfaceView = mSurfaceView;
+        this.mSurface = mSurface;
+    }
+
+
+    public VideoDecoder(FileDescriptor descriptor, SurfaceView mSurfaceView, Surface mSurface) {
+        super(descriptor);
         this.mSurfaceView = mSurfaceView;
         this.mSurface = mSurface;
     }
@@ -96,6 +104,11 @@ public class VideoDecoder extends BaseDecoder {
     @Override
     protected IExtractor initExtractor(String mFilePath) {
         return new VideoExtractor(mFilePath);
+    }
+
+    @Override
+    protected IExtractor initExtractor(FileDescriptor descriptor) {
+        return new VideoExtractor(descriptor);
     }
 
     @Override

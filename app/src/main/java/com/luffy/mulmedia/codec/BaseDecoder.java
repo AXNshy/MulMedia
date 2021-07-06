@@ -9,6 +9,7 @@ import com.luffy.mulmedia.IVideoListener;
 import com.luffy.mulmedia.extractor.IExtractor;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.nio.ByteBuffer;
 
 public abstract class BaseDecoder implements IDecoder {
@@ -47,6 +48,8 @@ public abstract class BaseDecoder implements IDecoder {
 
     private String mFilePath;
 
+    private FileDescriptor descriptor;
+
     /**
      * 从解码开始时系统时间，当解码暂停/恢复时，通过 当前系统时间-当前视频帧的时间戳来重新定位
      */
@@ -54,6 +57,10 @@ public abstract class BaseDecoder implements IDecoder {
 
     public BaseDecoder(String mFilePath) {
         this.mFilePath = mFilePath;
+    }
+
+    public BaseDecoder(FileDescriptor descriptor) {
+        this.descriptor = descriptor;
     }
 
     @Override
@@ -307,8 +314,8 @@ public abstract class BaseDecoder implements IDecoder {
 
     @Override
     public boolean init() {
-        if (TextUtils.isEmpty(mFilePath)
-                || !new File(mFilePath).exists()) {
+        if ((TextUtils.isEmpty(mFilePath)
+                || !new File(mFilePath).exists()) && descriptor == null) {
             Log.d(TAG, "file path is null");
             if (mStateListener != null) {
                 mStateListener.decoderError(this, 1000);
@@ -318,7 +325,11 @@ public abstract class BaseDecoder implements IDecoder {
         if (!check()) {
             return false;
         }
-        mExtractor = initExtractor(mFilePath);
+        if(descriptor != null) {
+            mExtractor = initExtractor(descriptor);
+        }else {
+            mExtractor = initExtractor(mFilePath);
+        }
         if (mExtractor == null || mExtractor.getFormat() == null) {
             return false;
         }
@@ -379,6 +390,8 @@ public abstract class BaseDecoder implements IDecoder {
     protected abstract void initSpecParams(MediaFormat format);
 
     protected abstract IExtractor initExtractor(String mFilePath);
+
+    protected abstract IExtractor initExtractor(FileDescriptor descriptor);
 
     protected abstract boolean check();
 }

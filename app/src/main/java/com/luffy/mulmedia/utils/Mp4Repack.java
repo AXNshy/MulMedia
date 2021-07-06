@@ -1,4 +1,4 @@
-package com.luffy.mulmedia;
+package com.luffy.mulmedia.utils;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -10,7 +10,7 @@ import com.luffy.mulmedia.muxer.MMuxer;
 
 import java.nio.ByteBuffer;
 
-public class WebpRepack {
+public class Mp4Repack {
     public static final String TAG = "Mp4Repack";
     private String path;
 
@@ -19,7 +19,7 @@ public class WebpRepack {
 
     private MMuxer mMuxer;
 
-    public WebpRepack(String path, String destPath) {
+    public Mp4Repack(String path, String destPath) {
         this.path = path;
         mAudioExtractor = new AudioExtractor(path);
         mVideoExtractor = new VideoExtractor(path);
@@ -74,7 +74,7 @@ public class WebpRepack {
                 mAudioExtractor.stop();
                 mVideoExtractor.stop();
                 mMuxer.release();
-                Log.d(TAG, "pack webp finish");
+                Log.d(TAG, "pack mp4 finish");
             }
         }).start();
     }

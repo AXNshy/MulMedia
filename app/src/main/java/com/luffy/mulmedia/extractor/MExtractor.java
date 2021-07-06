@@ -2,16 +2,27 @@ package com.luffy.mulmedia.extractor;
 
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.luffy.mulmedia.MyApplication;
+
+import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class MExtractor {
     private String path;
 
+    private FileDescriptor fileDescriptor;
     public MExtractor(String path) {
         this.path = path;
+        init();
+    }
+
+    public MExtractor(FileDescriptor descriptor){
+        this.fileDescriptor = descriptor;
         init();
     }
 
@@ -30,6 +41,7 @@ public class MExtractor {
     public void init() {
         mExtractor = new MediaExtractor();
         try {
+//            mExtractor.setDataSource(fileDescriptor);
             mExtractor.setDataSource(path);
         } catch (IOException e) {
             e.printStackTrace();

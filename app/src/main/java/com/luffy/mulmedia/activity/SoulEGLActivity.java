@@ -1,4 +1,4 @@
-package com.luffy.mulmedia;
+package com.luffy.mulmedia.activity;
 
 import android.database.Cursor;
 import android.graphics.SurfaceTexture;
@@ -11,24 +11,25 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.luffy.mulmedia.IVideoListener;
+import com.luffy.mulmedia.R;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.gl.CustomGLRender;
 import com.luffy.mulmedia.opengl.DragSurfaceView;
 import com.luffy.mulmedia.opengl.IDrawer;
-import com.luffy.mulmedia.opengl.ReliefFilter;
-import com.luffy.mulmedia.opengl.ReliefVideoDrawer;
+import com.luffy.mulmedia.opengl.SoulVideoDrawer;
+import com.luffy.mulmedia.opengl.SoulVideoShader;
 import com.luffy.mulmedia.opengl.TextureCallback;
-import com.luffy.mulmedia.opengl.VideoDrawer;
-import com.luffy.mulmedia.opengl.VideoShader;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class EGLVideoActivity extends AppCompatActivity {
+public class SoulEGLActivity extends BaseActivity {
 
     private Button playBtn;
     private DragSurfaceView eglSurfaceView;
@@ -37,7 +38,7 @@ public class EGLVideoActivity extends AppCompatActivity {
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     private CustomGLRender mVideoRender;
-    private ReliefVideoDrawer mVideoDrawer;
+    private SoulVideoDrawer mVideoDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +47,16 @@ public class EGLVideoActivity extends AppCompatActivity {
 
         eglSurfaceView = findViewById(R.id.gl_surfaceview);
 
-        mVideoDrawer = new ReliefVideoDrawer();
-        mVideoDrawer.setShader(new ReliefFilter(this));
+        mVideoDrawer = new SoulVideoDrawer();
         eglSurfaceView.setDrawer(mVideoDrawer);
+        mVideoDrawer.setShader(new SoulVideoShader(this));
         mVideoDrawer.setCallback(new TextureCallback() {
             @Override
             public void texture(SurfaceTexture surface) {
                 mSurface = new Surface(surface);
             }
         });
+//        mVideoDrawer.setVideoSize(1920, 1080);
         mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer));
         mVideoRender.setSurfaceView(eglSurfaceView);
 
@@ -62,31 +64,23 @@ public class EGLVideoActivity extends AppCompatActivity {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                initPlayer(null, mSurface);
+                initPlayer(path, mSurface);
             }
         });
-
-//        initPlayer(null);
     }
 
-    private String getMp4Path() {
-        File appOwnDic = getExternalFilesDir(null);
-        Log.d("tag", "appOwnDic " + appOwnDic.getAbsolutePath());
-        String file = appOwnDic.getAbsolutePath() + "/test.mp4";
-        return file;
+    @Override
+    protected void onUriAction(Uri uri) {
+
     }
 
-    private String getWebpPath() {
-        File appOwnDic = getExternalFilesDir(null);
-        Log.d("tag", "appOwnDic " + appOwnDic.getAbsolutePath());
-        String file = appOwnDic.getAbsolutePath() + "/new.mp4";
-        return file;
+    @Override
+    protected void onUriAction(FileDescriptor uri) {
+
     }
 
     private void initPlayer(Uri path, Surface surface) {
-        String file = getMp4Path();
-        mVideoDecoder = new VideoDecoder(file, null, surface);
+        mVideoDecoder = new VideoDecoder(path.getPath(), null, surface);
         mVideoDecoder.setStateListener(new DecoderStateListener() {
         });
         mVideoDecoder.setVideoListener(new IVideoListener() {
@@ -95,8 +89,9 @@ public class EGLVideoActivity extends AppCompatActivity {
                 mVideoDrawer.setVideoSize(width, height);
             }
         });
+//        mVideoDrawer.setVideoSize(1920, 1080);
 
-        mAudioDecoder = new AudioDecoder(file);
+        mAudioDecoder = new AudioDecoder(path.getPath());
         mAudioDecoder.setStateListener(new DecoderStateListener());
         mExecutor.execute(mVideoDecoder);
         mExecutor.execute(mAudioDecoder);
@@ -105,16 +100,5 @@ public class EGLVideoActivity extends AppCompatActivity {
     private void playVideo() {
         mVideoDecoder.goOn();
         mAudioDecoder.goOn();
-    }
-
-
-    private String findPath(Uri uri) {
-        Cursor cursor = getContentResolver().query(uri, null, null, null);
-        if (cursor != null) {
-            while (cursor.moveToFirst()) {
-//                String file = cursor.getString(MediaStore.Video.VideoColumns.);
-            }
-        }
-        return null;
     }
 }

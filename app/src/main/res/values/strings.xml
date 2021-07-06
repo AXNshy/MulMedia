@@ -4,6 +4,7 @@
     <string name="path_gl_video">/gl/video</string>
     <string name="path_egl_video">/egl/video</string>
     <string name="path_egl_filter_soul">/egl/filter/soul</string>
+    <string name="select_file">search file:</string>
 
     <array name="media_lesson_path_collection">
         <item>@string/path_mediacodec</item>

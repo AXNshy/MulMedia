@@ -2,6 +2,7 @@ package com.luffy.mulmedia.extractor;
 
 import android.media.MediaFormat;
 
+import java.io.FileDescriptor;
 import java.nio.ByteBuffer;
 
 public class VideoExtractor implements IExtractor {
@@ -10,8 +11,12 @@ public class VideoExtractor implements IExtractor {
 
     public VideoExtractor(String path) {
         mExtractor = new MExtractor(path);
-
     }
+
+    public VideoExtractor(FileDescriptor descriptor) {
+        mExtractor = new MExtractor(descriptor);
+    }
+
 
     @Override
     public MediaFormat getFormat() {

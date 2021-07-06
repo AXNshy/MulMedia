@@ -1,15 +1,12 @@
-package com.luffy.mulmedia;
+package com.luffy.mulmedia.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.os.EnvironmentCompat;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -18,17 +15,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.luffy.mulmedia.R;
+import com.luffy.mulmedia.utils.Mp4Repack;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
-import com.luffy.mulmedia.codec.IDecoder;
-import com.luffy.mulmedia.codec.IDecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MediaCodecTestActivity extends AppCompatActivity {
+public class MediaCodecTestActivity extends BaseActivity {
     private Button selectFileButton;
     private Button repackButton;
     private TextView fileTv;
@@ -83,11 +81,21 @@ public class MediaCodecTestActivity extends AppCompatActivity {
         repackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WebpRepack webpRepack = new WebpRepack(getMp4Path(), getWebpPath());
+                Mp4Repack webpRepack = new Mp4Repack(getMp4Path(), getWebpPath());
                 webpRepack.start();
             }
         });
 //        initPlayer(null);
+    }
+
+    @Override
+    protected void onUriAction(Uri uri) {
+
+    }
+
+    @Override
+    protected void onUriAction(FileDescriptor uri) {
+
     }
 
     @Override
@@ -98,7 +106,7 @@ public class MediaCodecTestActivity extends AppCompatActivity {
                 Uri uri = data.getData();
                 Log.d("tag", "文件路径：" + uri.getPath().toString());
                 fileTv.setText(uri.toString());
-                initPlayer(uri);
+                initPlayer(path);
             }
         }
     }
@@ -119,16 +127,14 @@ public class MediaCodecTestActivity extends AppCompatActivity {
     }
 
     private void initPlayer(Uri path) {
-        String file = getMp4Path();
-        mVideoDecoder = new VideoDecoder(file, view, mSurface);
+        mVideoDecoder = new VideoDecoder(path.getPath(), view, mSurface);
         mVideoDecoder.setStateListener(new DecoderStateListener());
-        mAudioDecoder = new AudioDecoder(file);
+        mAudioDecoder = new AudioDecoder(path.getPath());
         mAudioDecoder.setStateListener(new DecoderStateListener());
         mExecutor.execute(mVideoDecoder);
         mExecutor.execute(mAudioDecoder);
         mVideoDecoder.goOn();
         mAudioDecoder.goOn();
-
     }
 
     private String findPath(Uri uri) {
