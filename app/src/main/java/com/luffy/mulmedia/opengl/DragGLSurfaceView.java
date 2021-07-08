@@ -17,7 +17,6 @@ public class DragGLSurfaceView extends GLSurfaceView {
         super(context, attrs);
     }
 
-
     public void setDrawer(IDrawer drawer) {
         this.drawer = drawer;
     }

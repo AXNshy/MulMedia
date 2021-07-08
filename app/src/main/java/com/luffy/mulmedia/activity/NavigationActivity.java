@@ -1,9 +1,10 @@
 package com.luffy.mulmedia.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.FileUriExposedException;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
@@ -49,8 +51,37 @@ public class NavigationActivity extends AppCompatActivity {
         mSelectFileBtn = findViewById(R.id.btn_select_file);
         mSelectFileEt = findViewById(R.id.et_select_file_uri);
         mSelectFileBtn.setOnClickListener((view) -> {
-            startFileBrowser();
+            if(checkPermission()) {
+                startFileBrowser();
+            }else {
+                requestPermission();
+            }
         });
+    }
+
+    private boolean checkPermission(){
+        int code = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if(code == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void requestPermission(){
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 0){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Log.d(TAG,"权限申请成功");
+            }else {
+                Log.d(TAG,"权限申请失败");
+            }
+        }
     }
 
     @Override
