@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +21,6 @@ import com.luffy.mulmedia.opengl.ReliefFilter;
 import com.luffy.mulmedia.opengl.ReliefVideoDrawer;
 import com.luffy.mulmedia.opengl.TextureCallback;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -65,8 +64,6 @@ public class EGLVideoActivity extends BaseActivity {
                 initPlayer(path, mSurface);
             }
         });
-
-//        initPlayer(null);
     }
 
     @Override
@@ -80,6 +77,8 @@ public class EGLVideoActivity extends BaseActivity {
     }
 
     private void initPlayer(Uri path, Surface surface) {
+
+        if (path == null || TextUtils.isEmpty(path.toString())) return;
         mVideoDecoder = new VideoDecoder(path.getPath(), null, surface);
         mVideoDecoder.setStateListener(new DecoderStateListener() {
         });

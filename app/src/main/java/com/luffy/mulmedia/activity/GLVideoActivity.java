@@ -4,12 +4,10 @@ import android.database.Cursor;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.luffy.mulmedia.IVideoListener;
 import com.luffy.mulmedia.R;
@@ -22,7 +20,6 @@ import com.luffy.mulmedia.opengl.TextureCallback;
 import com.luffy.mulmedia.opengl.VideoDrawer;
 import com.luffy.mulmedia.opengl.VideoShader;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,12 +61,9 @@ public class GLVideoActivity extends BaseActivity {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                initPlayer(fileDescriptor,path, mSurface);
+                initPlayer(path, mSurface);
             }
         });
-
-//        initPlayer(null);
     }
 
     @Override
@@ -82,7 +76,8 @@ public class GLVideoActivity extends BaseActivity {
 
     }
 
-    private void initPlayer(FileDescriptor descriptor, Uri path, Surface surface) {
+    private void initPlayer(Uri path, Surface surface) {
+        if (path == null || TextUtils.isEmpty(path.toString())) return;
         mVideoDecoder = new VideoDecoder(path.getPath(), null, surface);
         mVideoDecoder.setStateListener(new DecoderStateListener() {
         });
@@ -93,7 +88,7 @@ public class GLVideoActivity extends BaseActivity {
             }
         });
 
-        mAudioDecoder = new AudioDecoder(descriptor);
+        mAudioDecoder = new AudioDecoder(path.toString());
         mAudioDecoder.setStateListener(new DecoderStateListener());
         mExecutor.execute(mVideoDecoder);
         mExecutor.execute(mAudioDecoder);

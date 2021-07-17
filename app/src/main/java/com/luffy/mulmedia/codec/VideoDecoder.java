@@ -27,13 +27,6 @@ public class VideoDecoder extends BaseDecoder {
         this.mSurface = mSurface;
     }
 
-
-    public VideoDecoder(FileDescriptor descriptor, SurfaceView mSurfaceView, Surface mSurface) {
-        super(descriptor);
-        this.mSurfaceView = mSurfaceView;
-        this.mSurface = mSurface;
-    }
-
     @Override
     public void render(ByteBuffer outputBuffers, MediaCodec.BufferInfo bufferInfo) {
 

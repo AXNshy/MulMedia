@@ -3,7 +3,6 @@ package com.luffy.mulmedia.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -20,12 +19,14 @@ public abstract class BaseActivity  extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG,"ACTIVITY " + getClass().getSimpleName() + " START");
+        Log.d(TAG, "ACTIVITY " + getClass().getSimpleName() + " START");
         super.onCreate(savedInstanceState);
-        path = getIntent().getParcelableExtra("uri");
-        String realPath = FileUtils.getPath(getApplicationContext(),path);
-        path = Uri.parse(realPath);
-        Log.d(TAG,"path:"+path);
+        Uri contentUri = getIntent().getParcelableExtra("uri");
+        if (contentUri != null) {
+            String realPath = FileUtils.getPath(getApplicationContext(), contentUri);
+            path = Uri.parse(realPath);
+            Log.d(TAG, "path:" + path);
+        }
     }
 
     @Override
@@ -39,11 +40,14 @@ public abstract class BaseActivity  extends AppCompatActivity {
 
     protected abstract void onUriAction(FileDescriptor uri);
 
+    protected void startPlayback() {
 
-    private void startFileBrowser(){
+    }
+
+    private void startFileBrowser() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("*/*");
-        startActivityForResult(intent,1);
+        startActivityForResult(intent, 1);
     }
 
     @Override

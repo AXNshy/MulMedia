@@ -1,6 +1,5 @@
 package com.luffy.mulmedia.codec;
 
-import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -10,7 +9,6 @@ import android.util.Log;
 
 import com.luffy.mulmedia.extractor.AudioExtractor;
 import com.luffy.mulmedia.extractor.IExtractor;
-import com.luffy.mulmedia.extractor.VideoExtractor;
 
 import java.io.FileDescriptor;
 import java.nio.ByteBuffer;
@@ -30,10 +28,6 @@ public class AudioDecoder extends BaseDecoder {
 
     public AudioDecoder(String mFilePath) {
         super(mFilePath);
-    }
-
-    public AudioDecoder(FileDescriptor descriptor) {
-        super(descriptor);
     }
 
     @Override

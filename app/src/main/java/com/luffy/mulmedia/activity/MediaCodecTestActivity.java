@@ -1,8 +1,5 @@
 package com.luffy.mulmedia.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,11 +12,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.luffy.mulmedia.R;
-import com.luffy.mulmedia.utils.Mp4Repack;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
+import com.luffy.mulmedia.utils.Mp4Repack;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -55,7 +54,6 @@ public class MediaCodecTestActivity extends BaseActivity {
             @Override
             public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
                 mSurface = holder.getSurface();
-//                initPlayer(null);
             }
 
             @Override

@@ -1,15 +1,12 @@
 package com.luffy.mulmedia.activity;
 
-import android.database.Cursor;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.luffy.mulmedia.IVideoListener;
 import com.luffy.mulmedia.R;
@@ -23,7 +20,6 @@ import com.luffy.mulmedia.opengl.SoulVideoDrawer;
 import com.luffy.mulmedia.opengl.SoulVideoShader;
 import com.luffy.mulmedia.opengl.TextureCallback;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -80,6 +76,7 @@ public class SoulEGLActivity extends BaseActivity {
     }
 
     private void initPlayer(Uri path, Surface surface) {
+        if (path == null || TextUtils.isEmpty(path.toString())) return;
         mVideoDecoder = new VideoDecoder(path.getPath(), null, surface);
         mVideoDecoder.setStateListener(new DecoderStateListener() {
         });
