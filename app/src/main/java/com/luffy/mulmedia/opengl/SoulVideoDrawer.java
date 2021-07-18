@@ -61,6 +61,8 @@ public class SoulVideoDrawer implements IDrawer {
     private FloatBuffer mTextureCoorsBuffer;
 
     private float[] mMatrix;
+    private float[] mSoulMatrix;
+    private float[] mVideoMatrix;
     private float[] projectionMatrix = new float[16];
     private float[] viewMatrix = new float[16];
 
@@ -130,6 +132,7 @@ public class SoulVideoDrawer implements IDrawer {
         Log.d(TAG, "setVideoSize w:" + w + ",h:" + h);
         mVideoWidth = w;
         mVideoHeight = h;
+        initialMatrix();
     }
 
     @Override
@@ -150,13 +153,16 @@ public class SoulVideoDrawer implements IDrawer {
 
 
     private void initDefMatrix() {
+        if (mVideoMatrix != null) {
+            return;
+        }
         initialMatrix();
     }
 
 
     @Override
     public void translate(float translateX, float translateY) {
-        if (mMatrix != null) {
+        if (mVideoMatrix != null) {
             transformTranslationMatrix(translateX, translateY);
         }
     }
@@ -247,7 +253,8 @@ public class SoulVideoDrawer implements IDrawer {
 
     private void configFBOViewport() {
         mDrawFBO = 1;
-        Matrix.setIdentityM(mMatrix, 0);
+        Matrix.setIdentityM(mSoulMatrix, 0);
+        mMatrix = mSoulMatrix;
         mVertexCoors = mReverseVertexCoors;
         initPos();
         GLES20.glViewport(0, 0, mVideoWidth, mVideoHeight);
@@ -258,7 +265,7 @@ public class SoulVideoDrawer implements IDrawer {
 
     private void configDefViewport() {
         mDrawFBO = 0;
-        mMatrix = null;
+        mMatrix = mVideoMatrix;
         mVertexCoors = mDefaultVertexCoors;
         initPos();
         initDefMatrix();
@@ -331,10 +338,8 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
     private void initialMatrix() {
-        if (mMatrix != null) {
-            return;
-        }
-        mMatrix = new float[16];
+        mVideoMatrix = new float[16];
+        mSoulMatrix = new float[16];
         float top = 1f, bottom = -1f;
         float verScale = (float) mSurfaceHeight / (float) mVideoHeight;
         float horScale = (float) mSurfaceWidth / (float) mVideoWidth;
@@ -343,12 +348,16 @@ public class SoulVideoDrawer implements IDrawer {
             bottom = -top;
         }
         sizeRatio[0] = 1;
+        //正交投影
         Matrix.orthoM(projectionMatrix, 0, -1, 1, bottom, top, 3, 5);
 //        Matrix.orthoM(projectionMatrix, 0, -2, 2, bottom, top, 1, 2);
 
+        Log.v(TAG, "orthoM bottom:" + bottom + ",top:" + top);
+        //设置相机位置
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5f, 0f, 0f, 0f, 0f, 1f, 0f);
-        Matrix.multiplyMM(mMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-        Log.v(TAG, "initialMatrix " + Arrays.toString(mMatrix));
+        Matrix.multiplyMM(mVideoMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Log.v(TAG, "initialMatrix " + Arrays.toString(mVideoMatrix));
+        mMatrix = mVideoMatrix;
     }
 
 
@@ -356,15 +365,15 @@ public class SoulVideoDrawer implements IDrawer {
         float dx = translationX / (float) mSurfaceWidth;
         float dy = translationY / (float) mSurfaceHeight;
         Log.v(TAG, "transformTranslationMatrix  dx dy:" + dx + ", " + dy);
-        Matrix.translateM(mMatrix, 0, sizeRatio[0] * dx * 2f, -sizeRatio[1] * dy * 2f, 0);
-        Log.v(TAG, "transformTranslationMatrix :" + Arrays.toString(mMatrix));
+        Matrix.translateM(mVideoMatrix, 0, sizeRatio[0] * dx * 2f, -sizeRatio[1] * dy * 2f, 0);
+        Log.v(TAG, "transformTranslationMatrix :" + Arrays.toString(mVideoMatrix));
         Log.v(TAG, "sizeRatio :" + Arrays.toString(sizeRatio));
     }
 
     private void transformScaleMatrix(float scaleX, float scaleY) {
-        Matrix.scaleM(mMatrix, 0, -scaleX, scaleX, 0);
+        Matrix.scaleM(mVideoMatrix, 0, -scaleX, scaleX, 0);
 //        Log.d(TAG,"videoSizeChangeMatrix " + Arrays.toString(videoSizeChangeMatrix));
-        Log.v(TAG, "transformScaleMatrix :" + Arrays.toString(mMatrix));
+        Log.v(TAG, "transformScaleMatrix :" + Arrays.toString(mVideoMatrix));
     }
 
     private String getVertexShaderCode() {
