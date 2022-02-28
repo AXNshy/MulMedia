@@ -9,8 +9,6 @@ public interface IDecoder extends Runnable {
 
     void stop();
 
-    void release();
-
     boolean isDecoding();
 
     boolean isSeeking();
