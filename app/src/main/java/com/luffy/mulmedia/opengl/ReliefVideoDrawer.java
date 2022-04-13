@@ -77,6 +77,7 @@ public class ReliefVideoDrawer implements IDrawer {
         Log.d(TAG, "setVideoSize w:" + w + ",h:" + h);
         mVideoWidth = w;
         mVideoHeight = h;
+        initialMatrix();
     }
 
     @Override
@@ -160,7 +161,9 @@ public class ReliefVideoDrawer implements IDrawer {
     }
 
     private void initDefMatrix() {
-        initialMatrix();
+        if (mMatrix == null) {
+            initialMatrix();
+        }
     }
 
     private void updateTexture() {
@@ -226,9 +229,6 @@ public class ReliefVideoDrawer implements IDrawer {
 
 
     private void initialMatrix() {
-        if (mMatrix != null) {
-            return;
-        }
         mMatrix = new float[16];
         float top = 1f, bottom = -1f;
         float verScale = (float) mSurfaceHeight / (float) mVideoHeight;
@@ -240,7 +240,7 @@ public class ReliefVideoDrawer implements IDrawer {
         sizeRatio[0] = 2;
         Matrix.orthoM(projectionMatrix, 0, -1, 1, bottom, top, 3, 5);
 //        Matrix.orthoM(projectionMatrix, 0, -2, 2, bottom, top, 1, 2);
-
+        Log.v(TAG, "orthoM bottom:" + bottom + ",top:" + top);
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5f, 0f, 0f, 0f, 0f, 1f, 0f);
         Matrix.multiplyMM(mMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         Log.v(TAG, "initialMatrix " + Arrays.toString(mMatrix));

@@ -11,19 +11,23 @@ public class OpenGLUtils {
 
 
     public static int createFBOTexture(int width, int height) {
+        //创建纹理id
         int[] textureId = new int[1];
+        //生成纹理id
         GLES20.glGenTextures(1, textureId, 0);
-
+        // bind texture id to texture unit
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0]);
-
+        // bind the texture pixels to texture unit.
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height,
                 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
 
+        // texture parameter set
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
+        // unbind the texture id and texture unit
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         return textureId[0];
     }
@@ -35,7 +39,9 @@ public class OpenGLUtils {
     }
 
     public static void bindFBO(int fb, int texture) {
+        // bind framebufferobject id to framebuffer unit
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fb);
+        // bind texture unit with fb object to make the texture pixels can render to the fbo.
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
                 GLES20.GL_TEXTURE_2D, texture, 0);
     }

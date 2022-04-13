@@ -6,3 +6,5 @@
 .externalNativeBuild
 .cxxgit
 /.idea
+local.properties
+/source
