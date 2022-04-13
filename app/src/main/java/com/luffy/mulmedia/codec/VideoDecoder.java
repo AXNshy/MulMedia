@@ -93,8 +93,13 @@ public class VideoDecoder extends BaseDecoder {
         try {
             int width = format.getInteger(MediaFormat.KEY_WIDTH);
             int height = format.getInteger(MediaFormat.KEY_HEIGHT);
+            int rotate = format.getInteger(MediaFormat.KEY_ROTATION, 0);
             if (mVideoListener != null) {
-                mVideoListener.onVideoSizeChanged(width, height);
+                if (rotate == 90 || rotate == 270) {
+                    mVideoListener.onVideoSizeChanged(height, width);
+                } else {
+                    mVideoListener.onVideoSizeChanged(width, height);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

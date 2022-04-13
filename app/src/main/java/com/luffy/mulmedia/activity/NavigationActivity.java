@@ -3,6 +3,7 @@ package com.luffy.mulmedia.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,17 +26,25 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.luffy.mulmedia.R;
+import com.luffyxu.mulmedia.ui.adapter.NavItemAdapter;
 import com.luffy.mulmedia.utils.FileUtils;
+import com.luffyxu.mulmedia.model.NavItem;
 
 import java.io.FileDescriptor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 public class NavigationActivity extends AppCompatActivity {
 
     private static final String TAG = "NavigationActivity";
     RecyclerView mLessonList;
-    List<String> mLessonPaths;
+    List<NavItem> mLessonPaths;
+
+    NavItemAdapter adapter;
 
     Button mSelectFileBtn;
     EditText mSelectFileEt;
@@ -87,38 +97,46 @@ public class NavigationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mLessonPaths = Arrays.asList(getResources().getStringArray(R.array.media_lesson_path_collection));
-        mLessonList.setAdapter(new RecyclerView.Adapter() {
-            @NonNull
+        mLessonPaths = createNavList();
+        adapter = new NavItemAdapter();
+        adapter.setData(mLessonPaths);
+        adapter.setItemClickListener(new Function2<View, Integer, Unit>() {
             @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_text,parent,false);
-
-                return new RecyclerView.ViewHolder(view){};
-            }
-
-            @Override
-            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-                TextView view = (TextView) holder.itemView;
-                view.setText(mLessonPaths.get(position));
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        navigate(position);
-                    }
-                });
-            }
-
-            @Override
-            public int getItemCount() {
-                return mLessonPaths.size();
+            public Unit invoke(View view, Integer integer) {
+                navigate(integer);
+                return null;
             }
         });
+        mLessonList.setAdapter(adapter);
+        mLessonList.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, int itemPosition, @NonNull RecyclerView parent) {
+                super.getItemOffsets(outRect, itemPosition, parent);
+                outRect.left = 20;
+                outRect.right = 20;
+                outRect.bottom = 20;
+            }
+        });
+
         mLessonList.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
     }
 
+    private List<NavItem> createNavList(){
+        String[] pathArrays = getResources().getStringArray(R.array.media_lesson_path_collection);
+        String[] titleArrays = getResources().getStringArray(R.array.media_lesson_title_collection);
+        List<NavItem> data = new ArrayList<>();
+        for(int i=0;i< pathArrays.length;i++){
+            data.add(new NavItem(titleArrays[i],pathArrays[i]));
+        }
+        return data;
+    }
+
     private void navigate(int position){
-        String path = mLessonPaths.get(position);
+//        if(selectUri == null){
+//            Toast.makeText(this, "please select a video first", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+        String path = mLessonPaths.get(position).getPath();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("xzq://navigate"+path));
         intent.putExtra("uri",selectUri);
         startActivity(intent);
@@ -126,7 +144,7 @@ public class NavigationActivity extends AppCompatActivity {
 
     private void startFileBrowser(){
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("*/*");
+        intent.setType("video/*");
         startActivityForResult(intent,1);
     }
 

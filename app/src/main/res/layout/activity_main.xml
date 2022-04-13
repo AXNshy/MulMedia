@@ -24,6 +24,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_file" />
 
+    <Button
+        android:id="@+id/btn_pip"
+        android:layout_width="wrap_content"
+        android:layout_height="120px"
+        android:gravity="center"
+        android:text="进入pip"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_repack" />
+
     <TextView
         android:id="@+id/tv_file"
         android:layout_width="wrap_content"

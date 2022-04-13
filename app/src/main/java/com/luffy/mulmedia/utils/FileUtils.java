@@ -199,6 +199,9 @@ public class FileUtils {
 
 
     public static FileDescriptor getFilePath(Context context, Uri uri) {
+        if(uri == null){
+            return null;
+        }
         if ("content".equalsIgnoreCase(uri.getScheme())) {
             ParcelFileDescriptor descriptor = null;
             try {

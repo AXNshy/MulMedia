@@ -344,6 +344,7 @@ public abstract class BaseDecoder implements IDecoder {
 
     @Override
     public boolean init() {
+        Log.d(TAG, "mFilePath : " + mFilePath);
         if ((TextUtils.isEmpty(mFilePath)
                 || !new File(mFilePath).exists()) && descriptor == null) {
             Log.d(TAG, "file path is null");

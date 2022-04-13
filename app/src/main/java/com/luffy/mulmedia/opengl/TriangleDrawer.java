@@ -1,6 +1,7 @@
 package com.luffy.mulmedia.opengl;
 
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -134,7 +135,7 @@ public class TriangleDrawer implements IDrawer {
 
     @Override
     public void setSurfaceSize(int w, int h) {
-
+        GLES30.glViewport(0,0,w,h);
     }
 
     @Override

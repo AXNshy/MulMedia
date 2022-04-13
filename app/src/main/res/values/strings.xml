@@ -1,15 +1,40 @@
 <resources>
     <string name="app_name">MulMedia</string>
+    <string name="path_gl_es_3">/surface/gles3</string>
     <string name="path_mediacodec">/surface/mediacodec</string>
     <string name="path_gl_video">/gl/video</string>
     <string name="path_egl_video">/egl/video</string>
     <string name="path_egl_filter_soul">/egl/filter/soul</string>
+    <string name="path_surface_video">/surfaceview</string>
+    <string name="path_media_info">/mediainfo</string>
+
+    <string name="title_gl_es_3">OpenGL ES3.0</string>
+    <string name="title_mediacodec">MediaCodec</string>
+    <string name="title_gl_video">GlSurfaceView播放视频</string>
+    <string name="title_egl_video">EGL播放视频</string>
+    <string name="title_egl_filter_soul">实现灵活抖动特效</string>
+    <string name="title_surface_video">SurfaceView测试</string>
+    <string name="title_media_info">媒体信息</string>
+
     <string name="select_file">search file:</string>
 
     <array name="media_lesson_path_collection">
+        <item>@string/path_gl_es_3</item>
         <item>@string/path_mediacodec</item>
         <item>@string/path_gl_video</item>
         <item>@string/path_egl_video</item>
         <item>@string/path_egl_filter_soul</item>
+        <item>@string/path_surface_video</item>
+        <item>@string/path_media_info</item>
+    </array>
+
+    <array name="media_lesson_title_collection">
+        <item>@string/title_gl_es_3</item>
+        <item>@string/title_mediacodec</item>
+        <item>@string/title_gl_video</item>
+        <item>@string/title_egl_video</item>
+        <item>@string/title_egl_filter_soul</item>
+        <item>@string/title_surface_video</item>
+        <item>@string/title_media_info</item>
     </array>
 </resources>
