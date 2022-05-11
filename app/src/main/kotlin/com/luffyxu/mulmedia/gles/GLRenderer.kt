@@ -27,6 +27,10 @@ class GLRenderer : IDrawer {
     private var textureBuffer: FloatBuffer? = null
     private var colorBuffer: FloatBuffer? = null
     private var textureId = 0
+
+    private var colorHandle = -1;
+    private var positionHandle = -1;
+
     private fun createProgram() {
         Log.d(TAG, "createProgram")
         val buffer = ByteBuffer.allocateDirect(vertexCoordinate.size * 4)
@@ -52,10 +56,15 @@ class GLRenderer : IDrawer {
         if (mProgramId == -1) {
             Log.d(TAG, "createGLPro")
             val vertexShader =
-                createShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode)
+                createShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode1)
             val fragShader =
                 createShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode)
             mProgramId = GLES30.glCreateProgram()
+
+            GLES30.glBindAttribLocation(mProgramId,colorHandle,"a_color")
+            GLES30.glBindAttribLocation(mProgramId,positionHandle,"vPosition")
+
+
             GLES30.glAttachShader(mProgramId, vertexShader)
             GLES30.glAttachShader(mProgramId, fragShader)
             GLES30.glLinkProgram(mProgramId)
@@ -101,9 +110,11 @@ class GLRenderer : IDrawer {
 //        GLES30.glVertexAttrib4f(0,1.0f,1.0f,0.0f,1.0f)
 
 //        GLES30.glClear ( GLES30.GL_COLOR_BUFFER_BIT );
+        // 1.use layout identifier declare
         GLES30.glVertexAttrib4fv(1,colorBuffer)
-        GLES30.glVertexAttribPointer(1,2,GLES30.GL_UNSIGNED_SHORT, true,0,colorBuffer)
-//        GLES30.glEnableVertexAttribArray(1)
+//        GLES30.glVertexAttribPointer(1,4,GLES30.GL_FLOAT, true,0,colorBuffer)
+        // 2.bind uniform attribute index to field in shader.
+        GLES30.glEnableVertexAttribArray(1)
 
 //        GLES30.glVertexAttrib4f(vertexHandle)
 //        GLES30.glVertexAttribPointer(textureHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)
@@ -133,14 +144,26 @@ class GLRenderer : IDrawer {
     override fun setVideoSize(w: Int, h: Int) {}
 
     companion object {
-
-        private const val vertexShaderCode = """
+        //1.use layout identifier declare
+        private const val vertexShaderCode1 = """
             #version 300 es
             layout(location = 0) in vec4 vPosition;
             layout(location = 1) in vec2 a_color;
             out vec4 v_color;
             void main(){
                 v_color = vec4(a_color,0f,1f);
+                gl_Position = vPosition;
+            }
+        """
+
+
+        private const val vertexShaderCode2 = """
+            #version 300 es
+            in vec4 vPosition;
+            in vec4 a_color;
+            out vec4 v_color;
+            void main(){
+                v_color = vec4(a_color);
                 gl_Position = vPosition;
             }
         """
