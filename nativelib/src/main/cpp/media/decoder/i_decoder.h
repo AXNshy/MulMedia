@@ -14,11 +14,11 @@ public:
     //停止解码
     virtual void Stop() = 0;
     //正在运行中
-    virtual void IsRunning() = 0;
+    virtual bool IsRunning() = 0;
     //获取视频长度
-    virtual void GetDuration() = 0;
+    virtual long GetDuration() = 0;
     //获取当前解码位置
-    virtual void GetCurPos() = 0;
+    virtual long GetCurPos() = 0;
 
 };
 

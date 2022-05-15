@@ -10,17 +10,20 @@
 #include <thread>
 
 
-#include "../utils/logger.h"
+#include "../../utils/logger.h"
 #include "decode_state.h"
 #include "i_decoder.h"
 
 
 extern "C" {
 
-#include "../include/libavcodec/avcodec.h"
-#include "../include/libavformat/avformat.h"
-#include "../include/libavutil/frame.h"
-#include "../include/libavutil/time.h"
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
+#include "libswscale/swscale.h"
+#include "libswresample/swresample.h"
+#include "libavutil/frame.h"
+#include "libavutil/time.h"
+#include "libavutil/imgutils.h"
 }
 
 class BaseDecoder : public IDecoder {
@@ -47,6 +50,8 @@ private:
 
     int m_stream_index = -1;
 
+    // 为合成器提供解码
+    bool m_for_synthesizer = false;
 
     void InitFFmpegDecoder(JNIEnv *env);
 
@@ -56,7 +61,7 @@ private:
 
     void ObtainTimeStamp();
 
-    void DoneDecode();
+    void DoneDecode(JNIEnv *env);
 
     void SyncRender();
 
@@ -77,6 +82,8 @@ private:
 
 protected:
 
+    AVCodecParameters  *parameters;
+
     void Wait(long second = 0);
 
     void SendSignal();
@@ -89,7 +96,9 @@ protected:
 
     virtual AVMediaType GetMediaType() = 0;
 
-    void *DecodeOneFrame();
+    virtual bool NeedDecodeLoop() = 0;
+
+    AVFrame* DecodeOneFrame();
 
     bool ForSynthesizer();
     /**
@@ -99,11 +108,23 @@ protected:
 
 public:
 
-    BaseDecoder(JNIEnv *env, jstring path);
+    BaseDecoder(JNIEnv *env, jstring path, bool for_synthesizer = false);
 
     virtual ~BaseDecoder();
 
     void Init(JNIEnv *pEnv, jstring pJstring);
+
+    void GoOn() override;
+
+    void Pause() override;
+
+    void Stop() override;
+
+    bool IsRunning() override;
+
+    long GetDuration() override;
+
+    long GetCurPos() override;
 
 };
 

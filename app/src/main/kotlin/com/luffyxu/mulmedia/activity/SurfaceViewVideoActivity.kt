@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.activity.BaseActivity
 import com.luffy.mulmedia.databinding.ActivitySurfaceBinding
+import com.luffy.mulmedia.utils.FileUtils
+import com.xzq.nativelib.FFmpegPlayer
 import java.io.FileDescriptor
 
 class SurfaceViewVideoActivity :BaseActivity(){
@@ -19,12 +21,13 @@ class SurfaceViewVideoActivity :BaseActivity(){
     lateinit var surfaceView : SurfaceView
     lateinit var binding : ActivitySurfaceBinding
 
-    var mediaPlayer : MediaPlayer? = null
+    var mediaPlayer : FFmpegPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_surface)
         surfaceView = binding.svVideo
+        mediaPlayer = FFmpegPlayer(path!!.toString())
         surfaceView.holder.addCallback(object :SurfaceHolder.Callback2{
             override fun surfaceCreated(holder: SurfaceHolder) {
                 surfaceHolder = holder
@@ -37,14 +40,9 @@ class SurfaceViewVideoActivity :BaseActivity(){
                 height: Int
             ) {
                 holder.setFixedSize(width, height)
-                mediaPlayer = MediaPlayer().apply {
-                    reset()
-                    setSurface(surfaceHolder.surface)
-                    setDataSource(path!!.path)
-                    setOnPreparedListener {
-                        it.start()
-                    }
-                    prepareAsync()
+                mediaPlayer?.apply {
+                    createPlayer(holder.surface)
+                    play()
                 }
             }
 
@@ -54,13 +52,6 @@ class SurfaceViewVideoActivity :BaseActivity(){
             override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
             }
         })
-        binding.btnRotate.setOnClickListener {
-            surfaceView.rotation = surfaceView.rotation + 45
-        }
-
-        binding.btnTranslate.setOnClickListener {
-            surfaceView.translationX =  surfaceView.translationX +10
-        }
     }
 
     override fun onUriAction(uri: Uri?) {
@@ -75,7 +66,6 @@ class SurfaceViewVideoActivity :BaseActivity(){
         super.onBackPressed()
         mediaPlayer?.apply {
             stop()
-            release()
         }
     }
 }

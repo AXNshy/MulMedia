@@ -22,24 +22,6 @@ project("nativelib")
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-add_library( # Sets the name of the library.
-        nativelib
-        # Sets the library as a shared library.
-        SHARED
-
-
-        # Provides a relative path to your source file(s).
-        media/base_decoder.cpp
-        media/decode_state.h
-        media/i_decoder.h
-
-        ffmpeg_player.cpp
-
-        utils/logger.h
-        utils/timer.c
-
-        nativelib.cpp)
-
 add_library(avcodec SHARED IMPORTED)
 set_target_properties(avcodec PROPERTIES IMPORTED_LOCATION ${ffmpeg_lib_dir}/libavcodec.so)
 
@@ -61,6 +43,33 @@ set_target_properties( swresample PROPERTIES IMPORTED_LOCATION ${ffmpeg_lib_dir}
 add_library(swscale SHARED IMPORTED)
 set_target_properties(swscale PROPERTIES IMPORTED_LOCATION ${ffmpeg_lib_dir}/libswscale.so)
 
+
+include_directories(${ffmpeg_head_dir}/include)
+
+add_library( # Sets the name of the library.
+        nativelib
+        # Sets the library as a shared library.
+        SHARED
+
+
+        # Provides a relative path to your source file(s).
+        media/decoder/base_decoder.cpp
+        media/decoder/decode_state.h
+        media/decoder/i_decoder.h
+        media/decoder/video/v_decoder.cpp
+        media/decoder/audio/a_decoder.cpp
+        media/render/video/video_render.h
+        media/render/video/native_render/native_render.cpp
+        media/render/video/native_render/native_render.h
+        media/one_frame.h
+
+        media/ffmpeg_player.cpp
+        media/ffmpeg_player.h
+
+        utils/logger.h
+        utils/timer.c
+
+        nativelib.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -87,5 +96,7 @@ target_link_libraries(nativelib
         swscale
         avformat
         avdevice
+
+        -landroid
 
         ${log-lib} )
