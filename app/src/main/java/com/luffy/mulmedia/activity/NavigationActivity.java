@@ -29,7 +29,6 @@ import com.luffy.mulmedia.R;
 import com.luffyxu.mulmedia.ui.adapter.NavItemAdapter;
 import com.luffy.mulmedia.utils.FileUtils;
 import com.luffyxu.mulmedia.model.NavItem;
-import com.xzq.nativelib2.NativeLib;
 
 import java.io.FileDescriptor;
 import java.util.ArrayList;
@@ -57,10 +56,6 @@ public class NavigationActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-        com.xzq.nativelib2.NativeLib libs = new NativeLib();
-        com.xzq.nativelib.NativeLib lib = new com.xzq.nativelib.NativeLib();
-        Log.d(TAG,"stringFromJNI1 " + lib.stringFromJNI());
-        Log.d(TAG,"stringFromJNI2 " + libs.stringFromJNI());
         mLessonList = findViewById(R.id.LessonListView);
         mSelectFileBtn = findViewById(R.id.btn_select_file);
         mSelectFileEt = findViewById(R.id.et_select_file_uri);

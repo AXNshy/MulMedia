@@ -2,7 +2,7 @@
 // Created by ZhenqianXu on 2022/5/15.
 //
 
-#include <cstring>
+#include <string.h>
 #include "native_render.h"
 
 void NativeRender::InitRender(JNIEnv *env, int video_width, int video_height, int *dst_size) {
@@ -31,11 +31,11 @@ void NativeRender::Render(OneFrame *frame) {
     ANativeWindow_lock(m_native_window,&m_out_buffer, nullptr);
 
     u_int8_t *dst = static_cast<u_int8_t *>(m_out_buffer.bits);
-    int disStride = m_out_buffer.stride * 4;
+    int dstStride = m_out_buffer.stride * 4;
     int srcStride = frame->line_size;
 
     for(int32_t h = 0;h < m_dst_h;h++){
-        memcpy(dst + disStride * h,frame->data + h * srcStride,srcStride);
+        memcpy(dst + dstStride * h,frame->data + h * srcStride,srcStride);
     }
 
     ANativeWindow_unlockAndPost(m_native_window);
