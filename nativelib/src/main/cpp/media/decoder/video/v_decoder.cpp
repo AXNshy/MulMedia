@@ -11,13 +11,14 @@ VideoDecoder::VideoDecoder(JNIEnv *env, _jstring *const path, bool for_synthesiz
 
 
 VideoDecoder::~VideoDecoder() {
-
+    delete m_video_render;
 }
 
 /*
  * 视频解码器初始化
  * */
 void VideoDecoder::Prepare(JNIEnv *env){
+    InitParams();
     InitRender(env);
     InitBuffer();
     InitSws();
@@ -69,22 +70,11 @@ void VideoDecoder::InitBuffer() {
 void VideoDecoder::InitSws() {
     m_sws_ctx = sws_getContext(width(),height(),video_pixel_format(),m_dst_w,m_dst_h,DST_FORMAT,SWS_FAST_BILINEAR,
                                nullptr, nullptr, nullptr);
-
 }
 
-int VideoDecoder::width() {
-    return parameters->width;
-}
-
-int VideoDecoder::height() {
-    return parameters->height;
-}
-
-enum AVPixelFormat VideoDecoder::video_pixel_format() {
-    return AV_PIX_FMT_X2BGR10LE;
-}
-
-
+//enum AVPixelFormat VideoDecoder::video_pixel_format() {
+//    return AV_PIX_FMT_X2BGR10LE;
+//}
 
 void VideoDecoder::Release() {
     LOGD(TAG,LogSpec(),"[VIDEO] release")
@@ -125,3 +115,9 @@ bool VideoDecoder::NeedDecodeLoop() {
 void VideoDecoder::SetRender(VideoRender *render) {
     m_video_render = render;
 }
+
+void VideoDecoder::InitParams() {
+
+}
+
+

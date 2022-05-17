@@ -13,9 +13,11 @@ class VideoDecoder : public BaseDecoder{
 private:
     const char *TAG = "VideoDecoder";
 
-    const AVPixelFormat DST_FORMAT = AV_PIX_FMT_ABGR;
+    const AVPixelFormat DST_FORMAT = AV_PIX_FMT_RGBA;
 
     AVFrame *m_rgb_frame = nullptr;
+
+    int rotate = 0;
 
     uint8_t *m_buf_rgb_frame = nullptr;
 
@@ -26,12 +28,13 @@ private:
     int m_dst_w;
     int m_dst_h;
 
+    void InitParams();
+
     void InitRender(JNIEnv *env);
 
     void InitBuffer();
 
     void InitSws();
-
 
 public:
     VideoDecoder(JNIEnv *env, _jstring *const path, bool for_synthesizer = false);
@@ -57,12 +60,6 @@ protected:
     const char *const LogSpec() override {
         return "VIDEO";
     }
-
-    int width();
-
-    int height();
-
-    enum AVPixelFormat video_pixel_format();
 };
 
 

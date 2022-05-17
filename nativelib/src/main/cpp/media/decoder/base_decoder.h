@@ -6,15 +6,15 @@
 
 
 #include <jni.h>
-#include <string>
+#include <string.h>
 #include <thread>
 
 
 #include "../../utils/logger.h"
 #include "decode_state.h"
 #include "i_decoder.h"
-
-
+#include <map>
+using namespace std;
 extern "C" {
 
 #include "libavcodec/avcodec.h"
@@ -84,11 +84,14 @@ protected:
 
     AVCodecParameters  *parameters;
 
+    map<string,string> *metadata;
+
     void Wait(long second = 0);
 
     void SendSignal();
 
     virtual void Prepare(JNIEnv *env) = 0;
+
 
     virtual void Render(AVFrame *frame) = 0;
 
@@ -111,6 +114,18 @@ public:
     BaseDecoder(JNIEnv *env, jstring path, bool for_synthesizer = false);
 
     virtual ~BaseDecoder();
+
+    int width() {
+        return m_codec_ctx->width;
+    }
+
+    int height() {
+        return m_codec_ctx->height;
+    }
+
+    AVPixelFormat video_pixel_format() {
+        return m_codec_ctx->pix_fmt;
+    }
 
     void Init(JNIEnv *pEnv, jstring pJstring);
 

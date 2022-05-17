@@ -31,6 +31,7 @@ void BaseDecoder::InitFFmpegDecoder(JNIEnv *env) {
         return;
     }
 
+
     int vIdx = -1;
     //获取流索引
     for (int i = 0; i < m_format_ctx->nb_streams; ++i) {
@@ -47,6 +48,14 @@ void BaseDecoder::InitFFmpegDecoder(JNIEnv *env) {
     }
 
     m_stream_index = vIdx;
+
+
+    const AVDictionaryEntry *m = nullptr;
+    while ((m = av_dict_get(m_format_ctx->streams[m_stream_index]->metadata, "", m, AV_DICT_APPEND)) != nullptr) {
+        LOGD(TAG, LogSpec(), "metadata key:%s,value:%s", m->key, m->value);
+    }
+
+
     //获取解码器参数
     parameters = m_format_ctx->streams[m_stream_index]->codecpar;
     // 搜索对应解码器
@@ -68,6 +77,7 @@ void BaseDecoder::InitFFmpegDecoder(JNIEnv *env) {
     // 获取视频时长
     m_dur = (long) ((float) m_format_ctx->duration / AV_TIME_BASE * 1000);
 
+
     LOGD(TAG, "decoder init Success [%s]", m_path);
 }
 
@@ -85,7 +95,7 @@ void BaseDecoder::LoopDecode() {
 
     while (1) {
 
-        LOG_INFO(TAG, LogSpec(), "m_state %d",m_state);
+        LOG_INFO(TAG, LogSpec(), "m_state %d", m_state);
         if (m_state != START &&
             m_state != DECODING &&
             m_state != STOP) {
@@ -107,9 +117,9 @@ void BaseDecoder::LoopDecode() {
                 m_state = PAUSE;
             }
         } else {
-            if(ForSynthesizer()){
+            if (ForSynthesizer()) {
                 m_state = STOP;
-            } else{
+            } else {
                 m_state = FINISH;
             }
         }
@@ -117,36 +127,37 @@ void BaseDecoder::LoopDecode() {
 }
 
 void BaseDecoder::ObtainTimeStamp() {
-    if(m_frame->pkt_dts != AV_NOPTS_VALUE) {
+    if (m_frame->pkt_dts != AV_NOPTS_VALUE) {
         m_cur_t_s = m_packet->dts;
     } else if (m_frame->pts != AV_NOPTS_VALUE) {
         m_cur_t_s = m_frame->pts;
     } else {
         m_cur_t_s = 0;
     }
-    m_cur_t_s = (int64_t)((m_cur_t_s * av_q2d(m_format_ctx->streams[m_stream_index]->time_base)) * 1000);
+    m_cur_t_s = (int64_t) ((m_cur_t_s * av_q2d(m_format_ctx->streams[m_stream_index]->time_base)) *
+                           1000);
 
 }
 
 void BaseDecoder::DoneDecode(JNIEnv *env) {
-    if(m_packet!= nullptr){
+    if (m_packet != nullptr) {
         av_packet_free(&m_packet);
     }
-    if(m_frame!= nullptr){
+    if (m_frame != nullptr) {
         av_frame_free(&m_frame);
     }
 
-    if(m_codec_ctx != nullptr){
+    if (m_codec_ctx != nullptr) {
         avcodec_close(m_codec_ctx);
         avcodec_free_context(&m_codec_ctx);
     }
 
-    if(m_format_ctx != nullptr){
+    if (m_format_ctx != nullptr) {
         avformat_close_input(&m_format_ctx);
         avformat_free_context(m_format_ctx);
     }
 
-    if(m_path != nullptr && m_path_ref != nullptr){
+    if (m_path != nullptr && m_path_ref != nullptr) {
         env->ReleaseStringUTFChars(static_cast<jstring>(m_path_ref), m_path);
         env->DeleteGlobalRef(m_path_ref);
     }
@@ -182,7 +193,7 @@ void BaseDecoder::Decode(std::shared_ptr<BaseDecoder> that) {
 }
 
 void BaseDecoder::Wait(long second) {
-    LOGD(TAG,"decoder Wait second:%d",second)
+    LOGD(TAG, "decoder Wait second:%d", second)
     pthread_mutex_lock(&m_mutex);
     if (second > 0) {
         timeval now;
@@ -200,13 +211,14 @@ void BaseDecoder::Wait(long second) {
 }
 
 void BaseDecoder::SendSignal() {
-    LOGD(TAG,"decoder SendSignal")
+    LOGD(TAG, "decoder SendSignal")
     pthread_mutex_lock(&m_mutex);
     pthread_cond_signal(&m_cond);
     pthread_mutex_unlock(&m_mutex);
 }
 
-BaseDecoder::BaseDecoder(JNIEnv *env, jstring path, bool for_synthesizer):m_for_synthesizer(for_synthesizer) {
+BaseDecoder::BaseDecoder(JNIEnv *env, jstring path, bool for_synthesizer) : m_for_synthesizer(
+        for_synthesizer) {
     Init(env, path);
     CreateDecodeThread();
 }
@@ -222,38 +234,41 @@ void BaseDecoder::Init(JNIEnv *env, jstring path) {
     m_path_ref = env->NewGlobalRef(path);
     m_path = env->GetStringUTFChars(path, nullptr);
     env->GetJavaVM(&m_jvm_for_thread);
-    LOGD(TAG,"decoder create path:%s",m_path)
+    LOGD(TAG, "decoder create path:%s", m_path)
 }
 
-AVFrame* BaseDecoder::DecodeOneFrame() {
+AVFrame *BaseDecoder::DecodeOneFrame() {
 
-    LOG_INFO(TAG, LogSpec(), "DecodeOneFrame %d",m_state);
-    int ret = av_read_frame(m_format_ctx,m_packet);
+    LOG_INFO(TAG, LogSpec(), "DecodeOneFrame %d", m_state);
+    int ret = av_read_frame(m_format_ctx, m_packet);
 
-    while (ret == 0){
-        if(m_packet->stream_index == m_stream_index){
-            switch (avcodec_send_packet(m_codec_ctx,m_packet)) {
+    while (ret == 0) {
+        if (m_packet->stream_index == m_stream_index) {
+            switch (avcodec_send_packet(m_codec_ctx, m_packet)) {
                 //数据阻塞了，需要从解码器输出中将数据清掉，才能继续给解码器提供数据
                 case AVERROR(EAGAIN) :
                     av_packet_unref(m_packet);
-                    LOG_ERROR(TAG,LogSpec(),"avcodec send packet error [%s]",av_err2str(AVERROR(EAGAIN)))
+                    LOG_ERROR(TAG, LogSpec(), "avcodec send packet error [%s]",
+                              av_err2str(AVERROR(EAGAIN)))
                     break;
                     //解码完成
                 case AVERROR_EOF:
-                    LOG_ERROR(TAG,LogSpec(),"avcodec work  complete [%s]",av_err2str(AVERROR_EOF))
+                    LOG_ERROR(TAG, LogSpec(), "avcodec work  complete [%s]",
+                              av_err2str(AVERROR_EOF))
                     return nullptr;
                     //解码器没有打开，codec是编码模式，或者需要把当前数据flush掉。
                 case AVERROR(EINVAL):
-                    LOG_ERROR(TAG,LogSpec(),"decoder not open,or it's encoder, [%s]",av_err2str(AVERROR(EINVAL)))
+                    LOG_ERROR(TAG, LogSpec(), "decoder not open,or it's encoder, [%s]",
+                              av_err2str(AVERROR(EINVAL)))
                     break;
                 case AVERROR(ENOMEM):
-                    LOG_ERROR(TAG,LogSpec(),"decoder error, [%s]",av_err2str(AVERROR(EINVAL)))
+                    LOG_ERROR(TAG, LogSpec(), "decoder error, [%s]", av_err2str(AVERROR(EINVAL)))
                     break;
 
                 default:
                     break;
             }
-            int result = avcodec_receive_frame(m_codec_ctx,m_frame);
+            int result = avcodec_receive_frame(m_codec_ctx, m_frame);
             switch (result) {
                 case 0:
                     ObtainTimeStamp();
@@ -261,12 +276,13 @@ AVFrame* BaseDecoder::DecodeOneFrame() {
                     return m_frame;
                 default:
                     av_packet_unref(m_packet);
-                    LOG_ERROR(TAG,LogSpec(),"avcodec_receive_frame error [%s]",av_err2str(result))
+                    LOG_ERROR(TAG, LogSpec(), "avcodec_receive_frame error [%s]",
+                              av_err2str(result))
                     break;
             }
         }
         av_packet_unref(m_packet);
-        ret = av_read_frame(m_format_ctx,m_packet);
+        ret = av_read_frame(m_format_ctx, m_packet);
     }
 
     av_packet_unref(m_packet);
@@ -278,13 +294,13 @@ bool BaseDecoder::ForSynthesizer() {
 }
 
 void BaseDecoder::GoOn() {
-m_state = DECODING;
-SendSignal();
+    m_state = DECODING;
+    SendSignal();
 
 }
 
 void BaseDecoder::Pause() {
-m_state = PAUSE;
+    m_state = PAUSE;
 }
 
 void BaseDecoder::Stop() {
