@@ -9,11 +9,16 @@
 #include <jni.h>
 #include "decoder/video/v_decoder.h"
 #include "render/video/video_render.h"
+#include "render/audio/audio_render.h"
+#include "decoder/audio/a_decoder.h"
+
 class FFmpegPlayer{
 private:
-    VideoDecoder *m_decoder;
+    VideoDecoder *m_v_decoder;
+    AudioDecoder *m_a_decoder;
 
-    VideoRender *m_render;
+    VideoRender *m_v_render;
+    AudioRender *m_a_render;
 
 public:
     FFmpegPlayer(JNIEnv *env,jstring path,jobject surface);

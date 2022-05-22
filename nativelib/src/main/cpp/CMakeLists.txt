@@ -59,8 +59,9 @@ add_library( # Sets the name of the library.
         media/decoder/video/v_decoder.cpp
         media/decoder/audio/a_decoder.cpp
         media/render/video/video_render.h
+        media/render/audio/audio_render.h
         media/render/video/native_render/native_render.cpp
-        media/render/video/native_render/native_render.h
+        media/render/audio/opensl/opensl_render.cpp
         media/one_frame.h
 
         media/ffmpeg_player.cpp
@@ -98,5 +99,6 @@ target_link_libraries(nativelib
         avdevice
 
         -landroid
+        OpenSLES
 
         ${log-lib} )

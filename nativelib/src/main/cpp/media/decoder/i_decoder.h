@@ -5,6 +5,8 @@
 #ifndef MULMEDIA_I_DECODER_H
 #define MULMEDIA_I_DECODER_H
 
+#include "i_decode_state_cb.h"
+
 class IDecoder{
 public:
     //继续解码
@@ -20,6 +22,7 @@ public:
     //获取当前解码位置
     virtual long GetCurPos() = 0;
 
+    virtual void SetStateReceiver(IDecodeCallback *cb) = 0;
 };
 
 #endif //MULMEDIA_I_DECODER_H

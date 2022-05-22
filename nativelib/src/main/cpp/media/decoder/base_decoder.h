@@ -13,6 +13,7 @@
 #include "../../utils/logger.h"
 #include "decode_state.h"
 #include "i_decoder.h"
+#include "i_decode_state_cb.h"
 #include <map>
 using namespace std;
 extern "C" {
@@ -109,7 +110,12 @@ protected:
  */
     virtual const char *const LogSpec() = 0;
 
+    IDecodeCallback *m_state_cb = NULL;
 public:
+
+    void SetStateReceiver(IDecodeCallback *cb) override {
+        m_state_cb = cb;
+    }
 
     BaseDecoder(JNIEnv *env, jstring path, bool for_synthesizer = false);
 
@@ -121,6 +127,10 @@ public:
 
     int height() {
         return m_codec_ctx->height;
+    }
+
+    AVCodecContext *codec_ctx(){
+        return m_codec_ctx;
     }
 
     AVPixelFormat video_pixel_format() {
@@ -141,6 +151,7 @@ public:
 
     long GetCurPos() override;
 
+    void CallbackState(DecodeState status);
 };
 
 

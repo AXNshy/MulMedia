@@ -77,7 +77,7 @@ void VideoDecoder::InitSws() {
 //}
 
 void VideoDecoder::Release() {
-    LOGD(TAG,LogSpec(),"[VIDEO] release")
+    LOGD(TAG,"[VIDEO] release")
     if(m_rgb_frame != nullptr){
         av_frame_free(&m_rgb_frame);
         m_rgb_frame = nullptr;

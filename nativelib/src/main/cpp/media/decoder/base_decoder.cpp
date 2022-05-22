@@ -49,12 +49,12 @@ void BaseDecoder::InitFFmpegDecoder(JNIEnv *env) {
 
     m_stream_index = vIdx;
 
-
+    LOGD(TAG, "av_dict_get");
     const AVDictionaryEntry *m = nullptr;
-    while ((m = av_dict_get(m_format_ctx->streams[m_stream_index]->metadata, "", m, AV_DICT_APPEND)) != nullptr) {
-        LOGD(TAG, LogSpec(), "metadata key:%s,value:%s", m->key, m->value);
+    while ((m = av_dict_get(m_format_ctx->streams[m_stream_index]->metadata, "", m, AV_DICT_IGNORE_SUFFIX)) !=
+            nullptr) {
+        LOGD(TAG, "metadata key:%s,value:%s", m->key, m->value);
     }
-
 
     //获取解码器参数
     parameters = m_format_ctx->streams[m_stream_index]->codecpar;
@@ -91,7 +91,7 @@ void BaseDecoder::LoopDecode() {
         m_state = START;
     }
 
-    LOG_INFO(TAG, LogSpec(), "start decode llllllloop");
+    LOG_INFO(TAG, LogSpec(), "start decode llllllloop ,start state is [%d]" , m_state);
 
     while (1) {
 
@@ -183,6 +183,8 @@ void BaseDecoder::Decode(std::shared_ptr<BaseDecoder> that) {
     // 为帧缓冲分配内存
     that->AllocFrameBuffer();
     //回调通知解码器初始化完成
+
+    av_usleep(2000);
     that->Prepare(env);
     // 进入解码循环
     that->LoopDecode();
@@ -193,7 +195,7 @@ void BaseDecoder::Decode(std::shared_ptr<BaseDecoder> that) {
 }
 
 void BaseDecoder::Wait(long second) {
-    LOGD(TAG, "decoder Wait second:%d", second)
+    LOGD(LogSpec(), "decoder Wait second:%d", second)
     pthread_mutex_lock(&m_mutex);
     if (second > 0) {
         timeval now;
@@ -239,11 +241,12 @@ void BaseDecoder::Init(JNIEnv *env, jstring path) {
 
 AVFrame *BaseDecoder::DecodeOneFrame() {
 
-    LOG_INFO(TAG, LogSpec(), "DecodeOneFrame %d", m_state);
+//    LOG(TAG, LogSpec(), "DecodeOneFrame %d", m_state);
     int ret = av_read_frame(m_format_ctx, m_packet);
 
     while (ret == 0) {
         if (m_packet->stream_index == m_stream_index) {
+
             switch (avcodec_send_packet(m_codec_ctx, m_packet)) {
                 //数据阻塞了，需要从解码器输出中将数据清掉，才能继续给解码器提供数据
                 case AVERROR(EAGAIN) :
@@ -318,6 +321,33 @@ long BaseDecoder::GetDuration() {
 long BaseDecoder::GetCurPos() {
     return m_cur_t_s;
 }
+
+void BaseDecoder::CallbackState(DecodeState status) {
+    if (m_state_cb != NULL) {
+        switch (status) {
+            case PREPARE:
+                m_state_cb->DecodePrepare(this);
+                break;
+            case START:
+                m_state_cb->DecodeReady(this);
+                break;
+            case DECODING:
+                m_state_cb->DecodeRunning(this);
+                break;
+            case PAUSE:
+                m_state_cb->DecodePause(this);
+                break;
+            case FINISH:
+                m_state_cb->DecodeFinish(this);
+                break;
+            case STOP:
+                m_state_cb->DecodeStop(this);
+                break;
+        }
+    }
+}
+
+
 
 
 
