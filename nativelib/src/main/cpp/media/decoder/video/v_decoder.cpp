@@ -100,6 +100,10 @@ void VideoDecoder::Release() {
 }
 
 void VideoDecoder::Render(AVFrame *frame) {
+    /*
+     * frame->data  the pointer of planes in image,the size of planes in YUV Format is 4 ;the size of planes in RGB Format = 1.
+     * format->linesize the size of data in one line of plane data.
+     * */
     sws_scale(m_sws_ctx,frame->data,frame->linesize,0,height(),m_rgb_frame->data,m_rgb_frame->linesize);
 
     OneFrame* oneFrame = new OneFrame(m_rgb_frame->data[0],m_rgb_frame->linesize[0],m_rgb_frame->pts,m_rgb_frame->time_base,
