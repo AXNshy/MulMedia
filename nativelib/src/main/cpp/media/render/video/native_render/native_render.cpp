@@ -36,7 +36,7 @@ void NativeRender::Render(OneFrame *frame) {
 
     for(int32_t h = 0;h < m_dst_h;h++) {
         //change data copy order in Y axis
-        memcpy(dst + dstStride * (m_dst_h - h - 1), frame->data + h * srcStride, srcStride);
+        memcpy(dst + dstStride * h,frame->data + h * srcStride,srcStride);
     }
 
     ANativeWindow_unlockAndPost(m_native_window);

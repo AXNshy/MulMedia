@@ -110,11 +110,11 @@ class GLRenderer : IDrawer {
 //        GLES30.glVertexAttrib4f(0,1.0f,1.0f,0.0f,1.0f)
 
 //        GLES30.glClear ( GLES30.GL_COLOR_BUFFER_BIT );
-        // 1.use layout identifier declare
+//        1.use layout identifier declare
         GLES30.glVertexAttrib4fv(1,colorBuffer)
 //        GLES30.glVertexAttribPointer(1,4,GLES30.GL_FLOAT, true,0,colorBuffer)
-        // 2.bind uniform attribute index to field in shader.
-        GLES30.glEnableVertexAttribArray(1)
+//        2.bind uniform attribute index to field in shader.
+//        GLES30.glEnableVertexAttribArray(1)
 
 //        GLES30.glVertexAttrib4f(vertexHandle)
 //        GLES30.glVertexAttribPointer(textureHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)

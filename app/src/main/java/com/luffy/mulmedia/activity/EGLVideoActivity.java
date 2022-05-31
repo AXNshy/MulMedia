@@ -110,4 +110,15 @@ public class EGLVideoActivity extends BaseActivity {
         }
         return null;
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mVideoDecoder != null){
+            mVideoDecoder.stop();
+        }
+        if(mAudioDecoder != null) {
+            mAudioDecoder.stop();
+        }
+    }
 }

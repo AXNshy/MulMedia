@@ -112,6 +112,7 @@ void BaseDecoder::LoopDecode() {
 
         if (DecodeOneFrame() != nullptr) {
             SyncRender();
+            LOGD(TAG,"Render pts:%lld" ,m_frame->pts);
             Render(m_frame);
             if (m_state == START) {
                 m_state = PAUSE;
@@ -136,7 +137,6 @@ void BaseDecoder::ObtainTimeStamp() {
     }
     m_cur_t_s = (int64_t) ((m_cur_t_s * av_q2d(m_format_ctx->streams[m_stream_index]->time_base)) *
                            1000);
-
 }
 
 void BaseDecoder::DoneDecode(JNIEnv *env) {

@@ -98,4 +98,15 @@ public class SoulEGLActivity extends BaseActivity {
         mVideoDecoder.goOn();
         mAudioDecoder.goOn();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mVideoDecoder != null){
+            mVideoDecoder.stop();
+        }
+        if(mAudioDecoder != null) {
+            mAudioDecoder.stop();
+        }
+    }
 }
