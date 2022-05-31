@@ -87,7 +87,7 @@ protected:
 
     map<string,string> *metadata;
 
-    void Wait(long second = 0);
+    void Wait(long second = 0, long ms = 0);
 
     void SendSignal();
 

@@ -307,6 +307,9 @@ public abstract class BaseDecoder implements IDecoder {
         return isEndOfStream;
     }
 
+    /*
+    * 等待时间去解码下一帧，如果不等待的会，就会像快进一样很快播放完视频
+    * */
     protected void waitDecode() {
 
         try {

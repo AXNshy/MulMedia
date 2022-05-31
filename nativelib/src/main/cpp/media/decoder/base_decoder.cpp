@@ -112,7 +112,7 @@ void BaseDecoder::LoopDecode() {
 
         if (DecodeOneFrame() != nullptr) {
             SyncRender();
-            LOGD(TAG,"Render pts:%lld" ,m_frame->pts);
+            LOGD(LogSpec(),"Render pts:%lld" ,m_frame->pts)
             Render(m_frame);
             if (m_state == START) {
                 m_state = PAUSE;
@@ -135,8 +135,11 @@ void BaseDecoder::ObtainTimeStamp() {
     } else {
         m_cur_t_s = 0;
     }
+
+    //获取当前时间进度
     m_cur_t_s = (int64_t) ((m_cur_t_s * av_q2d(m_format_ctx->streams[m_stream_index]->time_base)) *
                            1000);
+    LOGD(LogSpec(),"m_cur_t_s:%lld",m_cur_t_s);
 }
 
 void BaseDecoder::DoneDecode(JNIEnv *env) {
@@ -166,7 +169,12 @@ void BaseDecoder::DoneDecode(JNIEnv *env) {
 }
 
 void BaseDecoder::SyncRender() {
-
+    if(m_state == DECODING){
+        uint64_t passTime = GetCurMsTime() - m_start_t;
+        if(passTime < m_cur_t_s){
+            av_usleep((m_cur_t_s - passTime) * 1000);
+        }
+    }
 }
 
 //解码线程运行代码
@@ -194,14 +202,17 @@ void BaseDecoder::Decode(std::shared_ptr<BaseDecoder> that) {
     that->m_jvm_for_thread->DetachCurrentThread();
 }
 
-void BaseDecoder::Wait(long second) {
-    LOGD(LogSpec(), "decoder Wait second:%d", second)
+/*
+* 等待时间去解码下一帧，如果不等待的会，就会像快进一样很快播放完视频
+* */
+void BaseDecoder::Wait(long second, long ms) {
+    LOGD(LogSpec(), "decoder Wait second:%d,ms:%d", second,ms)
     pthread_mutex_lock(&m_mutex);
-    if (second > 0) {
+    if (second > 0 || ms > 0) {
         timeval now;
         timespec outtime;
         gettimeofday(&now, NULL);
-        int64_t destNSec = now.tv_usec * 1000;
+        int64_t destNSec = now.tv_usec * 1000 + ms * 10000000;
         outtime.tv_sec = static_cast<__kernel_time_t>(now.tv_sec + second + destNSec / 1000000000);
         outtime.tv_nsec = static_cast<long>(destNSec % 1000000000);
         pthread_cond_timedwait(&m_cond, &m_mutex, &outtime);
