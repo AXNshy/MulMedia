@@ -128,10 +128,10 @@ void BaseDecoder::LoopDecode() {
 }
 
 void BaseDecoder::ObtainTimeStamp() {
-    if (m_frame->pkt_dts != AV_NOPTS_VALUE) {
-        m_cur_t_s = m_packet->dts;
-    } else if (m_frame->pts != AV_NOPTS_VALUE) {
+    if (m_frame->pts != AV_NOPTS_VALUE) {
         m_cur_t_s = m_frame->pts;
+    } else if (m_frame->pkt_dts != AV_NOPTS_VALUE) {
+        m_cur_t_s = m_packet->dts;
     } else {
         m_cur_t_s = 0;
     }
@@ -304,7 +304,7 @@ AVFrame *BaseDecoder::DecodeOneFrame() {
 }
 
 bool BaseDecoder::ForSynthesizer() {
-    return false;
+    return m_for_synthesizer;
 }
 
 void BaseDecoder::GoOn() {

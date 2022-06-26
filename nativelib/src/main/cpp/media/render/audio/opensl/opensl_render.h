@@ -12,6 +12,7 @@
 #include <SLES/OpenSLES_Android.h>
 #include "../audio_render.h"
 #include <pthread.h>
+#include <libavformat/avformat.h>
 
 using namespace std;
 
@@ -31,6 +32,13 @@ private:
     const char *TAG = "OpenSLRender";
 
     const SLuint32 SL_QUEUE_BUFFER_COUNT = 2;
+
+    //采样率
+    SLuint32 m_pcm_sample_rate = SL_SAMPLINGRATE_48;
+    //数据格式
+    SLuint32 m_data_format = SL_DATAFORMAT_PCM;
+    //声道数量
+    SLuint32 m_channel_num = 2;
 
     SLObjectItf m_engine_obj = nullptr;
     SLEngineItf m_engine = nullptr;
@@ -82,7 +90,7 @@ public:
 
     ~OpenSLRender();
 
-    void InitRender() override;
+    void InitRender(AVStream *stream) override;
 
     void Render(uint8_t *pcm, int size) override;
 

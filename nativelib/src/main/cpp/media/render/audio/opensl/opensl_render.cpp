@@ -54,10 +54,11 @@ bool OpenSLRender::CreateOutputMixer() {
  * */
 bool OpenSLRender::ConfigPlayer() {
     SLDataLocator_AndroidSimpleBufferQueue android_queue ={SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,SL_QUEUE_BUFFER_COUNT};
+    // 需要根据视频audio参数设置采样率大小，不然音频播放速度不正常
     SLDataFormat_PCM pcm = {
-SL_DATAFORMAT_PCM,
-(SLuint32)2,
-SL_SAMPLINGRATE_44_1,
+m_data_format,
+m_channel_num,
+m_pcm_sample_rate,
 SL_PCMSAMPLEFORMAT_FIXED_16,
 SL_PCMSAMPLEFORMAT_FIXED_16,
 SL_SPEAKER_FRONT_LEFT|SL_SPEAKER_FRONT_RIGHT,
@@ -109,7 +110,7 @@ void OpenSLRender::BlockEnqueue() {
 
     while (!m_data_queue.empty()){
         PCMData *front = m_data_queue.front();
-        if(front->used){
+        if(front != nullptr && front->used){
             m_data_queue.pop();
             delete front;
         } else{
@@ -163,8 +164,9 @@ OpenSLRender::~OpenSLRender() {
  * Create Mixer
  * Config Player
  * */
-void OpenSLRender::InitRender() {
+void OpenSLRender::InitRender(AVStream *context) {
     LOGD(TAG,"InitRender")
+
     if (!CreateEngine()) return;
     if (!CreateOutputMixer()) return;
     if (!ConfigPlayer()) return;
@@ -180,7 +182,7 @@ void OpenSLRender::Render(uint8_t *pcm, int size) {
         if(pcm != nullptr && size > 0){
             while (m_data_queue.size() >= 2){
                 SendCacheReadySignal();
-                usleep(20000);
+//                usleep(20000);
             }
 
             uint8_t *data = static_cast<uint8_t *>(malloc(size));

@@ -8,18 +8,20 @@ void AudioDecoder::InitSwr() {
     AVCodecContext *codec_ct = codec_ctx();
 
     m_swr = swr_alloc();
+    struct AVChannelLayout oh = AV_CHANNEL_LAYOUT_STEREO;
 
-    av_opt_set_int(m_swr,"in_channel_layout",codec_ct->channel_layout,0);
-    av_opt_set_int(m_swr,"out_channel_layout",ENCODE_AUDIO_DEST_CHANNEL_LAYOUT     ,0);
-    av_opt_set_int(m_swr,"in_sample_rate",codec_ct->sample_rate,0);
-    av_opt_set_int(m_swr,"out_sample_rate",GetSampleRate(codec_ct->sample_rate),0);
+    swr_alloc_set_opts2(&m_swr, &oh,GetSampleFmt(),GetSampleRate(codec_ct->sample_rate),&codec_ct->ch_layout,codec_ct->sample_fmt,codec_ct->sample_rate,0,nullptr);
+//    av_opt_set_int(m_swr,"in_channel_layout",codec_ct->channel_layout,0);
+//    av_opt_set_int(m_swr,"out_channel_layout",ENCODE_AUDIO_DEST_CHANNEL_LAYOUT     ,0);
+//    av_opt_set_int(m_swr,"in_sample_rate",codec_ct->sample_rate,0);
+//    av_opt_set_int(m_swr,"out_sample_rate",GetSampleRate(codec_ct->sample_rate),0);
 
     av_opt_set_sample_fmt(m_swr,"in_sample_fmt",codec_ct->sample_fmt,0);
     av_opt_set_sample_fmt(m_swr,"out_sample_fmt",GetSampleFmt(),0);
     swr_init(m_swr);
 
-//    LOGI(TAG, "sample rate: %d, channel: %d, format: %d, frame_size: %d, layout: %lld",
-//         codec_ct->sample_rate, codec_ct->channels, codec_ct->sample_fmt, codec_ct->frame_size,codec_ct->channel_layout)
+    LOGI(TAG, "sample rate: %d, channel: %d, format: %d, frame_size: %d, layout: %lld",
+         codec_ct->sample_rate, codec_ct->channels, codec_ct->sample_fmt, codec_ct->frame_size,codec_ct->channel_layout)
 
 }
 
@@ -41,7 +43,7 @@ void AudioDecoder::InitOutputBuffer() {
 
 void AudioDecoder::InitRender() {
     if(m_render != nullptr){
-        m_render->InitRender();
+        m_render->InitRender(nullptr);
     }
 }
 

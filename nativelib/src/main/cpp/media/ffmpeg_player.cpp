@@ -7,7 +7,7 @@
 #include "render/audio/opensl/opensl_render.h"
 
 FFmpegPlayer::FFmpegPlayer(JNIEnv *env, jstring path, jobject surface) {
-    m_v_decoder = new VideoDecoder(env, path);
+    m_v_decoder = new VideoDecoder(env, path, true);
     m_v_render = new NativeRender(env, surface);
     m_v_decoder->SetRender(m_v_render);
 
