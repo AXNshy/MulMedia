@@ -1,3 +1,4 @@
 include ':app'
 rootProject.name = "MulMedia"
 include ':nativelib'
+include ':camera'

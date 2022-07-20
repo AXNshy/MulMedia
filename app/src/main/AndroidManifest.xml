@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -88,6 +90,15 @@
                 <data android:host="navigate"
                     android:scheme="xzq"
                     android:path="@string/path_gl_es_3"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.luffyxu.mulmedia.activity.CameraActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_camera_base"/>
             </intent-filter>
         </activity>
     </application>
