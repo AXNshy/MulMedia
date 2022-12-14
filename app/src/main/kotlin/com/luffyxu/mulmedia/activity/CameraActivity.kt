@@ -1,84 +1,41 @@
 package com.luffyxu.mulmedia.activity
 
+import android.content.ContentValues
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
+import android.util.Size
+import android.view.LayoutInflater
 import android.view.Surface
 import android.view.SurfaceHolder
 import androidx.lifecycle.lifecycleScope
 import com.luffy.mulmedia.databinding.ActivityCameraBinding
 import com.luffyxu.camera.CameraClient
+import com.luffyxu.mulmedia.utils.CameraUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 
 class CameraActivity :CameraBaseActivity() {
-    lateinit var viewBinding : ActivityCameraBinding
 
-
-    lateinit var cameraClient : CameraClient
-
-    lateinit var surfaceHolder : SurfaceHolder
-    lateinit var surface : Surface
-
-    var handler: Handler = Handler(Looper.getMainLooper())
+    lateinit var viewBinding :ActivityCameraBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"onCreate")
-        viewBinding = ActivityCameraBinding.inflate(layoutInflater)
+        viewBinding = ActivityCameraBinding.inflate(LayoutInflater.from(this))
         setContentView(viewBinding.root)
-        viewBinding.apply {
-            btnCapture.setOnClickListener { _->
-                lifecycleScope.launch {
-                    val result = cameraClient.takePhoto()
-                    cameraClient.savePhoto(result)
-                }
-            }
-        }
-
-        lifecycleScope.launch{
-            cameraClient = CameraClient()
-        }
     }
 
-    override fun cameraAvailable(immiadate:Boolean) {
-        Log.d(TAG,"cameraAvailable $immiadate")
-//        if(immiadate){
-            handler.post{
-                viewBinding.surfacePreview.holder.addCallback(object : SurfaceHolder.Callback2 {
-                    override fun surfaceCreated(holder: SurfaceHolder) {
-                        Log.d(TAG,"surfaceCreated")
-                        lifecycleScope.launch {
-                            val inited = cameraClient.init(this@CameraActivity,holder.surface)
-                            if(inited) {
-                                cameraClient.openPreview()
-                            }
-                        }
-                    }
-
-                    override fun surfaceChanged(
-                        holder: SurfaceHolder,
-                        format: Int,
-                        width: Int,
-                        height: Int
-                    ) {
-                        Log.d(TAG,"surfaceChanged")
-                    }
-
-                    override fun surfaceDestroyed(holder: SurfaceHolder) {
-                        Log.d(TAG,"surfaceDestroyed")
-                    }
-
-                    override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
-                    }
-                })
-            }
-//        }
-
-    }
-
-
-    companion object{
-        const val TAG = "CameraBase"
+    override fun cameraAvailable(immiadate: Boolean) {
+//        viewBinding.viewPager
     }
 }

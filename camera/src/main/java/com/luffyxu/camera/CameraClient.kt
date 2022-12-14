@@ -12,19 +12,20 @@ import android.media.ImageReader
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.Size
+import android.view.Display
 import android.view.Surface
+import android.view.SurfaceHolder
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.material.snackbar.Snackbar
 import com.luffyxu.mulmedia.utils.CameraUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.Closeable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Runnable
 import java.lang.RuntimeException
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeoutException
@@ -44,11 +45,15 @@ class CameraClient {
         ) : Closeable {
             override fun close() = image.close()
         }
+
+        interface Callback {
+            fun onCameraSizeChange(size: Size)
+        }
     }
 
-    private var canCapture :Boolean = false
+    private var canCapture: Boolean = false
 
-    val scope : CoroutineScope = CoroutineScope(Dispatchers.Main)
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
     //preview surface
     lateinit var surface: Surface
@@ -69,40 +74,57 @@ class CameraClient {
     val cameraHandler: Handler = Handler(Looper.getMainLooper())
     val imageReaderHandler: Handler = Handler(Looper.getMainLooper())
 
+    var clientCallback: Callback? = null
 
-    suspend fun init(context: Context, surface: Surface): Boolean {
+    suspend fun init(context: Context, sv: AutoFitSurfaceView,cameraId: Int = 0): Boolean {
         if (!checkPermission(context)) {
-            Toast.makeText(context,"没有权限",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "please request camera permission first")
             return false
         }
         this.context = context
-        this@CameraClient.surface = surface
+        this@CameraClient.surface = sv.holder.surface
         cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraIds = cameraManager.cameraIdList
-        Log.d(TAG, "cameraIdList $cameraIds")
+        Log.d(TAG, "cameraIdList ${cameraIds.joinToString { it }}")
 
         val size = characteristics.get(
             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
         )!!
             .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
 
+
         mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 2)
 
-            mCamera = openCamera(cameraManager, cameraIds[0])
-            captureSession = createSession(mCamera, mutableListOf(surface,mReader.surface))
+        sv.setAspectRatio(size.width,size.height)
+        Log.d(TAG, "adjustSurfaceSize before ${size}")
+        CameraUtils.adjustSurfaceSize(size, CameraUtils.obtainScreenSize(context)).run {
+//            clientCallback?.onCameraSizeChange(this)
+//            sv.setAspectRatio(1080,1920)
+        }
+
+        Log.d(TAG, "adjustSurfaceSize after ${size}")
+
+        mCamera = openCamera(cameraManager, cameraIds[cameraId])
+        captureSession = createSession(mCamera, mutableListOf(surface, mReader.surface))
 //
+//        captureSession.device.si
         canCapture = true
         return true
     }
 
-    fun destroy(){
+    fun getSuitableSurfaceSize(availableSizes: Array<Size>,display: Display):Size{
+        val size = CameraUtils.getSuitableSize(availableSizes, display)
+        return size
+    }
+
+    fun destroy() {
 
     }
 
     @SuppressLint("MissingPermission")
     suspend fun openCamera(manager: CameraManager, cameraId: String): CameraDevice {
-        return suspendCoroutine {
+        return suspendCancellableCoroutine {
             manager.openCamera(cameraId, object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
                     it.resume(camera)
@@ -110,15 +132,15 @@ class CameraClient {
 
                 override fun onClosed(camera: CameraDevice) {
                     super.onClosed(camera)
-                    it.resumeWithException(RuntimeException("onClosed"))
+                    if (it.isActive) it.resumeWithException(RuntimeException("onClosed"))
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {
-                    it.resumeWithException(RuntimeException("onDisconnected"))
+                    if (it.isActive) it.resumeWithException(RuntimeException("onDisconnected"))
                 }
 
                 override fun onError(camera: CameraDevice, error: Int) {
-                    it.resumeWithException(RuntimeException("onError $error"))
+                    if (it.isActive) it.resumeWithException(RuntimeException("onError $error"))
                 }
             }, cameraHandler)
         }
@@ -126,14 +148,14 @@ class CameraClient {
 
     @SuppressLint("MissingPermission")
     suspend fun createSession(device: CameraDevice, targets: List<Surface>): CameraCaptureSession {
-        return suspendCoroutine {
+        return suspendCoroutine { cont ->
             device.createCaptureSession(targets, object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
-                    it.resume(session)
+                    cont.resume(session)
                 }
 
                 override fun onConfigureFailed(session: CameraCaptureSession) {
-                    it.resumeWithException(RuntimeException("onConfigureFailed $session"))
+                    cont.resumeWithException(RuntimeException("onConfigureFailed $session"))
                 }
 
             }, cameraHandler)
@@ -144,42 +166,20 @@ class CameraClient {
     * 开启预览，创建一个CaptureRequest对象，模板参数为CameraDevice.TEMPLATE_PREVIEW，为request对象设置绘制的surface对象。
     * 最后通过CameraCaptureSession::setRepeatingRequest 发送预览的请求到RequestQueue中
     * */
-    suspend fun openPreview() {
+    suspend fun openPreview(surface: Surface) {
         val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         captureRequest.addTarget(surface)
         captureSession.setRepeatingRequest(
             captureRequest.build(),
-            object : CameraCaptureSession.CaptureCallback() {
-                override fun onCaptureStarted(
-                    session: CameraCaptureSession,
-                    request: CaptureRequest,
-                    timestamp: Long,
-                    frameNumber: Long
-                ) {
-                    super.onCaptureStarted(session, request, timestamp, frameNumber)
-                }
-
-                override fun onCaptureCompleted(
-                    session: CameraCaptureSession,
-                    request: CaptureRequest,
-                    result: TotalCaptureResult
-                ) {
-                    super.onCaptureCompleted(session, request, result)
-                }
-
-                override fun onCaptureFailed(
-                    session: CameraCaptureSession,
-                    request: CaptureRequest,
-                    failure: CaptureFailure
-                ) {
-                    super.onCaptureFailed(session, request, failure)
-                }
-
-            },
+            null,
             cameraHandler
         )
     }
 
+
+    suspend fun closePreview() {
+        captureSession.stopRepeating()
+    }
 
     /*
     * 拍照
@@ -196,9 +196,10 @@ class CameraClient {
         }, imageReaderHandler)
 
 
-        val captureRequest = captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE).apply {
-            addTarget(mReader.surface)
-        }.build()
+        val captureRequest =
+            captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE).apply {
+                addTarget(mReader.surface)
+            }.build()
 
         captureSession.capture(captureRequest, object : CameraCaptureSession.CaptureCallback() {
             override fun onCaptureStarted(
@@ -219,21 +220,29 @@ class CameraClient {
                 val resultTimestamp = result.get(CaptureResult.SENSOR_TIMESTAMP)
                 val exc = TimeoutException("Image dequeuing took too long")
                 val timeout = Runnable { con.resumeWithException(exc) }
-                imageReaderHandler.postDelayed(timeout,5000)
-                scope.launch {
-                    while (true){
+                imageReaderHandler.postDelayed(timeout, 5000)
+                scope.launch(con.context) {
+                    while (true) {
                         val image = imageQueue.take()
-                        if(resultTimestamp != image.timestamp) continue
+                        if (resultTimestamp != image.timestamp) continue
 
                         imageReaderHandler.removeCallbacks(timeout)
-                        mReader.setOnImageAvailableListener(null,null)
-                        while (imageQueue.size>0){
+                        mReader.setOnImageAvailableListener(null, null)
+                        while (imageQueue.size > 0) {
                             imageQueue.take().close()
                         }
 
-                        val mirrired = characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT
+                        val mirrired =
+                            characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT
                         val rotation = 0
-                        con.resume(CombinedCaptureResult(image,result,CameraUtils.computeExifOrientation(rotation,mirrired),mReader.imageFormat))
+                        con.resume(
+                            CombinedCaptureResult(
+                                image,
+                                result,
+                                CameraUtils.computeExifOrientation(rotation, mirrired),
+                                mReader.imageFormat
+                            )
+                        )
                     }
                 }
             }
@@ -248,21 +257,21 @@ class CameraClient {
         }, cameraHandler)
     }
 
-    suspend fun savePhoto(result : CombinedCaptureResult) : File = suspendCoroutine{ cont->
-        when{
-            result.format == ImageFormat.JPEG ->{
+    suspend fun savePhoto(result: CombinedCaptureResult): File = suspendCoroutine { cont ->
+        when {
+            result.format == ImageFormat.JPEG -> {
                 val buffer = result.image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
-                try{
-                    val output = CameraUtils.createFile(context,"jpg")
-                    Log.d(TAG,"savePhoto to [${output.path}]")
+                try {
+                    val output = CameraUtils.createFile(context.applicationContext, "jpg")
+                    Log.d(TAG, "savePhoto to [${output.path}]")
                     FileOutputStream(output).use { it.write(bytes) }
                     cont.resume(output)
-                }catch (e : IOException){
+                } catch (e: IOException) {
                     cont.resumeWithException(e)
                 }
             }
-            else ->{
+            else -> {
 
             }
         }
