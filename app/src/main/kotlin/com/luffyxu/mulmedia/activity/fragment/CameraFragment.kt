@@ -47,52 +47,8 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG,"onCreate")
         viewBinding.apply {
-            btnCapture.setOnClickListener { _->
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val result = cameraClient.takePhoto()
-                    cameraClient.savePhoto(result).apply {
-                        galleryAddPic(this)
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    private fun galleryAddPic(image : File) {
-//        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-//        val contentUri: Uri = Uri.fromFile(image)
-//        mediaScanIntent.setData(contentUri)
-//        this.sendBroadcast(mediaScanIntent)
-        val insertUri: Uri =
-            context!!.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())!!
-        val bitmap = BitmapFactory.decodeFile(image.path)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, context!!.contentResolver.openOutputStream(insertUri))
-        context!!.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(image)))
-    }
-
-
-    fun cameraAvailable(immiadate:Boolean) {
-        Log.d(TAG,"cameraAvailable $immiadate")
-//        if(immiadate){
-        handler.post{
-            lifecycleScope.launch{
-                cameraClient = CameraClient().apply {
-                    clientCallback = object : CameraClient.Companion.Callback {
-                        override fun onCameraSizeChange(size: Size) {
-                            Log.d(TAG,"onCameraSizeChange $size")
-                            surfaceHolder?.setFixedSize(size.width,size.height)
-                            lifecycleScope.launch {
-//                                    cameraClient.closePreview()
-//                                    cameraClient.openPreview()
-                            }
-                        }
-                    }
-                }
-            }
             Log.d(TAG,"surface addCallback")
-            viewBinding.surfacePreview.holder.addCallback(object : SurfaceHolder.Callback2 {
+            surfacePreview.holder.addCallback(object : SurfaceHolder.Callback {
                 override fun surfaceCreated(holder: SurfaceHolder) {
                     Log.d(TAG,"surfaceCreated")
                     surfaceHolder = holder
@@ -122,11 +78,51 @@ class CameraFragment : Fragment() {
                     Log.d(TAG,"surfaceDestroyed")
                     surfaceHolder = null
                 }
-
-                override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
-                }
             })
+
+            btnCapture.setOnClickListener { _->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val result = cameraClient.takePhoto()
+                    cameraClient.savePhoto(result).apply {
+                        galleryAddPic(this)
+                    }
+                }
+            }
         }
+
+        lifecycleScope.launch{
+            cameraClient = CameraClient().apply {
+                clientCallback = object : CameraClient.Companion.Callback {
+                    override fun onCameraSizeChange(size: Size) {
+                        Log.d(TAG,"onCameraSizeChange $size")
+                        surfaceHolder?.setFixedSize(size.width,size.height)
+                        lifecycleScope.launch {
+//                                    cameraClient.closePreview()
+//                                    cameraClient.openPreview()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun galleryAddPic(image : File) {
+//        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+//        val contentUri: Uri = Uri.fromFile(image)
+//        mediaScanIntent.setData(contentUri)
+//        this.sendBroadcast(mediaScanIntent)
+        val insertUri: Uri =
+            context!!.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())!!
+        val bitmap = BitmapFactory.decodeFile(image.path)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, context!!.contentResolver.openOutputStream(insertUri))
+        context!!.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(image)))
+    }
+
+
+    fun cameraAvailable(immiadate:Boolean) {
+        Log.d(TAG,"cameraAvailable $immiadate")
+//        if(immiadate){
+
 //        }
 
     }

@@ -3,6 +3,8 @@ package com.luffyxu.mulmedia.activity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,16 +22,28 @@ abstract class CameraBaseActivity : AppCompatActivity() {
         const val TAG :String = "CameraBaseActivity"
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        checkCameraPermissions()
+    private val mHandler : Handler = object  : Handler(){
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            when(msg.what){
+
+            }
+        }
     }
 
 
-    private fun checkCameraPermissions(){
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+
+    protected fun checkCameraPermissions(){
 
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
-            cameraAvailable(true)
+            mHandler.post(Runnable {
+                onCameraAvailable(true)
+            })
+
         }else{
             ActivityCompat.requestPermissions(this, permissions,REQUEST_CODE)
         }
@@ -50,13 +64,18 @@ abstract class CameraBaseActivity : AppCompatActivity() {
                         return
                     }
                 }
-                cameraAvailable(false)
+                mHandler.post(Runnable {
+                    onCameraAvailable(false)
+                })
             }
             else ->{
-
+                mHandler.post(Runnable {
+                    onCameraUnavailable("permission fail")
+                })
             }
         }
     }
 
-    abstract fun cameraAvailable(immiadate :Boolean)
+    abstract fun onCameraAvailable(immiadate :Boolean)
+    abstract fun onCameraUnavailable(msg :String)
 }

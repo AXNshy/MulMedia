@@ -1,29 +1,11 @@
 package com.luffyxu.mulmedia.activity
 
-import android.content.ContentValues
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
-import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
-import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
-import android.view.Surface
-import android.view.SurfaceHolder
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.luffy.mulmedia.databinding.ActivityCameraBinding
-import com.luffyxu.camera.CameraClient
-import com.luffyxu.mulmedia.utils.CameraUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.File
+import com.luffyxu.mulmedia.activity.fragment.CameraFragment
 
 class CameraActivity :CameraBaseActivity() {
 
@@ -33,9 +15,24 @@ class CameraActivity :CameraBaseActivity() {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(LayoutInflater.from(this))
         setContentView(viewBinding.root)
+        checkCameraPermissions()
     }
 
-    override fun cameraAvailable(immiadate: Boolean) {
+    override fun onCameraAvailable(immiadate: Boolean) {
 //        viewBinding.viewPager
+        viewBinding.viewPager.adapter = object : FragmentStateAdapter(this){
+            override fun getItemCount(): Int {
+                return 1
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return CameraFragment()
+            }
+
+        }
+    }
+
+    override fun onCameraUnavailable(msg: String) {
+        TODO("Not yet implemented")
     }
 }
