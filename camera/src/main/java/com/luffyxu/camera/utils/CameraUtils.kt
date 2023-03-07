@@ -13,10 +13,8 @@ import android.util.Log
 import android.util.Size
 import android.view.Display
 import android.view.WindowManager
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import com.luffyxu.camera.AutoFitSurfaceView
-import com.luffyxu.camera.CameraSize
+import com.luffyxu.camera.SmartSize
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -120,7 +118,7 @@ object CameraUtils {
         val point = Point()
         display.getRealSize(point)
 
-        val screenSize = CameraSize(Size(point.x,point.y))
-        return availableSizes.sortedBy { it.width*it.height }.map { CameraSize(it) }.reversed().first { screenSize.long>it.long && screenSize.short > it.short }.size
+        val screenSize = SmartSize(point.x,point.y)
+        return availableSizes.sortedBy { it.width*it.height }.map { SmartSize(it.width,it.height) }.reversed().first { screenSize.long>it.long && screenSize.short > it.short }.size
     }
 }

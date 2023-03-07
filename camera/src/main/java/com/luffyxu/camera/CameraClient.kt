@@ -16,6 +16,7 @@ import android.util.Size
 import android.view.Display
 import android.view.Surface
 import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.material.snackbar.Snackbar
@@ -76,6 +77,8 @@ class CameraClient {
 
     var clientCallback: Callback? = null
 
+
+
     suspend fun init(context: Context, sv: AutoFitSurfaceView,cameraId: Int = 0): Boolean {
         if (!checkPermission(context)) {
             Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
@@ -94,9 +97,9 @@ class CameraClient {
             .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
 
 
-        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 2)
-
-        sv.setAspectRatio(size.width,size.height)
+        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 3)
+        val viewSize = getPreviewSize(context!!.display!!,characteristics,SurfaceHolder::class.java)
+        sv.setAspectRatio(viewSize.width,viewSize.height)
         Log.d(TAG, "adjustSurfaceSize before ${size}")
         CameraUtils.adjustSurfaceSize(size, CameraUtils.obtainScreenSize(context)).run {
 //            clientCallback?.onCameraSizeChange(this)
@@ -186,6 +189,8 @@ class CameraClient {
     *
     * */
     suspend fun takePhoto(): CombinedCaptureResult = suspendCoroutine { con ->
+
+        Log.d(TAG, "takePhoto")
         while (mReader.acquireNextImage() != null) {
         }
 

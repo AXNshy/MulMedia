@@ -1,9 +1,13 @@
 package com.luffyxu.mulmedia.activity.fragment
 
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -14,24 +18,23 @@ import android.util.Size
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.luffy.mulmedia.databinding.ActivityCameraBinding
 import com.luffy.mulmedia.databinding.FragmentCameraBinding
 import com.luffyxu.camera.CameraClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class CameraFragment : Fragment() {
+class CameraFragment(val state : Int = 0) : Fragment() {
 
     lateinit var viewBinding : FragmentCameraBinding
-
 
     lateinit var cameraClient : CameraClient
 
     var surfaceHolder : SurfaceHolder? = null
+
     var surface : Surface? = null
 
-    var handler: Handler = Handler(Looper.getMainLooper())
+    val cameraManager by lazy { requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager }
 
 
     override fun onCreateView(
@@ -52,11 +55,9 @@ class CameraFragment : Fragment() {
                 override fun surfaceCreated(holder: SurfaceHolder) {
                     Log.d(TAG,"surfaceCreated")
                     surfaceHolder = holder
-//                        val availableSizes = cameraManager.characteristics.get(
-//                            CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
-//                        )!!
-//                            .getOutputSizes(ImageFormat.JPEG)
-//                        val size = cameraClient.getSuitableSurfaceSize(windowManager.defaultDisplay)
+//                    val previewSize = getPreviewSize(requireActivity().display!!,characteristics,SurfaceView::class.java)
+//
+//                        val size = cameraClient.getSuitableSurfaceSize(requireActivity().windowManager.defaultDisplay)
                     lifecycleScope.launch {
                         val inited = cameraClient.init(context!!,viewBinding.surfacePreview)
                         if(inited) {
@@ -116,15 +117,6 @@ class CameraFragment : Fragment() {
         val bitmap = BitmapFactory.decodeFile(image.path)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, context!!.contentResolver.openOutputStream(insertUri))
         context!!.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(image)))
-    }
-
-
-    fun cameraAvailable(immiadate:Boolean) {
-        Log.d(TAG,"cameraAvailable $immiadate")
-//        if(immiadate){
-
-//        }
-
     }
 
 
