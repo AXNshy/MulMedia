@@ -96,17 +96,10 @@ class CameraClient {
         )!!
             .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
 
-
-        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 3)
         val viewSize = getPreviewSize(context!!.display!!,characteristics,SurfaceHolder::class.java)
-        sv.setAspectRatio(viewSize.width,viewSize.height)
-        Log.d(TAG, "adjustSurfaceSize before ${size}")
-        CameraUtils.adjustSurfaceSize(size, CameraUtils.obtainScreenSize(context)).run {
-//            clientCallback?.onCameraSizeChange(this)
-//            sv.setAspectRatio(1080,1920)
-        }
 
-        Log.d(TAG, "adjustSurfaceSize after ${size}")
+        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 2)
+        sv.setAspectRatio(viewSize.width,viewSize.height)
 
         mCamera = openCamera(cameraManager, cameraIds[cameraId])
         captureSession = createSession(mCamera, mutableListOf(surface, mReader.surface))
