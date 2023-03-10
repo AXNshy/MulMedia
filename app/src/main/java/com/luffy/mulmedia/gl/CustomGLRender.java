@@ -5,9 +5,8 @@ import android.view.SurfaceView;
 import android.view.View;
 
 
-import com.luffy.mulmedia.opengl.IDrawer;
+import com.luffy.mulmedia.gles2.IDrawer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomGLRender implements SurfaceHolder.Callback {

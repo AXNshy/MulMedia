@@ -1,20 +1,24 @@
-package com.luffy.mulmedia.opengl;
+package com.luffy.mulmedia.gles2;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 
-public class DragGLSurfaceView extends GLSurfaceView {
+public class DragSurfaceView extends SurfaceView {
     IDrawer drawer;
 
-    public DragGLSurfaceView(Context context) {
+    public DragSurfaceView(Context context) {
         super(context);
     }
 
-    public DragGLSurfaceView(Context context, AttributeSet attrs) {
+    public DragSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public DragSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     public void setDrawer(IDrawer drawer) {

@@ -1,4 +1,4 @@
-package com.luffyxu.mulmedia.gles
+package com.luffyxu.mulmedia.gles3
 
 import android.opengl.EGL14
 import android.opengl.EGLConfig
@@ -6,7 +6,7 @@ import android.opengl.EGLDisplay
 import android.opengl.EGLSurface
 import android.util.Log
 import android.view.Surface
-import com.luffy.mulmedia.opengl.IDrawer
+import com.luffy.mulmedia.gles2.IDrawer
 import java.lang.Exception
 
 class RenderThread : Thread("GL3-Render") {

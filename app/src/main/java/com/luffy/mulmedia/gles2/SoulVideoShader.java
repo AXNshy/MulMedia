@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.opengl;
+package com.luffy.mulmedia.gles2;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -21,7 +21,7 @@ public class SoulVideoShader implements IGLShader {
     @Override
     public String vertexShader() {
         if (TextUtils.isEmpty(vertexShader)) {
-            vertexShader =  FileUtils.getStringFromAssets(context, "shader_vertex_video_soul.glsl");
+            vertexShader =  FileUtils.getStringFromAssets(context, "gles2/shader_vertex_video_soul.glsl");
         }
         Log.d(TAG,"vertexShader :" + vertexShader);
         return vertexShader;
@@ -30,7 +30,7 @@ public class SoulVideoShader implements IGLShader {
     @Override
     public String fragmentShader() {
         if (TextUtils.isEmpty(fragShader)) {
-            fragShader = FileUtils.getStringFromAssets(context, "shader_frag_video_soul.glsl");
+            fragShader = FileUtils.getStringFromAssets(context, "gles2/shader_frag_video_soul.glsl");
         }
         Log.d(TAG,"vertexShader :" + fragShader);
         return fragShader;

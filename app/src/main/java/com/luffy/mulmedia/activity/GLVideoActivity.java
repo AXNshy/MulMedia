@@ -14,11 +14,11 @@ import com.luffy.mulmedia.R;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
-import com.luffy.mulmedia.opengl.DragGLSurfaceView;
-import com.luffy.mulmedia.opengl.SimpleRenderer;
-import com.luffy.mulmedia.opengl.TextureCallback;
-import com.luffy.mulmedia.opengl.VideoDrawer;
-import com.luffy.mulmedia.opengl.VideoShader;
+import com.luffy.mulmedia.gles2.DragGLSurfaceView;
+import com.luffy.mulmedia.gles2.SimpleRenderer;
+import com.luffy.mulmedia.gles2.TextureCallback;
+import com.luffy.mulmedia.gles2.VideoDrawer;
+import com.luffy.mulmedia.gles2.VideoShader;
 
 import java.io.FileDescriptor;
 import java.util.concurrent.ExecutorService;

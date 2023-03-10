@@ -1,11 +1,18 @@
 package com.luffy.mulmedia.utils;
 
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 
 public class OpenGLUtils {
     public static int[] createTextureId(int count) {
         int[] arrys = new int[count];
         GLES20.glGenTextures(count, arrys, 0);
+        return arrys;
+    }
+
+    public static int[] GLES30_createTextureId(int count){
+        int[] arrys = new int[count];
+        GLES30.glGenTextures(count, arrys, 0);
         return arrys;
     }
 

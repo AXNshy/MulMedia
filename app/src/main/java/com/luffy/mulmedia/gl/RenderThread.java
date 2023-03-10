@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-import com.luffy.mulmedia.opengl.IDrawer;
+import com.luffy.mulmedia.gles2.IDrawer;
 import com.luffy.mulmedia.utils.OpenGLUtils;
 
 import java.lang.ref.WeakReference;

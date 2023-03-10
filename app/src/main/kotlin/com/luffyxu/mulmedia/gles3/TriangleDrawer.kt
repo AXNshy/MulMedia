@@ -1,24 +1,30 @@
-package com.luffyxu.mulmedia.gles
+package com.luffyxu.mulmedia.gles3
 
-import android.opengl.*
+import android.opengl.GLES30
 import android.util.Log
-import com.luffy.mulmedia.opengl.IDrawer
-import com.luffy.mulmedia.opengl.IGLShader
+import com.luffy.mulmedia.gles2.IDrawer
+import com.luffy.mulmedia.gles2.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-class GLRenderer : IDrawer {
+class TriangleDrawer : IDrawer {
 
     val TAG = "GLRenderer"
     private val vertexCoordinate = floatArrayOf(
-        -1f, -1f,
-        1f, -1f,
-        0f, 1f,
+        -1f, -1f,0.0f,
+        1f, -1f,0.0f,
+        0f, 1f,0.0f,
     )
 
+    private val textureCoordinate = floatArrayOf(
+        0f, 1f,
+        1f, 1f,
+        0f, 0f,
+        1f, 0f
+    )
     private val color = floatArrayOf(
-        1f, 0f, 0f, 1f, 1f, 1f
+        1f, 0f, 0f, 1f,1f,1f
     )
 
 
@@ -38,11 +44,11 @@ class GLRenderer : IDrawer {
         vertexBuffer = buffer.asFloatBuffer()
         vertexBuffer?.put(vertexCoordinate)
         vertexBuffer?.position(0)
-//        val buffer1 = ByteBuffer.allocateDirect(textureCoordinate.size * 4)
-//        buffer1.order(ByteOrder.nativeOrder())
-//        textureBuffer = buffer1.asFloatBuffer()
-//        textureBuffer?.put(textureCoordinate)
-//        textureBuffer?.position(0)
+        val buffer1 = ByteBuffer.allocateDirect(textureCoordinate.size * 4)
+        buffer1.order(ByteOrder.nativeOrder())
+        textureBuffer = buffer1.asFloatBuffer()
+        textureBuffer?.put(textureCoordinate)
+        textureBuffer?.position(0)
 
         val buffer2 = ByteBuffer.allocateDirect(color.size * 4)
         buffer2.order(ByteOrder.nativeOrder())
@@ -56,7 +62,7 @@ class GLRenderer : IDrawer {
         if (mProgramId == -1) {
             Log.d(TAG, "createGLPro")
             val vertexShader =
-                createShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode1)
+                createShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode3)
             val fragShader =
                 createShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode)
             mProgramId = GLES30.glCreateProgram()
@@ -93,7 +99,7 @@ class GLRenderer : IDrawer {
     }
 
     override fun draw() {
-        Log.d(TAG, "draw")
+        Log.d(TAG, "draw mProgramId:$mProgramId")
         createGLPro()
         // Set the viewport
 //        GLES30.glViewport ( 0, 0, mWidth, mHeight );
@@ -104,17 +110,22 @@ class GLRenderer : IDrawer {
 //        GLES30.glVertexAttrib1fv(1,colorBuffer)
 
 //        GLES30.glEnableVertexAttribArray(textureHandle)
-        GLES30.glVertexAttribPointer(0, 2, GLES30.GL_FLOAT, true, 0, vertexBuffer)
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, vertexBuffer)
         GLES30.glEnableVertexAttribArray(0)
 
 //        GLES30.glVertexAttrib4f(0,1.0f,1.0f,0.0f,1.0f)
 
 //        GLES30.glClear ( GLES30.GL_COLOR_BUFFER_BIT );
 //        1.use layout identifier declare
-        GLES30.glVertexAttrib4fv(1,colorBuffer)
-//        GLES30.glVertexAttribPointer(1,4,GLES30.GL_FLOAT, true,0,colorBuffer)
+
+        //设置顶点颜色  开始
+        // 方式1.常量顶点属性设置
+//        GLES30.glVertexAttrib4fv(1,colorBuffer)
+        // 方式2.顶点数组
+        GLES30.glVertexAttribPointer(1,4,GLES30.GL_FLOAT, true,0,colorBuffer)
 //        2.bind uniform attribute index to field in shader.
-//        GLES30.glEnableVertexAttribArray(1)
+        GLES30.glEnableVertexAttribArray(1)
+        //设置顶点颜色  结束
 
 //        GLES30.glVertexAttrib4f(vertexHandle)
 //        GLES30.glVertexAttribPointer(textureHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)
@@ -145,20 +156,29 @@ class GLRenderer : IDrawer {
 
     companion object {
         //1.use layout identifier declare
-        private const val vertexShaderCode1 = """
-            #version 300 es
+        //使用常量顶点颜色
+        private const val vertexShaderCode1 = """#version 300 es
             layout(location = 0) in vec4 vPosition;
-            layout(location = 1) in vec2 a_color;
+            layout(location = 1) in vec4 a_color;
             out vec4 v_color;
             void main(){
-                v_color = vec4(a_color,0f,1f);
+                v_color = a_color;
                 gl_Position = vPosition;
             }
         """
 
+        //使用顶点颜色数组
+        private const val vertexShaderCode3 = """#version 300 es
+            layout(location = 0) in vec4 vPosition;
+            layout(location = 1) in vec2 a_color;
+            out vec4 v_color;
+            void main(){
+                v_color = vec4(a_color,0,1);
+                gl_Position = vPosition;
+            }
+        """
 
-        private const val vertexShaderCode2 = """
-            #version 300 es
+        private const val vertexShaderCode2 = """#version 300 es
             in vec4 vPosition;
             in vec4 a_color;
             out vec4 v_color;
@@ -168,8 +188,7 @@ class GLRenderer : IDrawer {
             }
         """
 
-        private const val fragmentShaderCode = """
-            #version 300 es
+        private const val fragmentShaderCode = """#version 300 es
             precision mediump float;
             in vec4 v_color;
             out vec4 fragColor;

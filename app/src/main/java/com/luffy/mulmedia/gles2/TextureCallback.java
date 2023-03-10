@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.opengl;
+package com.luffy.mulmedia.gles2;
 
 import android.graphics.SurfaceTexture;
 
