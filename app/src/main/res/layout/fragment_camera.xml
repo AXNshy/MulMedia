@@ -12,9 +12,12 @@
         android:id="@+id/btn_capture"
         android:layout_width="96dp"
         android:layout_height="96dp"
+        android:layout_gravity="bottom|center"
+        android:background="@drawable/ic_shutter"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/ic_shutter"
+
         android:layout_marginBottom="60dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

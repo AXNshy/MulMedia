@@ -34,7 +34,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class CameraClient {
+class CameraClient(var context: Context) {
     companion object {
         const val TAG = "CameraClient"
 
@@ -64,10 +64,9 @@ class CameraClient {
     lateinit var captureSession: CameraCaptureSession
     lateinit var mCamera: CameraDevice
 
-    lateinit var context: Context
-    private val characteristics: CameraCharacteristics by lazy {
-        cameraManager.getCameraCharacteristics(cameraIds[0])
-    }
+    private lateinit var characteristics: CameraCharacteristics
+
+    var cameraId:Int = 0
 
     //用来直接读取图像像素数据
     lateinit var mReader: ImageReader
@@ -75,43 +74,45 @@ class CameraClient {
     val cameraHandler: Handler = Handler(Looper.getMainLooper())
     val imageReaderHandler: Handler = Handler(Looper.getMainLooper())
 
-    var clientCallback: Callback? = null
 
+    fun initPreview(sv: AutoFitSurfaceView,characteristics: CameraCharacteristics){
+        surface = sv.holder.surface
 
+//        val viewSize = getPreviewSize(context!!.display!!,characteristics,SurfaceHolder::class.java)
+//        sv.setAspectRatio(viewSize.width,viewSize.height)
+    }
 
-    suspend fun init(context: Context, sv: AutoFitSurfaceView,cameraId: Int = 0): Boolean {
+    suspend fun init(sv: AutoFitSurfaceView,characteristics: CameraCharacteristics): Boolean {
         if (!checkPermission(context)) {
             Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "please request camera permission first")
             return false
         }
-        this.context = context
-        this@CameraClient.surface = sv.holder.surface
+        this.characteristics = characteristics
         cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraIds = cameraManager.cameraIdList
-        Log.d(TAG, "cameraIdList ${cameraIds.joinToString { it }}")
-
-        val size = characteristics.get(
-            CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
-        )!!
-            .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
-
-        val viewSize = getPreviewSize(context!!.display!!,characteristics,SurfaceHolder::class.java)
-
-        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 2)
-        sv.setAspectRatio(viewSize.width,viewSize.height)
 
         mCamera = openCamera(cameraManager, cameraIds[cameraId])
-        captureSession = createSession(mCamera, mutableListOf(surface, mReader.surface))
-//
-//        captureSession.device.si
+
+        initPreview(sv,characteristics)
+        val size = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!.getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
+
+        Log.d(TAG, "ImageReader size ${size.width}x${size.height}")
+        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 3)
+
+
+        captureSession = createSession(mCamera, listOf(surface, mReader.surface))
+
+//        openPreview(surface)
+        val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+        captureRequest.addTarget(surface)
+        captureSession.setRepeatingRequest(
+            captureRequest.build(),
+            null,
+            cameraHandler
+        )
         canCapture = true
         return true
-    }
-
-    fun getSuitableSurfaceSize(availableSizes: Array<Size>,display: Display):Size{
-        val size = CameraUtils.getSuitableSize(availableSizes, display)
-        return size
     }
 
     fun destroy() {
@@ -151,7 +152,9 @@ class CameraClient {
                 }
 
                 override fun onConfigureFailed(session: CameraCaptureSession) {
-                    cont.resumeWithException(RuntimeException("onConfigureFailed $session"))
+                    val exc = RuntimeException("Camera ${device.id} session configuration failed")
+                    Log.e(TAG, exc.message, exc)
+                    cont.resumeWithException(exc)
                 }
 
             }, cameraHandler)
@@ -162,7 +165,7 @@ class CameraClient {
     * 开启预览，创建一个CaptureRequest对象，模板参数为CameraDevice.TEMPLATE_PREVIEW，为request对象设置绘制的surface对象。
     * 最后通过CameraCaptureSession::setRepeatingRequest 发送预览的请求到RequestQueue中
     * */
-    suspend fun openPreview(surface: Surface) {
+    fun openPreview(surface: Surface) {
         val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         captureRequest.addTarget(surface)
         captureSession.setRepeatingRequest(

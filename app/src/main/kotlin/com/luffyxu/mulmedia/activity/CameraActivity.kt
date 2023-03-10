@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.luffy.mulmedia.databinding.ActivityCameraBinding
+import com.luffyxu.mulmedia.activity.fragment.Camera2Fragment
 import com.luffyxu.mulmedia.activity.fragment.CameraFragment
 
 class CameraActivity :CameraBaseActivity() {
@@ -26,7 +27,10 @@ class CameraActivity :CameraBaseActivity() {
             }
 
             override fun createFragment(position: Int): Fragment {
-                return CameraFragment()
+                return when(position){
+                    1 -> CameraFragment()
+                    else -> CameraFragment()
+                }
             }
 
         }

@@ -53,6 +53,7 @@ class AutoFitSurfaceView @JvmOverloads constructor(
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val width = MeasureSpec.getSize(widthMeasureSpec)
         val height = MeasureSpec.getSize(heightMeasureSpec)
+        Log.d(TAG, "Measure dimensions set: $width x $height")
         if (aspectRatio == 0f) {
             setMeasuredDimension(width, height)
         } else {
@@ -69,7 +70,6 @@ class AutoFitSurfaceView @JvmOverloads constructor(
                 newHeight = (width / actualRatio).roundToInt()
             }
 
-            Log.d(TAG, "Measure dimensions set: $width x $height")
             Log.d(TAG, "Measured dimensions set: $newWidth x $newHeight")
             setMeasuredDimension(newWidth, newHeight)
         }
