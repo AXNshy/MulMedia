@@ -9,7 +9,7 @@ import com.luffy.mulmedia.gles2.IDrawer
 import com.luffy.mulmedia.gles2.IGLShader
 import com.luffy.mulmedia.gles2.TextureCallback
 import com.luffy.mulmedia.gles2.VideoDrawer
-import com.luffy.mulmedia.utils.OpenGLUtils
+import com.luffyxu.mulmedia.gles3.createShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -100,6 +100,7 @@ class VideoDrawer : IDrawer {
             Log.d(TAG,"createGLPro")
             val vertexShader=
                 createShader(GLES30.GL_VERTEX_SHADER,mGLShader!!.vertexShader())
+
             val fragShader=
                 createShader(GLES30.GL_FRAGMENT_SHADER,mGLShader!!.fragmentShader())
             mProgramId=GLES30.glCreateProgram()
@@ -107,29 +108,13 @@ class VideoDrawer : IDrawer {
             GLES30.glAttachShader(mProgramId,vertexShader)
             GLES30.glAttachShader(mProgramId,fragShader)
             GLES30.glLinkProgram(mProgramId)
-
+            val path : MutableList<Int> = mutableListOf()
+            val result : MutableList<List<Int>> = mutableListOf()
+            path.add(1)
+            result.add(path.toMutableList())
             mMatrixHandle = GLES30.glGetUniformLocation(mProgramId,"uMatrix")
             mTextureHandle = GLES30.glGetUniformLocation(mProgramId,"uTexture")
         }
-    }
-
-    private fun createShader(type:Int,code:String):Int{
-        val shader=GLES30.glCreateShader(type)
-        GLES30.glShaderSource(shader,code)
-        GLES30.glCompileShader(shader)
-        var compiled=IntArray(1)
-        GLES30.glGetShaderiv(shader,GLES30.GL_COMPILE_STATUS,compiled,0)
-        if(compiled[0]==0){
-
-            var length=IntArray(1)
-            GLES30.glGetShaderiv(shader,GLES30.GL_INFO_LOG_LENGTH,length,0)
-            if(length[0]>1){
-                var log=GLES30.glGetShaderInfoLog(shader)
-                Log.d(TAG,"Error Compiling shader type:$type")
-                Log.d(TAG,"Error Compiling shader:$log")
-            }
-        }
-        return shader
     }
 
     override fun draw(){

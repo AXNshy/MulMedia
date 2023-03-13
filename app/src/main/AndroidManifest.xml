@@ -112,6 +112,16 @@
                     android:path="@string/path_camera_base"/>
             </intent-filter>
         </activity>
+
+        <activity android:name="com.luffyxu.mulmedia.gles3.square.SquareActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_gles3_adpter6_lession1"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

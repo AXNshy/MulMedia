@@ -9,6 +9,8 @@
     <string name="path_surface_video">/surfaceview</string>
     <string name="path_camera_base">/camera/base</string>
     <string name="path_media_info">/mediainfo</string>
+    <string name="path_gles3_adpter6_lession1">/gles3/chapter6/1</string>
+    <string name="path_gles3_adpter6_lession2">/gles3/chapter6/2</string>
 
     <string name="title_gles3">GLES3.0</string>
     <string name="title_gles3_video">GLES3.0 Video</string>
@@ -19,6 +21,9 @@
     <string name="title_surface_video">SurfaceView测试</string>
     <string name="title_camera_base">相机基础</string>
     <string name="title_media_info">媒体信息</string>
+
+    <string name="title_gles3_adpter6_lession1">gles3 chapter6-1</string>
+    <string name="title_gles3_adpter6_lession2">gles3 chapter6-2</string>
 
     <string name="select_file">search file:</string>
 
@@ -32,6 +37,8 @@
         <item>@string/path_surface_video</item>
         <item>@string/path_media_info</item>
         <item>@string/path_camera_base</item>
+        <item>@string/path_gles3_adpter6_lession1</item>
+        <item>@string/path_gles3_adpter6_lession2</item>
     </array>
 
     <array name="media_lesson_title_collection">
@@ -44,5 +51,7 @@
         <item>@string/title_surface_video</item>
         <item>@string/title_media_info</item>
         <item>@string/title_camera_base</item>
+        <item>@string/title_gles3_adpter6_lession1</item>
+        <item>@string/title_gles3_adpter6_lession2</item>
     </array>
 </resources>
