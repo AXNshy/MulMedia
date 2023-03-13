@@ -13,7 +13,7 @@ import com.luffy.mulmedia.R;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
-import com.luffy.mulmedia.gl.CustomGLRender;
+import com.luffy.mulmedia.egl.CustomGLRender;
 import com.luffy.mulmedia.gles2.DragSurfaceView;
 import com.luffy.mulmedia.gles2.IDrawer;
 import com.luffy.mulmedia.gles2.SoulVideoDrawer;
@@ -53,7 +53,7 @@ public class SoulEGLActivity extends BaseActivity {
             }
         });
 //        mVideoDrawer.setVideoSize(1920, 1080);
-        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer));
+        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer),2);
         mVideoRender.setSurfaceView(eglSurfaceView);
 
         playBtn = findViewById(R.id.btn_file);

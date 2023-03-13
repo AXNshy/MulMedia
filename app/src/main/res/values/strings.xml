@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">MulMedia</string>
-    <string name="path_gl_es_3">/surface/gles3</string>
+    <string name="path_gles3">/surface/gles3/test</string>
+    <string name="path_gles3_video">/surface/gles3/video</string>
     <string name="path_mediacodec">/surface/mediacodec</string>
     <string name="path_gl_video">/gl/video</string>
     <string name="path_egl_video">/egl/video</string>
@@ -9,7 +10,8 @@
     <string name="path_camera_base">/camera/base</string>
     <string name="path_media_info">/mediainfo</string>
 
-    <string name="title_gl_es_3">OpenGL ES3.0</string>
+    <string name="title_gles3">GLES3.0</string>
+    <string name="title_gles3_video">GLES3.0 Video</string>
     <string name="title_mediacodec">MediaCodec</string>
     <string name="title_gl_video">GlSurfaceView播放视频</string>
     <string name="title_egl_video">EGL播放视频</string>
@@ -21,7 +23,8 @@
     <string name="select_file">search file:</string>
 
     <array name="media_lesson_path_collection">
-        <item>@string/path_gl_es_3</item>
+        <item>@string/path_gles3</item>
+        <item>@string/path_gles3_video</item>
         <item>@string/path_mediacodec</item>
         <item>@string/path_gl_video</item>
         <item>@string/path_egl_video</item>
@@ -32,7 +35,8 @@
     </array>
 
     <array name="media_lesson_title_collection">
-        <item>@string/title_gl_es_3</item>
+        <item>@string/title_gles3</item>
+        <item>@string/title_gles3_video</item>
         <item>@string/title_mediacodec</item>
         <item>@string/title_gl_video</item>
         <item>@string/title_egl_video</item>

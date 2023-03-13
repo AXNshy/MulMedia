@@ -13,23 +13,23 @@ import java.util.Arrays;
 
 public class VideoDrawer implements IDrawer {
     public static final String TAG = "VideoDrawer";
-    private float[] vertexCoordinate = new float[]{
+    private float[] vertexCoordinateData = new float[]{
             -1f, -1f,
             1f, -1f,
             -1f, 1f,
             1f, 1f,
     };
 
-    private float[] textureCoordinate = new float[]{
+    private float[] textureCoordinateData = new float[]{
             0f, 1f,
             1f, 1f,
             0f, 0f,
             1f, 0f,
     };
 
-    private int vertexPosHandle;
+    private int mPositionHandle;
 
-    private int texturePosHandle;
+    private int mCoordinateHandle;
 
     private int mMVPMatrix;
 
@@ -41,7 +41,9 @@ public class VideoDrawer implements IDrawer {
     private FloatBuffer textureBuffer;
 
     private float[] mMatrix;
+
     private float[] projectionMatrix = new float[16];
+
     private float[] viewMatrix = new float[16];
 
     private float[] sizeRatio = new float[2];
@@ -84,17 +86,17 @@ public class VideoDrawer implements IDrawer {
     }
 
     private void createProgram() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(vertexCoordinate.length * 4);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(vertexCoordinateData.length * 4);
         buffer.order(ByteOrder.nativeOrder());
         vertexBuffer = buffer.asFloatBuffer();
-        vertexBuffer.put(vertexCoordinate);
+        vertexBuffer.put(vertexCoordinateData);
         vertexBuffer.position(0);
 
 
-        ByteBuffer buffer1 = ByteBuffer.allocateDirect(textureCoordinate.length * 4);
+        ByteBuffer buffer1 = ByteBuffer.allocateDirect(textureCoordinateData.length * 4);
         buffer1.order(ByteOrder.nativeOrder());
         textureBuffer = buffer1.asFloatBuffer();
-        textureBuffer.put(textureCoordinate);
+        textureBuffer.put(textureCoordinateData);
         textureBuffer.position(0);
     }
 
@@ -108,8 +110,8 @@ public class VideoDrawer implements IDrawer {
             GLES20.glAttachShader(mProgramId, fragShader);
             GLES20.glLinkProgram(mProgramId);
 
-            vertexPosHandle = GLES20.glGetAttribLocation(mProgramId, "aPosition");
-            texturePosHandle = GLES20.glGetAttribLocation(mProgramId, "aCoordinate");
+            mPositionHandle = GLES20.glGetAttribLocation(mProgramId, "aPosition");
+            mCoordinateHandle = GLES20.glGetAttribLocation(mProgramId, "aCoordinate");
             textureHandle = GLES20.glGetUniformLocation(mProgramId, "uTexture");
             mMVPMatrix = GLES20.glGetUniformLocation(mProgramId, "uMatrix");
         }
@@ -180,13 +182,13 @@ public class VideoDrawer implements IDrawer {
 //        GLES20.glClearColor(0f, 0f, 0f, 0f);
 //        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        GLES20.glEnableVertexAttribArray(vertexPosHandle);
-        GLES20.glEnableVertexAttribArray(texturePosHandle);
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(mCoordinateHandle);
 
 
         GLES20.glUniformMatrix4fv(mMVPMatrix, 1, false, mMatrix, 0);
-        GLES20.glVertexAttribPointer(vertexPosHandle, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer);
-        GLES20.glVertexAttribPointer(texturePosHandle, 2, GLES20.GL_FLOAT, false, 0, textureBuffer);
+        GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer);
+        GLES20.glVertexAttribPointer(mCoordinateHandle, 2, GLES20.GL_FLOAT, false, 0, textureBuffer);
 
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
@@ -213,8 +215,8 @@ public class VideoDrawer implements IDrawer {
 
     @Override
     public void release() {
-        GLES20.glDisableVertexAttribArray(vertexPosHandle);
-        GLES20.glDisableVertexAttribArray(texturePosHandle);
+        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mCoordinateHandle);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glDeleteTextures(1, new int[1], 0);
         GLES20.glDeleteProgram(mProgramId);

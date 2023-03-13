@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.gl;
+package com.luffy.mulmedia.egl;
 
 import android.opengl.EGLContext;
 import android.opengl.EGLSurface;
@@ -10,9 +10,9 @@ public class EGLSurfaceHolder {
 
     private EGLSurface mEGLSurface = null;
 
-    public void init(EGLContext context, int flags) {
+    public void init(EGLContext context, int flags,int glVersion) {
         mEGLCore = new EGLCore();
-        mEGLCore.init(context, flags);
+        mEGLCore.init(context, flags,glVersion);
     }
 
     public void createEGLSurface(Object surface, int width, int height) {

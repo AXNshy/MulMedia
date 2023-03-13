@@ -1,13 +1,9 @@
-package com.luffyxu.mulmedia.activity
+package com.luffyxu.mulmedia.gles3.video
 
 import android.net.Uri
-import android.opengl.GLES30
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.Surface
-import android.view.SurfaceHolder
-import android.view.SurfaceView
 import androidx.databinding.DataBindingUtil
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.activity.BaseActivity
@@ -15,70 +11,43 @@ import com.luffy.mulmedia.codec.AudioDecoder
 import com.luffy.mulmedia.codec.DecoderStateListener
 import com.luffy.mulmedia.codec.VideoDecoder
 import com.luffy.mulmedia.databinding.ActivityGl3VideoBinding
-import com.luffy.mulmedia.utils.OpenGLUtils
-import com.luffyxu.mulmedia.gles3.RenderThread
-import com.luffyxu.mulmedia.gles3.VideoDrawer
-import com.luffyxu.mulmedia.gles3.VideoShader
+import com.luffy.mulmedia.gles2.TextureCallback
+import com.luffyxu.mulmedia.gles3.egl.GLES3Renderer
 import java.io.FileDescriptor
 import java.util.concurrent.Executors
 
 class GLES3VideoActivity : BaseActivity() {
     val TAG = "GLES3VideoActivity"
     lateinit var binding: ActivityGl3VideoBinding
-    lateinit var surfaceView: SurfaceView
-    val thread : RenderThread = RenderThread()
-//    val drawer : TriangleDrawer = TriangleDrawer()
+//    lateinit var surfaceView: SurfaceView
+//    val thread : RenderThread = RenderThread()
     val mVideoDrawer : VideoDrawer = VideoDrawer()
+    val mVideoRender = GLES3Renderer(listOf(mVideoDrawer),3)
     private val mExecutor = Executors.newFixedThreadPool(2)
     var mVideoDecoder: VideoDecoder? = null
     var mAudioDecoder: AudioDecoder? = null
+
+    private var mSurface: Surface? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_gl_3_video)
-        surfaceView = binding.glSurfaceview
+
         mVideoDrawer.setShader(VideoShader(this))
-        surfaceView.holder.addCallback(object : SurfaceHolder.Callback2{
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                Log.d(TAG,"surfaceCreated")
-                thread.surface = holder.surface
+        mVideoDrawer.callback = TextureCallback { surface -> mSurface = Surface(surface) }
 
-                thread.addDrawer(mVideoDrawer)
-                thread.start()
-                GLES30.glClear(0)
+        mVideoRender.setSurfaceView(binding.glSurfaceview)
 
-            }
-
-            override fun surfaceChanged(
-                holder: SurfaceHolder,
-                format: Int,
-                width: Int,
-                height: Int
-            ) {
-                Log.d(TAG,"surfaceChanged")
-                GLES30.glClearColor(1f,1f,1f,1f)
-                GLES30.glClearDepthf(0f)
-                mVideoDrawer.setSurfaceSize(width,height)
-                mVideoDrawer.setTextureId(OpenGLUtils.GLES30_createTextureId(1)[0])
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
-                Log.d(TAG,"surfaceDestroyed")
-            }
-
-            override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
-            }
-        })
-
+        binding.btnPlay.setOnClickListener {
+            initPlayer(path,mSurface!!)
+        }
     }
 
     override fun onUriAction(uri: Uri?) {
-        TODO("Not yet implemented")
     }
 
     override fun onUriAction(uri: FileDescriptor?) {
-        TODO("Not yet implemented")
     }
 
 

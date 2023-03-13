@@ -14,7 +14,7 @@ import com.luffy.mulmedia.R;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
-import com.luffy.mulmedia.gl.CustomGLRender;
+import com.luffy.mulmedia.egl.CustomGLRender;
 import com.luffy.mulmedia.gles2.DragSurfaceView;
 import com.luffy.mulmedia.gles2.IDrawer;
 import com.luffy.mulmedia.gles2.ReliefFilter;
@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EGLVideoActivity extends BaseActivity {
+
+    private volatile boolean render;
 
     private Button playBtn;
     private DragSurfaceView eglSurfaceView;
@@ -53,7 +55,7 @@ public class EGLVideoActivity extends BaseActivity {
                 mSurface = new Surface(surface);
             }
         });
-        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer));
+        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer),2);
         mVideoRender.setSurfaceView(eglSurfaceView);
 
         playBtn = findViewById(R.id.btn_file);

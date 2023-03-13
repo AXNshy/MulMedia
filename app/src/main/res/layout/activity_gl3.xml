@@ -8,19 +8,9 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <SurfaceView
             android:id="@+id/gl_surfaceview"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <ImageButton
-            android:id="@+id/btn_play"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_gravity="bottom|center"
-            android:background="@drawable/ic_shutter"
-            android:scaleType="fitCenter"
-            android:layout_marginBottom="60dp"/>
     </FrameLayout>
 </layout>

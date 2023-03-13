@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.gl;
+package com.luffy.mulmedia.egl;
 
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -11,12 +11,13 @@ import java.util.List;
 
 public class CustomGLRender implements SurfaceHolder.Callback {
 
-    private RenderThread mThread = new RenderThread();
+    private RenderThread mThread;
 
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
 
-    public CustomGLRender(List<IDrawer> drawers) {
+    public CustomGLRender(List<IDrawer> drawers,int glVersion) {
+        mThread = new RenderThread(glVersion);
         mThread.setDrawers(drawers);
         mThread.start();
     }

@@ -18,6 +18,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
 
         <activity android:name=".activity.NavigationActivity">
@@ -83,13 +84,23 @@
                     android:path="@string/path_surface_video"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.luffyxu.mulmedia.activity.GLES3VideoActivity">
+        <activity android:name="com.luffyxu.mulmedia.gles3.video.GLES3VideoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_gl_es_3"/>
+                    android:path="@string/path_gles3_video"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.luffyxu.mulmedia.gles3.triangle.GLES3Activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_gles3"/>
             </intent-filter>
         </activity>
         <activity android:name="com.luffyxu.mulmedia.activity.CameraActivity">

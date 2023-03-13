@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.gl;
+package com.luffy.mulmedia.egl;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
@@ -9,11 +9,6 @@ import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.util.Log;
 import android.view.Surface;
-
-import java.nio.channels.OverlappingFileLockException;
-import java.util.Arrays;
-
-import javax.microedition.khronos.egl.EGL;
 
 public class EGLCore {
     public static final int FLAG_RECORDABLE = 0x01;
@@ -35,7 +30,9 @@ public class EGLCore {
      * @param eglContext
      * @param flag
      */
-    public void init(EGLContext eglContext, int flag) {
+    public void init(EGLContext eglContext, int flag,int glVersion) {
+        Log.d(TAG,"init glVersion:" + glVersion);
+
         if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
             throw new RuntimeException("EGLSurface has already");
         }
@@ -59,9 +56,9 @@ public class EGLCore {
 
         //start >>>>>> 创建EGLConfig
         if (mEGLContext == EGL14.EGL_NO_CONTEXT) {
-            EGLConfig config = getConfig(flag, 2);
+            EGLConfig config = getConfig(flag, glVersion);
             if (config == null) throw new RuntimeException("unable to find a suitable config");
-            int[] attr2List = new int[]{EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE};
+            int[] attr2List = new int[]{EGL14.EGL_CONTEXT_CLIENT_VERSION, glVersion, EGL14.EGL_NONE};
             EGLContext context = EGL14.eglCreateContext(mEGLDisplay, config, sharedContext, attr2List, 0);
             mEGLConfig = config;
             mEGLContext = context;

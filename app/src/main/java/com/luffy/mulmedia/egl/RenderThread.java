@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.gl;
+package com.luffy.mulmedia.egl;
 
 import android.opengl.GLES20;
 import android.util.Log;
@@ -9,6 +9,7 @@ import com.luffy.mulmedia.utils.OpenGLUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.opengl.EGLExt.EGL_RECORDABLE_ANDROID;
@@ -29,6 +30,11 @@ public class RenderThread extends Thread {
 
     private List<IDrawer> drawers = new ArrayList<>();
 
+    public RenderThread(int glVersion){
+        this.glVersion = glVersion;
+    }
+
+    private int glVersion = 2;
 
     private int width;
     private int height;
@@ -125,7 +131,7 @@ public class RenderThread extends Thread {
     private void initEGL() {
         Log.d(TAG, "initEGL");
         mEGLHolder = new EGLSurfaceHolder();
-        mEGLHolder.init(null, EGL_RECORDABLE_ANDROID);
+        mEGLHolder.init(null, EGL_RECORDABLE_ANDROID,glVersion);
     }
 
     private void createEGLSurfaceFirst() {
@@ -144,6 +150,7 @@ public class RenderThread extends Thread {
         Log.d(TAG, "generateTextureId");
         int[] textureIds = OpenGLUtils.createTextureId(drawers.size());
         int i = 0;
+        Log.d(TAG,"generateTextureId " + Arrays.toString(textureIds));
         for (IDrawer drawer : drawers) {
             drawer.setTextureId(textureIds[i]);
             i++;
@@ -177,7 +184,7 @@ public class RenderThread extends Thread {
     }
 
     private void draw() {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         for (IDrawer drawer : drawers) {
             drawer.draw();
         }

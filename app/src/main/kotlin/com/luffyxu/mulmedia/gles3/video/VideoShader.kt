@@ -1,4 +1,4 @@
-package com.luffyxu.mulmedia.gles3
+package com.luffyxu.mulmedia.gles3.video
 
 import android.content.Context
 import android.text.TextUtils

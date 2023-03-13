@@ -1,4 +1,4 @@
-package com.luffyxu.mulmedia.gles3;
+package com.luffyxu.mulmedia.gles3.video;
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
@@ -9,6 +9,7 @@ import com.luffy.mulmedia.gles2.IDrawer
 import com.luffy.mulmedia.gles2.IGLShader
 import com.luffy.mulmedia.gles2.TextureCallback
 import com.luffy.mulmedia.gles2.VideoDrawer
+import com.luffy.mulmedia.utils.OpenGLUtils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -16,12 +17,12 @@ import java.util.*
 
 class VideoDrawer : IDrawer {
 
-    val TAG="GLRenderer"
+    val TAG="GLES3-Video"
     private val vertexCoordinate = floatArrayOf(
-        -1f, -1f,0f,
-        1f, -1f,0f,
-        -1f, 1f,0f,
-        1f, 1f,0f,
+        -1f, -1f,
+         1f, -1f,
+        -1f,  1f,
+         1f,  1f,
     )
 
     private val textureCoordinate=floatArrayOf(
@@ -30,20 +31,14 @@ class VideoDrawer : IDrawer {
         0f,0f,
         1f,0f
     )
-    private val color=floatArrayOf(
-        1f,0f,0f,1f,1f,1f
-    )
-
 
     private var mProgramId=-1
     private var vertexBuffer: FloatBuffer?=null
     private var textureBuffer:FloatBuffer?=null
-    private var colorBuffer:FloatBuffer?=null
-    private var textureId=0
 
-    private var mMatrixHandle=-1;
-    private var positionHandle=-1;
-    private var mCoordinateHandle = -1
+    private var textureId = -1
+
+    private var mMatrixHandle=-1
     private var mTextureHandle = -1
 
     var mGLShader: IGLShader? = null
@@ -70,18 +65,12 @@ class VideoDrawer : IDrawer {
         vertexBuffer=buffer.asFloatBuffer()
         vertexBuffer?.put(vertexCoordinate)
         vertexBuffer?.position(0)
+
         val buffer1= ByteBuffer.allocateDirect(textureCoordinate.size*4)
         buffer1.order(ByteOrder.nativeOrder())
         textureBuffer=buffer1.asFloatBuffer()
         textureBuffer?.put(textureCoordinate)
         textureBuffer?.position(0)
-
-        val buffer2=ByteBuffer.allocateDirect(color.size*4)
-        buffer2.order(ByteOrder.nativeOrder())
-        colorBuffer=buffer2.asFloatBuffer().apply{
-            put(color)
-            position(0)
-        }
     }
 
     private fun initialMatrix() {
@@ -103,7 +92,7 @@ class VideoDrawer : IDrawer {
         //        Matrix.orthoM(projectionMatrix, 0, -2, 2, bottom, top, 1, 2);
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5f, 0f, 0f, 0f, 0f, 1f, 0f)
         Matrix.multiplyMM(mMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-        Log.v(VideoDrawer.TAG, "initialMatrix " + Arrays.toString(mMatrix))
+        Log.v(TAG, "initialMatrix " + Arrays.toString(mMatrix))
     }
 
     private fun createGLPro(){
@@ -115,20 +104,12 @@ class VideoDrawer : IDrawer {
                 createShader(GLES30.GL_FRAGMENT_SHADER,mGLShader!!.fragmentShader())
             mProgramId=GLES30.glCreateProgram()
 
-            GLES30.glBindAttribLocation(mProgramId,mCoordinateHandle,"aCoordinate")
-            GLES30.glBindAttribLocation(mProgramId,positionHandle,"vPosition")
-            GLES30.glBindAttribLocation(mProgramId,mMatrixHandle,"uMatrix")
-
-
-
             GLES30.glAttachShader(mProgramId,vertexShader)
             GLES30.glAttachShader(mProgramId,fragShader)
             GLES30.glLinkProgram(mProgramId)
 
-
+            mMatrixHandle = GLES30.glGetUniformLocation(mProgramId,"uMatrix")
             mTextureHandle = GLES30.glGetUniformLocation(mProgramId,"uTexture")
-//        vertexHandle = GLES30.glGetAttribLocation(mProgramId, "aPosition")
-//        textureHandle = GLES30.glGetAttribLocation(mProgramId, "aCoordinate")
         }
     }
 
@@ -153,99 +134,89 @@ class VideoDrawer : IDrawer {
 
     override fun draw(){
         Log.d(TAG,"draw mProgramId:$mProgramId")
+        initialMatrix()
         createGLPro()
-
         activeTexture()
-
         updateTexture()
-
         doDraw()
     }
 
+    fun checkGLError(method:String){
+        var err: Int = GLES30.glGetError()
+        if(err != GLES30.GL_NO_ERROR){
+            println("method($method) error($err)")
+        }
+    }
+
     private fun doDraw() {
-        // Set the viewport
-//        GLES30.glViewport ( 0, 0, mWidth, mHeight );
-
         // Clear the color buffer
-
         GLES30.glUseProgram(mProgramId)
-//        GLES30.glVertexAttrib1fv(1,colorBuffer)
 
-//        GLES30.glEnableVertexAttribArray(textureHandle)
-        GLES30.glVertexAttribPointer(0,3,GLES30.GL_FLOAT,false,0,vertexBuffer)
+        GLES30.glClearColor(0f, 0f, 0f, 0f);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
+
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+
+        GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
+        GLES30.glUniform1i(mTextureHandle, 0)
+
         GLES30.glEnableVertexAttribArray(0)
-
-//        GLES30.glVertexAttrib4f(0,1.0f,1.0f,0.0f,1.0f)
-
-//        GLES30.glClear ( GLES30.GL_COLOR_BUFFER_BIT );
-//        1.use layout identifier declare
-
-        //设置顶点颜色  开始
-        // 方式1.常量顶点属性设置
-//        GLES30.glVertexAttrib4fv(1,colorBuffer)
-        // 方式2.顶点数组
-        GLES30.glVertexAttribPointer(1,4,GLES30.GL_FLOAT,true,0,colorBuffer)
-//        2.bind uniform attribute index to field in shader.
         GLES30.glEnableVertexAttribArray(1)
-        //设置顶点颜色  结束
-
-//        GLES30.glVertexAttrib4f(vertexHandle)
-//        GLES30.glVertexAttribPointer(textureHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES,0,3)
-        GLES30.glDisableVertexAttribArray(0)
-        GLES30.glDisableVertexAttribArray(1)
-
-
-//        GLES20.glClearColor(0f, 0f, 0f, 0f);
-//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES30.glEnableVertexAttribArray(positionHandle)
-        GLES30.glEnableVertexAttribArray(mCoordinateHandle)
 
 
         GLES30.glUniformMatrix4fv(mMatrixHandle, 1, false, mMatrix, 0)
-        GLES30.glVertexAttribPointer(positionHandle, 2, GLES30.GL_FLOAT, false, 0, vertexBuffer)
-        GLES30.glVertexAttribPointer(mCoordinateHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)
-
+        GLES30.glVertexAttribPointer(0, 2, GLES30.GL_FLOAT, false, 0, vertexBuffer)
+        GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)
 
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
+
+        GLES30.glDisableVertexAttribArray(0)
+        GLES30.glDisableVertexAttribArray(1)
     }
 
     private fun activeTexture() {
-        Log.d(VideoDrawer.TAG, "activeTexture $textureId")
-        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
-        GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,textureId)
-        GLES30.glUniform1i(mTextureHandle,0)
+        Log.d(TAG, "activeTexture $textureId")
+        if(textureId >= 0) {
 
+            GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
 
-        GLES30.glTexParameterf(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-            GLES30.GL_TEXTURE_MIN_FILTER,
-            GLES30.GL_LINEAR.toFloat()
-        )
-        GLES30.glTexParameterf(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-            GLES30.GL_TEXTURE_MAG_FILTER,
-            GLES30.GL_LINEAR.toFloat()
-        )
-        GLES30.glTexParameterf(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-            GLES30.GL_TEXTURE_WRAP_S,
-            GLES30.GL_CLAMP_TO_EDGE.toFloat()
-        )
-        GLES30.glTexParameterf(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-            GLES30.GL_TEXTURE_WRAP_T,
-            GLES30.GL_CLAMP_TO_EDGE.toFloat()
-        )
+            GLES30.glTexParameterf(
+                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                    GLES30.GL_TEXTURE_MIN_FILTER,
+                    GLES30.GL_LINEAR.toFloat()
+            )
+            GLES30.glTexParameterf(
+                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                    GLES30.GL_TEXTURE_MAG_FILTER,
+                    GLES30.GL_LINEAR.toFloat()
+            )
+            GLES30.glTexParameterf(
+                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                    GLES30.GL_TEXTURE_WRAP_S,
+                    GLES30.GL_CLAMP_TO_EDGE.toFloat()
+            )
+            GLES30.glTexParameterf(
+                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                    GLES30.GL_TEXTURE_WRAP_T,
+                    GLES30.GL_CLAMP_TO_EDGE.toFloat()
+            )
 
+            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
+        }
     }
 
     private fun updateTexture() {
-        surfaceTexture!!.updateTexImage()
+        surfaceTexture?.updateTexImage()
+        val error = GLES30.glGetError()
+        if(error != 0){
+            Log.d(TAG,"updateTexImage error $error")
+        }
     }
 
     override fun setTextureId(id:Int){
-        textureId=id
+        Log.d(TAG,"setTextureId $id")
+        textureId = id
         surfaceTexture = SurfaceTexture(textureId)
         if (callback != null) {
             callback!!.texture(surfaceTexture)
@@ -264,10 +235,15 @@ class VideoDrawer : IDrawer {
 
     override fun translate(translateX:Float,translateY:Float){}
     override fun scale(scaleX:Float,scaleY:Float){}
-    override fun setShader(shader: IGLShader){}
+    override fun setShader(shader: IGLShader){
+        mGLShader = shader
+    }
+
     override fun release(){
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D,0)
-        GLES30.glDeleteTextures(1,intArrayOf(textureId),0)
+        GLES30.glDisableVertexAttribArray(0)
+        GLES30.glDisableVertexAttribArray(1)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+        GLES30.glDeleteTextures(1, IntArray(1), 0)
         GLES30.glDeleteProgram(mProgramId)
     }
 
@@ -281,6 +257,7 @@ class VideoDrawer : IDrawer {
         Log.d(VideoDrawer.TAG, "setSurfaceSize w:$w,h:$h")
         mSurfaceWidth = w
         mSurfaceHeight = h
+        GLES30.glViewport(0,0,mSurfaceWidth,mSurfaceHeight)
     }
 
     init{

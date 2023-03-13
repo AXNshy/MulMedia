@@ -1,4 +1,4 @@
-package com.luffyxu.mulmedia.gles3
+package com.luffyxu.mulmedia.gles3.triangle
 
 import android.opengl.GLES30
 import android.util.Log
@@ -17,12 +17,6 @@ class TriangleDrawer : IDrawer {
         0f, 1f,0.0f,
     )
 
-    private val textureCoordinate = floatArrayOf(
-        0f, 1f,
-        1f, 1f,
-        0f, 0f,
-        1f, 0f
-    )
     private val color = floatArrayOf(
         1f, 0f, 0f, 1f,1f,1f
     )
@@ -30,9 +24,7 @@ class TriangleDrawer : IDrawer {
 
     private var mProgramId = -1
     private var vertexBuffer: FloatBuffer? = null
-    private var textureBuffer: FloatBuffer? = null
     private var colorBuffer: FloatBuffer? = null
-    private var textureId = 0
 
     private var colorHandle = -1;
     private var positionHandle = -1;
@@ -44,11 +36,6 @@ class TriangleDrawer : IDrawer {
         vertexBuffer = buffer.asFloatBuffer()
         vertexBuffer?.put(vertexCoordinate)
         vertexBuffer?.position(0)
-        val buffer1 = ByteBuffer.allocateDirect(textureCoordinate.size * 4)
-        buffer1.order(ByteOrder.nativeOrder())
-        textureBuffer = buffer1.asFloatBuffer()
-        textureBuffer?.put(textureCoordinate)
-        textureBuffer?.position(0)
 
         val buffer2 = ByteBuffer.allocateDirect(color.size * 4)
         buffer2.order(ByteOrder.nativeOrder())
@@ -74,8 +61,6 @@ class TriangleDrawer : IDrawer {
             GLES30.glAttachShader(mProgramId, vertexShader)
             GLES30.glAttachShader(mProgramId, fragShader)
             GLES30.glLinkProgram(mProgramId)
-//        vertexHandle = GLES30.glGetAttribLocation(mProgramId, "aPosition")
-//        textureHandle = GLES30.glGetAttribLocation(mProgramId, "aCoordinate")
         }
     }
 
@@ -122,30 +107,23 @@ class TriangleDrawer : IDrawer {
         // 方式1.常量顶点属性设置
 //        GLES30.glVertexAttrib4fv(1,colorBuffer)
         // 方式2.顶点数组
-        GLES30.glVertexAttribPointer(1,4,GLES30.GL_FLOAT, true,0,colorBuffer)
+        GLES30.glVertexAttribPointer(1,3,GLES30.GL_FLOAT, true,0,colorBuffer)
 //        2.bind uniform attribute index to field in shader.
         GLES30.glEnableVertexAttribArray(1)
         //设置顶点颜色  结束
 
-//        GLES30.glVertexAttrib4f(vertexHandle)
-//        GLES30.glVertexAttribPointer(textureHandle, 2, GLES30.GL_FLOAT, false, 0, textureBuffer)
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 3)
         GLES30.glDisableVertexAttribArray(0)
         GLES30.glDisableVertexAttribArray(1)
     }
 
 
-    override fun setTextureId(id: Int) {
-        textureId = id
-    }
+    override fun setTextureId(id: Int) {}
 
     override fun translate(translateX: Float, translateY: Float) {}
     override fun scale(scaleX: Float, scaleY: Float) {}
     override fun setShader(shader: IGLShader) {}
     override fun release() {
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
-        GLES30.glDeleteTextures(1, intArrayOf(textureId), 0)
-        GLES30.glDeleteProgram(mProgramId)
     }
 
     override fun setSurfaceSize(w: Int, h: Int) {

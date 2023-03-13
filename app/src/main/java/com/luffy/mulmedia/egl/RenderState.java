@@ -1,4 +1,4 @@
-package com.luffy.mulmedia.gl;
+package com.luffy.mulmedia.egl;
 
 public enum RenderState {
     NO_SURFACE,
