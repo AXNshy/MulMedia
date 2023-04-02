@@ -1,17 +1,11 @@
 package com.luffyxu.mulmedia.activity.fragment
 
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
@@ -20,12 +14,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.luffy.mulmedia.databinding.FragmentCameraBinding
 import com.luffyxu.camera.CameraClient
-import com.luffyxu.camera.getPreviewSize
+import com.luffyxu.mulmedia.gles3.texture.TextureDrawer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class CameraFragment(val state: Int = 0) : Fragment() {
+class CameraFragment(val cameraId: Int = 0) : Fragment() {
 
     lateinit var viewBinding: FragmentCameraBinding
 
@@ -35,8 +29,9 @@ class CameraFragment(val state: Int = 0) : Fragment() {
 
     var surface: Surface? = null
 
-    val cameraManager by lazy { requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager }
-    val characteristics by lazy { cameraManager.getCameraCharacteristics(cameraManager.cameraIdList[0]) }
+    val previewSize: Size? = null
+
+    val textureDrawer: TextureDrawer = TextureDrawer()
 
 
     override fun onCreateView(
@@ -48,6 +43,7 @@ class CameraFragment(val state: Int = 0) : Fragment() {
         return viewBinding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onCreate")
@@ -56,20 +52,23 @@ class CameraFragment(val state: Int = 0) : Fragment() {
             surfacePreview.holder.addCallback(object : SurfaceHolder.Callback {
                 override fun surfaceCreated(holder: SurfaceHolder) {
                     Log.d(TAG, "surfaceCreated")
-                    val previewSize = getPreviewSize(
-                        viewBinding.surfacePreview.display,
-                        characteristics,
-                        SurfaceHolder::class.java
+//                    val previewSize = getPreviewSize(
+//                        viewBinding.surfacePreview.display,
+//                        characteristics,
+//                        SurfaceHolder::class.java
+//                    )
+                    Log.d(
+                        TAG,
+                        "View finder size: ${viewBinding.surfacePreview.width} x ${viewBinding.surfacePreview.height}"
                     )
-                    Log.d(TAG, "View finder size: ${viewBinding.surfacePreview.width} x ${viewBinding.surfacePreview.height}")
                     Log.d(TAG, "Selected preview size: $previewSize")
-                    viewBinding.surfacePreview.setAspectRatio(
-                        previewSize.width,
-                        previewSize.height
-                    )
+//                    viewBinding.surfacePreview.setAspectRatio(
+//                        previewSize.width,
+//                        previewSize.height
+//                    )
 
                     lifecycleScope.launch {
-                        cameraClient.init(viewBinding.surfacePreview, characteristics)
+                        cameraClient.init(viewBinding.surfacePreview)
                     }
                 }
 
@@ -97,7 +96,13 @@ class CameraFragment(val state: Int = 0) : Fragment() {
                 }
             }
         }
-        cameraClient = CameraClient(requireContext())
+        cameraClient = CameraClient(requireContext(), cameraId)
+
+//        textureDrawer.setupCameraClient(cameraClient)
+//        textureDrawer.setShader(TextureShader(requireContext()))
+//        val render = CameraGLES3Renderer(listOf(textureDrawer),3,cameraClient)
+//        render.setSurfaceView(viewBinding.surfacePreview)
+
     }
 
     private fun galleryAddPic(image: File) {

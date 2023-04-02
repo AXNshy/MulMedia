@@ -6,20 +6,17 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
-import android.hardware.camera2.params.SessionConfiguration
 import android.media.Image
 import android.media.ImageReader
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.util.Size
-import android.view.Display
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.google.android.material.snackbar.Snackbar
 import com.luffyxu.mulmedia.utils.CameraUtils
 import kotlinx.coroutines.*
 import java.io.Closeable
@@ -27,14 +24,14 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Runnable
-import java.lang.RuntimeException
+import java.nio.ByteBuffer
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeoutException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class CameraClient(var context: Context) {
+class CameraClient(var context: Context, var cameraId: Int = 0) {
     companion object {
         const val TAG = "CameraClient"
 
@@ -59,61 +56,73 @@ class CameraClient(var context: Context) {
     //preview surface
     lateinit var surface: Surface
 
-    lateinit var cameraManager: CameraManager
-    lateinit var cameraIds: Array<String>
+    var cameraManager: CameraManager
+    var cameraIds: Array<String>
     lateinit var captureSession: CameraCaptureSession
     lateinit var mCamera: CameraDevice
 
-    private lateinit var characteristics: CameraCharacteristics
+    var characteristics: CameraCharacteristics
 
-    var cameraId:Int = 0
+
+    var previewFrameCallback: ((data: ByteBuffer, width: Int, height: Int) -> Unit)? = null
 
     //用来直接读取图像像素数据
     lateinit var mReader: ImageReader
+    lateinit var mPreviewImageReader: ImageReader
+
 
     val cameraHandler: Handler = Handler(Looper.getMainLooper())
     val imageReaderHandler: Handler = Handler(Looper.getMainLooper())
 
-
-    fun initPreview(sv: AutoFitSurfaceView,characteristics: CameraCharacteristics){
-        surface = sv.holder.surface
-
-//        val viewSize = getPreviewSize(context!!.display!!,characteristics,SurfaceHolder::class.java)
-//        sv.setAspectRatio(viewSize.width,viewSize.height)
+    init {
+        cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        cameraIds = cameraManager.cameraIdList
+        characteristics = cameraManager.getCameraCharacteristics(cameraIds[cameraId])
     }
 
-    suspend fun init(sv: AutoFitSurfaceView,characteristics: CameraCharacteristics): Boolean {
+    suspend fun init(sv: SurfaceView, previewSize: Size? = null): Boolean {
         if (!checkPermission(context)) {
             Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "please request camera permission first")
             return false
         }
-        this.characteristics = characteristics
-        cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        cameraIds = cameraManager.cameraIdList
+        findSuitablePreviewSize(sv as AutoFitSurfaceView)
 
         mCamera = openCamera(cameraManager, cameraIds[cameraId])
+        surface = sv.holder.surface
+        val captureSize =
+            characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
 
-        initPreview(sv,characteristics)
-        val size = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!.getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
+        Log.d(TAG, "ImageReader size ${captureSize.width}x${captureSize.height}")
+        mReader =
+            ImageReader.newInstance(captureSize.width, captureSize.height, ImageFormat.JPEG, 3)
+//        mPreviewImageReader = ImageReader.newInstance(previewSize.width, previewSize.height, ImageFormat.YUV_420_888, 3)
 
-        Log.d(TAG, "ImageReader size ${size.width}x${size.height}")
-        mReader = ImageReader.newInstance(size.width, size.height, ImageFormat.JPEG, 3)
 
+        captureSession =
+            createSession(mCamera, listOf(surface, mReader.surface/*,mPreviewImageReader.surface*/))
 
-        captureSession = createSession(mCamera, listOf(surface, mReader.surface))
-
-//        openPreview(surface)
-        val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-        captureRequest.addTarget(surface)
-        captureSession.setRepeatingRequest(
-            captureRequest.build(),
-            null,
-            cameraHandler
-        )
+        openPreview()
         canCapture = true
         return true
     }
+
+    private fun findSuitablePreviewSize(surface: AutoFitSurfaceView): Size {
+        val previewSize = getPreviewSize(
+            surface!!.display,
+            characteristics,
+            SurfaceHolder::class.java
+        )
+        Log.d(TAG, "View finder size: ${surface!!.width} x ${surface!!.height}")
+        Log.d(TAG, "Selected preview size: $previewSize")
+        surface!!.setAspectRatio(
+            previewSize.width,
+            previewSize.height
+        )
+        return previewSize
+    }
+
 
     fun destroy() {
 
@@ -165,7 +174,35 @@ class CameraClient(var context: Context) {
     * 开启预览，创建一个CaptureRequest对象，模板参数为CameraDevice.TEMPLATE_PREVIEW，为request对象设置绘制的surface对象。
     * 最后通过CameraCaptureSession::setRepeatingRequest 发送预览的请求到RequestQueue中
     * */
-    fun openPreview(surface: Surface) {
+    fun openPreview() {
+//        openPreviewWithProcess(mPreviewImageReader.surface) { data: ByteBuffer, width: Int, height: Int ->
+//            previewFrameCallback?.let { it(data, width, height) }
+//        }
+        openPreviewWithoutProcess(surface)
+    }
+
+    fun openPreviewWithoutProcess(surface: Surface) {
+        val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+        captureRequest.addTarget(surface)
+        captureSession.setRepeatingRequest(
+            captureRequest.build(),
+            null,
+            cameraHandler
+        )
+    }
+
+    fun openPreviewWithProcess(
+        surface: Surface,
+        callback: (data: ByteBuffer, width: Int, height: Int) -> Unit
+    ) {
+        Log.d(TAG, "openPreviewWithProcess")
+        mPreviewImageReader.setOnImageAvailableListener({
+            val image = it.acquireLatestImage()
+//            callback(CameraUtils.YUV_420_888_dataFetch(image),image.width,image.height)
+            callback(image.planes[0].buffer, image.width, image.height)
+            image.close()
+        }, cameraHandler)
+
         val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         captureRequest.addTarget(surface)
         captureSession.setRepeatingRequest(

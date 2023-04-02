@@ -4,7 +4,6 @@ import android.opengl.GLES30
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.View
 import com.luffy.mulmedia.gles2.IDrawer
 
 class GLES3Renderer(val drawers: List<IDrawer>, glVersion: Int) : SurfaceHolder.Callback {
@@ -26,12 +25,6 @@ class GLES3Renderer(val drawers: List<IDrawer>, glVersion: Int) : SurfaceHolder.
     fun setSurfaceView(surfaceView: SurfaceView) {
         this.surfaceView = surfaceView
         surfaceView.holder.addCallback(this)
-        surfaceView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) {}
-            override fun onViewDetachedFromWindow(v: View) {
-//                mThread.r()
-            }
-        })
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
