@@ -38,7 +38,7 @@
         <item>@string/path_media_info</item>
         <item>@string/path_camera_base</item>
         <item>@string/path_gles3_adpter6_lession1</item>
-        <item>@string/path_gles3_adpter6_lession2</item>
+<!--        <item>@string/path_gles3_adpter6_lession2</item>-->
     </array>
 
     <array name="media_lesson_title_collection">
@@ -52,6 +52,6 @@
         <item>@string/title_media_info</item>
         <item>@string/title_camera_base</item>
         <item>@string/title_gles3_adpter6_lession1</item>
-        <item>@string/title_gles3_adpter6_lession2</item>
+        <!--        <item>@string/title_gles3_adpter6_lession2</item>-->
     </array>
 </resources>

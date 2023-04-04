@@ -81,6 +81,7 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
     }
 
     suspend fun init(sv: SurfaceView, previewSize: Size? = null): Boolean {
+        Log.d(TAG, "init")
         if (!checkPermission(context)) {
             Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "please request camera permission first")
@@ -302,10 +303,19 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
                 val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
                 try {
                     val output = CameraUtils.createFile(context.applicationContext, "jpg")
+                    output.parentFile.apply {
+                        if (!exists()) {
+                            mkdirs()
+                        }
+                    }
+                    if (!output.exists()) {
+                        output.createNewFile()
+                    }
                     Log.d(TAG, "savePhoto to [${output.path}]")
                     FileOutputStream(output).use { it.write(bytes) }
                     cont.resume(output)
                 } catch (e: IOException) {
+                    e.printStackTrace()
                     cont.resumeWithException(e)
                 }
             }
