@@ -26,11 +26,11 @@ import kotlin.math.roundToInt
  * A [SurfaceView] that can be adjusted to a specified aspect ratio and
  * performs center-crop transformation of input frames.
  */
-class AutoFitSurfaceView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0
-) : SurfaceView(context, attrs, defStyle) {
+class CameraPreviewView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : SurfaceView(context, attrs, defStyle), CameraView {
 
     private var aspectRatio = 0f
 
@@ -41,8 +41,8 @@ class AutoFitSurfaceView @JvmOverloads constructor(
      * @param width  Camera resolution horizontal size
      * @param height Camera resolution vertical size
      */
-    fun setAspectRatio(width: Int, height: Int) {
-        Log.d(TAG,"setAspectRatio width:$width ,height:$height")
+    override fun setAspectRatio(width: Int, height: Int) {
+        Log.d(TAG, "setAspectRatio width:$width ,height:$height")
         require(width > 0 && height > 0) { "Size cannot be negative" }
         aspectRatio = width.toFloat() / height.toFloat()
         holder.setFixedSize(width, height)
@@ -76,6 +76,6 @@ class AutoFitSurfaceView @JvmOverloads constructor(
     }
 
     companion object {
-        private val TAG = AutoFitSurfaceView::class.java.simpleName
+        private val TAG = CameraPreviewView::class.java.simpleName
     }
 }

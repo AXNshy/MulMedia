@@ -8,7 +8,6 @@ import com.luffy.mulmedia.egl.RenderState
 import com.luffy.mulmedia.egl.RenderThread
 import com.luffy.mulmedia.gles2.IDrawer
 import com.luffy.mulmedia.utils.OpenGLUtils
-import java.lang.ref.WeakReference
 
 class RenderThread : Thread("GL3-RenderThread") {
     val TAG = "GL3-RenderThread"
@@ -196,7 +195,7 @@ class RenderThread : Thread("GL3-RenderThread") {
             createEGLSurface()
             if (!isBindEGLSurface) {
                 isBindEGLSurface = true
-                generateTextureId()
+//                generateTextureId()
             }
         }
     }
@@ -206,7 +205,7 @@ class RenderThread : Thread("GL3-RenderThread") {
         val textureIds = OpenGLUtils.createTextureId(drawers.size)
         var i = 0
         for (drawer in drawers) {
-            drawer.setTextureId(textureIds[i])
+//            drawer.setTextureId(textureIds[i])
             i++
         }
     }

@@ -112,8 +112,8 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int id) {
-        textureId = id;
+    public void setTextureId(int[] id) {
+        textureId = id[0];
         surfaceTexture = new SurfaceTexture(textureId);
         if (callback != null) {
             callback.texture(surfaceTexture);
@@ -277,6 +277,9 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
     private void activeDefTexture() {
+        if (textureId == -1) {
+            textureId = OpenGLUtils.createTextureId(1)[0];
+        }
         activeTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId, 0, textureHandler);
     }
 

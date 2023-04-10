@@ -6,6 +6,8 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.luffy.mulmedia.utils.OpenGLUtils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -172,7 +174,11 @@ public class ReliefVideoDrawer implements IDrawer {
 
     private void activeTexture() {
         Log.d(TAG, "activeTexture " + textureId);
+        if (textureId == -1) {
+            textureId = OpenGLUtils.createTextureId(1)[0];
+        }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
         GLES20.glUniform1i(textureHandle, 0);
 
@@ -200,8 +206,8 @@ public class ReliefVideoDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int id) {
-        textureId = id;
+    public void setTextureId(int[] id) {
+        textureId = id[0];
         surfaceTexture = new SurfaceTexture(textureId);
         if (callback != null) {
             callback.texture(surfaceTexture);

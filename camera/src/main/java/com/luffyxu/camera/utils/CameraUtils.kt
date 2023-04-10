@@ -17,7 +17,10 @@ import android.view.Display
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import com.luffyxu.camera.SmartSize
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -139,6 +142,8 @@ object CameraUtils {
 
         for (plane in planes.indices) {
             val buffer = planes[plane].buffer
+
+            Log.d(TAG, "YUV_420_888_dataFetch $plane: ${buffer.remaining()}")
             val rowStride = planes[plane].rowStride
             // Experimentally, U and V planes have |pixelStride| = 2, which
             // essentially means they are packed.
@@ -170,4 +175,29 @@ object CameraUtils {
 
         return data
     }
+
+    fun saveAsJPEG(bytes: ByteArray) {
+        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS")
+        val file: File = File(
+            "${Environment.getExternalStorageDirectory()}/Pictures/CameraDemo/dump/yuv/",
+            "Image_${sdf.format(Date())}_.YUV"
+        )
+
+        var out: OutputStream? = null
+        try {
+            out = BufferedOutputStream(FileOutputStream(file))
+            out.write(bytes, 0, bytes.size)
+        } catch (e: Exception) {
+            Log.d(TAG, e.toString())
+        } finally {
+            if (out != null) {
+                try {
+                    out.close()
+                } catch (e: Exception) {
+                    Log.d(TAG, e.toString())
+                }
+            }
+        }
+    }
+
 }

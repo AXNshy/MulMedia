@@ -3,7 +3,7 @@ package com.luffy.mulmedia.gles2;
 public interface IDrawer {
     void draw();
 
-    void setTextureId(int id);
+    void setTextureId(int[] id);
 
     void release();
 

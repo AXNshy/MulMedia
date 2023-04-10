@@ -1,5 +1,7 @@
 package com.luffy.mulmedia.egl;
 
+import static android.opengl.EGLExt.EGL_RECORDABLE_ANDROID;
+
 import android.opengl.GLES20;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -11,8 +13,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static android.opengl.EGLExt.EGL_RECORDABLE_ANDROID;
 
 public class RenderThread extends Thread {
     public static final String TAG = "RenderThread";
@@ -152,7 +152,7 @@ public class RenderThread extends Thread {
         int i = 0;
         Log.d(TAG,"generateTextureId " + Arrays.toString(textureIds));
         for (IDrawer drawer : drawers) {
-            drawer.setTextureId(textureIds[i]);
+//            drawer.setTextureId(textureIds[i]);
             i++;
         }
     }

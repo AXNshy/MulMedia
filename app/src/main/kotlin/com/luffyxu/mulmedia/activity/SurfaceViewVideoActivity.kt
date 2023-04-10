@@ -1,17 +1,14 @@
 package com.luffyxu.mulmedia.activity
 
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.activity.BaseActivity
 import com.luffy.mulmedia.databinding.ActivitySurfaceBinding
-import com.luffy.mulmedia.utils.FileUtils
 import com.xzq.nativelib.FFmpegPlayer
 import java.io.FileDescriptor
 
@@ -25,10 +22,12 @@ class SurfaceViewVideoActivity :BaseActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_surface)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_surface)
         surfaceView = binding.svVideo
-        mediaPlayer = FFmpegPlayer(path!!.toString())
-        surfaceView.holder.addCallback(object :SurfaceHolder.Callback2{
+        if (path != null) {
+            mediaPlayer = FFmpegPlayer(path!!.toString())
+        }
+        surfaceView.holder.addCallback(object : SurfaceHolder.Callback2 {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 surfaceHolder = holder
             }

@@ -118,7 +118,7 @@ class TriangleDrawer : IDrawer {
     }
 
 
-    override fun setTextureId(id: Int) {}
+    override fun setTextureId(id: IntArray) {}
 
     override fun translate(translateX: Float, translateY: Float) {}
     override fun scale(scaleX: Float, scaleY: Float) {}

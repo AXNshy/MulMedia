@@ -195,8 +195,8 @@ public class VideoDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int id) {
-        textureId = id;
+    public void setTextureId(int[] id) {
+        textureId = id[0];
         surfaceTexture = new SurfaceTexture(textureId);
         if (callback != null) {
             callback.texture(surfaceTexture);

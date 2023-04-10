@@ -1,9 +1,7 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
-import com.luffy.mulmedia.gles2.IDrawer
 import com.luffy.mulmedia.gles2.IGLShader
-import com.luffyxu.mulmedia.gles3.createShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -55,7 +53,7 @@ class Square2Renderer(shader: IGLShader? = null) : BaseRenderer(shader) {
         GLES30.glDisableVertexAttribArray(1)
     }
 
-    override fun setTextureId(id: Int) {
+    override fun setTextureId(id: IntArray) {
     }
 
 

@@ -14,7 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.luffy.mulmedia.databinding.FragmentCameraBinding
 import com.luffyxu.camera.CameraClient
+import com.luffyxu.mulmedia.gles3.egl.CameraGLES3Renderer
 import com.luffyxu.mulmedia.gles3.texture.TextureDrawer
+import com.luffyxu.mulmedia.gles3.texture.TextureShader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -49,43 +51,43 @@ class CameraFragment(val cameraId: Int = 0) : Fragment() {
         Log.d(TAG, "onCreate")
         viewBinding.apply {
             Log.d(TAG, "surface addCallback")
-            surfacePreview.holder.addCallback(object : SurfaceHolder.Callback {
-                override fun surfaceCreated(holder: SurfaceHolder) {
-                    Log.d(TAG, "surfaceCreated")
-//                    val previewSize = getPreviewSize(
-//                        viewBinding.surfacePreview.display,
-//                        characteristics,
-//                        SurfaceHolder::class.java
+//            surfacePreview.holder.addCallback(object : SurfaceHolder.Callback {
+//                override fun surfaceCreated(holder: SurfaceHolder) {
+//                    Log.d(TAG, "surfaceCreated")
+////                    val previewSize = getPreviewSize(
+////                        viewBinding.surfacePreview.display,
+////                        characteristics,
+////                        SurfaceHolder::class.java
+////                    )
+//                    Log.d(
+//                        TAG,
+//                        "View finder size: ${viewBinding.surfacePreview.width} x ${viewBinding.surfacePreview.height}"
 //                    )
-                    Log.d(
-                        TAG,
-                        "View finder size: ${viewBinding.surfacePreview.width} x ${viewBinding.surfacePreview.height}"
-                    )
-                    Log.d(TAG, "Selected preview size: $previewSize")
-//                    viewBinding.surfacePreview.setAspectRatio(
-//                        previewSize.width,
-//                        previewSize.height
-//                    )
-
-                    lifecycleScope.launch {
-                        cameraClient.init(viewBinding.surfacePreview)
-                    }
-                }
-
-                override fun surfaceChanged(
-                    holder: SurfaceHolder,
-                    format: Int,
-                    width: Int,
-                    height: Int
-                ) {
-                    Log.d(TAG, "surfaceChanged,width:$width,height:$height")
-                }
-
-                override fun surfaceDestroyed(holder: SurfaceHolder) {
-                    Log.d(TAG, "surfaceDestroyed")
-                    surfaceHolder = null
-                }
-            })
+//                    Log.d(TAG, "Selected preview size: $previewSize")
+////                    viewBinding.surfacePreview.setAspectRatio(
+////                        previewSize.width,
+////                        previewSize.height
+////                    )
+//
+//                    lifecycleScope.launch {
+//                        cameraClient.startCameraWithEffect(viewBinding.surfacePreview)
+//                    }
+//                }
+//
+//                override fun surfaceChanged(
+//                    holder: SurfaceHolder,
+//                    format: Int,
+//                    width: Int,
+//                    height: Int
+//                ) {
+//                    Log.d(TAG, "surfaceChanged,width:$width,height:$height")
+//                }
+//
+//                override fun surfaceDestroyed(holder: SurfaceHolder) {
+//                    Log.d(TAG, "surfaceDestroyed")
+//                    surfaceHolder = null
+//                }
+//            })
 
             btnCapture.setOnClickListener { _ ->
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -98,10 +100,11 @@ class CameraFragment(val cameraId: Int = 0) : Fragment() {
         }
         cameraClient = CameraClient(requireContext(), cameraId)
 
-//        textureDrawer.setupCameraClient(cameraClient)
-//        textureDrawer.setShader(TextureShader(requireContext()))
-//        val render = CameraGLES3Renderer(listOf(textureDrawer),3,cameraClient)
-//        render.setSurfaceView(viewBinding.surfacePreview)
+        textureDrawer.setupCameraClient(cameraClient)
+        textureDrawer.setVideoSize(1920, 1080)
+        textureDrawer.setShader(TextureShader(requireContext()))
+        val render = CameraGLES3Renderer(listOf(textureDrawer), 3, cameraClient)
+        render.setSurfaceView(viewBinding.surfacePreview)
 
     }
 
@@ -126,5 +129,12 @@ class CameraFragment(val cameraId: Int = 0) : Fragment() {
 
     companion object {
         const val TAG = "CameraBase"
+    }
+
+    override fun onDestroyView() {
+        lifecycleScope.launch {
+            cameraClient?.closeCamera()
+        }
+        super.onDestroyView()
     }
 }

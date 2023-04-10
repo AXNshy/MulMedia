@@ -9,6 +9,7 @@ import com.luffy.mulmedia.gles2.IDrawer
 import com.luffy.mulmedia.gles2.IGLShader
 import com.luffy.mulmedia.gles2.TextureCallback
 import com.luffy.mulmedia.gles2.VideoDrawer
+import com.luffy.mulmedia.utils.OpenGLUtils
 import com.luffyxu.mulmedia.gles3.createShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -17,33 +18,33 @@ import java.util.*
 
 class VideoDrawer : IDrawer {
 
-    val TAG="GLES3-Video"
+    val TAG = "GLES3-Video"
     private val vertexCoordinate = floatArrayOf(
         -1f, -1f,
-         1f, -1f,
-        -1f,  1f,
-         1f,  1f,
+        1f, -1f,
+        -1f, 1f,
+        1f, 1f,
     )
 
-    private val textureCoordinate=floatArrayOf(
-        0f,1f,
-        1f,1f,
-        0f,0f,
-        1f,0f
+    private val textureCoordinate = floatArrayOf(
+        0f, 1f,
+        1f, 1f,
+        0f, 0f,
+        1f, 0f
     )
 
-    private var mProgramId=-1
-    private var vertexBuffer: FloatBuffer?=null
-    private var textureBuffer:FloatBuffer?=null
+    private var mProgramId = -1
+    private var vertexBuffer: FloatBuffer? = null
+    private var textureBuffer: FloatBuffer? = null
 
     private var textureId = -1
 
-    private var mMatrixHandle=-1
+    private var mMatrixHandle = -1
     private var mTextureHandle = -1
 
     var mGLShader: IGLShader? = null
 
-    var surfaceTexture:SurfaceTexture? = null
+    var surfaceTexture: SurfaceTexture? = null
 
     private var mSurfaceWidth = 1
     private var mSurfaceHeight = 1
@@ -58,17 +59,17 @@ class VideoDrawer : IDrawer {
 
     private val sizeRatio = FloatArray(2)
 
-    private fun createProgram(){
-        Log.d(TAG,"createProgram")
-        val buffer=ByteBuffer.allocateDirect(vertexCoordinate.size*4)
+    private fun createProgram() {
+        Log.d(TAG, "createProgram")
+        val buffer = ByteBuffer.allocateDirect(vertexCoordinate.size * 4)
         buffer.order(ByteOrder.nativeOrder())
-        vertexBuffer=buffer.asFloatBuffer()
+        vertexBuffer = buffer.asFloatBuffer()
         vertexBuffer?.put(vertexCoordinate)
         vertexBuffer?.position(0)
 
-        val buffer1= ByteBuffer.allocateDirect(textureCoordinate.size*4)
+        val buffer1 = ByteBuffer.allocateDirect(textureCoordinate.size * 4)
         buffer1.order(ByteOrder.nativeOrder())
-        textureBuffer=buffer1.asFloatBuffer()
+        textureBuffer = buffer1.asFloatBuffer()
         textureBuffer?.put(textureCoordinate)
         textureBuffer?.position(0)
     }
@@ -95,30 +96,30 @@ class VideoDrawer : IDrawer {
         Log.v(TAG, "initialMatrix " + Arrays.toString(mMatrix))
     }
 
-    private fun createGLPro(){
-        if(mProgramId==-1){
-            Log.d(TAG,"createGLPro")
-            val vertexShader=
-                createShader(GLES30.GL_VERTEX_SHADER,mGLShader!!.vertexShader())
+    private fun createGLPro() {
+        if (mProgramId == -1) {
+            Log.d(TAG, "createGLPro")
+            val vertexShader =
+                createShader(GLES30.GL_VERTEX_SHADER, mGLShader!!.vertexShader())
 
-            val fragShader=
-                createShader(GLES30.GL_FRAGMENT_SHADER,mGLShader!!.fragmentShader())
-            mProgramId=GLES30.glCreateProgram()
+            val fragShader =
+                createShader(GLES30.GL_FRAGMENT_SHADER, mGLShader!!.fragmentShader())
+            mProgramId = GLES30.glCreateProgram()
 
-            GLES30.glAttachShader(mProgramId,vertexShader)
-            GLES30.glAttachShader(mProgramId,fragShader)
+            GLES30.glAttachShader(mProgramId, vertexShader)
+            GLES30.glAttachShader(mProgramId, fragShader)
             GLES30.glLinkProgram(mProgramId)
-            val path : MutableList<Int> = mutableListOf()
-            val result : MutableList<List<Int>> = mutableListOf()
+            val path: MutableList<Int> = mutableListOf()
+            val result: MutableList<List<Int>> = mutableListOf()
             path.add(1)
             result.add(path.toMutableList())
-            mMatrixHandle = GLES30.glGetUniformLocation(mProgramId,"uMatrix")
-            mTextureHandle = GLES30.glGetUniformLocation(mProgramId,"uTexture")
+            mMatrixHandle = GLES30.glGetUniformLocation(mProgramId, "uMatrix")
+            mTextureHandle = GLES30.glGetUniformLocation(mProgramId, "uTexture")
         }
     }
 
-    override fun draw(){
-        Log.d(TAG,"draw mProgramId:$mProgramId")
+    override fun draw() {
+        Log.d(TAG, "draw mProgramId:$mProgramId")
         initialMatrix()
         createGLPro()
         activeTexture()
@@ -126,9 +127,9 @@ class VideoDrawer : IDrawer {
         doDraw()
     }
 
-    fun checkGLError(method:String){
+    fun checkGLError(method: String) {
         var err: Int = GLES30.glGetError()
-        if(err != GLES30.GL_NO_ERROR){
+        if (err != GLES30.GL_NO_ERROR) {
             println("method($method) error($err)")
         }
     }
@@ -161,47 +162,48 @@ class VideoDrawer : IDrawer {
 
     private fun activeTexture() {
         Log.d(TAG, "activeTexture $textureId")
-        if(textureId >= 0) {
-
-            GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
-            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
-
-            GLES30.glTexParameterf(
-                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                    GLES30.GL_TEXTURE_MIN_FILTER,
-                    GLES30.GL_LINEAR.toFloat()
-            )
-            GLES30.glTexParameterf(
-                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                    GLES30.GL_TEXTURE_MAG_FILTER,
-                    GLES30.GL_LINEAR.toFloat()
-            )
-            GLES30.glTexParameterf(
-                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                    GLES30.GL_TEXTURE_WRAP_S,
-                    GLES30.GL_CLAMP_TO_EDGE.toFloat()
-            )
-            GLES30.glTexParameterf(
-                    GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                    GLES30.GL_TEXTURE_WRAP_T,
-                    GLES30.GL_CLAMP_TO_EDGE.toFloat()
-            )
-
-            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
+        if (textureId == -1) {
+            setTextureId(OpenGLUtils.createTextureId(1))
         }
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+        GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
+
+        GLES30.glTexParameterf(
+            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+            GLES30.GL_TEXTURE_MIN_FILTER,
+            GLES30.GL_LINEAR.toFloat()
+        )
+        GLES30.glTexParameterf(
+            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+            GLES30.GL_TEXTURE_MAG_FILTER,
+            GLES30.GL_LINEAR.toFloat()
+        )
+        GLES30.glTexParameterf(
+            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+            GLES30.GL_TEXTURE_WRAP_S,
+            GLES30.GL_CLAMP_TO_EDGE.toFloat()
+        )
+        GLES30.glTexParameterf(
+            GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+            GLES30.GL_TEXTURE_WRAP_T,
+            GLES30.GL_CLAMP_TO_EDGE.toFloat()
+        )
+
+        GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
+
     }
 
     private fun updateTexture() {
         surfaceTexture?.updateTexImage()
         val error = GLES30.glGetError()
-        if(error != 0){
-            Log.d(TAG,"updateTexImage error $error")
+        if (error != 0) {
+            Log.d(TAG, "updateTexImage error $error")
         }
     }
 
-    override fun setTextureId(id:Int){
-        Log.d(TAG,"setTextureId $id")
-        textureId = id
+    override fun setTextureId(id: IntArray) {
+        Log.d(TAG, "setTextureId $id")
+        textureId = id[0]
         surfaceTexture = SurfaceTexture(textureId)
         if (callback != null) {
             callback!!.texture(surfaceTexture)
@@ -217,14 +219,13 @@ class VideoDrawer : IDrawer {
         }
 
 
-
-    override fun translate(translateX:Float,translateY:Float){}
-    override fun scale(scaleX:Float,scaleY:Float){}
-    override fun setShader(shader: IGLShader){
+    override fun translate(translateX: Float, translateY: Float) {}
+    override fun scale(scaleX: Float, scaleY: Float) {}
+    override fun setShader(shader: IGLShader) {
         mGLShader = shader
     }
 
-    override fun release(){
+    override fun release() {
         GLES30.glDisableVertexAttribArray(0)
         GLES30.glDisableVertexAttribArray(1)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
@@ -242,10 +243,10 @@ class VideoDrawer : IDrawer {
         Log.d(VideoDrawer.TAG, "setSurfaceSize w:$w,h:$h")
         mSurfaceWidth = w
         mSurfaceHeight = h
-        GLES30.glViewport(0,0,mSurfaceWidth,mSurfaceHeight)
+        GLES30.glViewport(0, 0, mSurfaceWidth, mSurfaceHeight)
     }
 
-    init{
+    init {
         createProgram()
     }
 }

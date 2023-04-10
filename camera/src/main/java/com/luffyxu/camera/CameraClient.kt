@@ -31,7 +31,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class CameraClient(var context: Context, var cameraId: Int = 0) {
+class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
     companion object {
         const val TAG = "CameraClient"
 
@@ -51,43 +51,82 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
 
     private var canCapture: Boolean = false
 
-    val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
     //preview surface
-    lateinit var surface: Surface
+    private lateinit var surface: Surface
 
-    var cameraManager: CameraManager
-    var cameraIds: Array<String>
-    lateinit var captureSession: CameraCaptureSession
-    lateinit var mCamera: CameraDevice
+    private var cameraManager: CameraManager
+    private var cameraIds: Array<String>
+    private lateinit var captureSession: CameraCaptureSession
+    private lateinit var mCamera: CameraDevice
 
-    var characteristics: CameraCharacteristics
+    private var characteristics: CameraCharacteristics
 
+    var previewView: CameraPreviewView? = null
 
-    var previewFrameCallback: ((data: ByteBuffer, width: Int, height: Int) -> Unit)? = null
+    var previewFrameCallback: ((image: Image, data: ByteBuffer, width: Int, height: Int) -> Unit)? =
+        null
 
     //用来直接读取图像像素数据
-    lateinit var mReader: ImageReader
-    lateinit var mPreviewImageReader: ImageReader
+    private lateinit var mCaptureReader: ImageReader
+    private lateinit var mPreviewImageReader: ImageReader
 
 
-    val cameraHandler: Handler = Handler(Looper.getMainLooper())
-    val imageReaderHandler: Handler = Handler(Looper.getMainLooper())
+    private val cameraHandler: Handler = Handler(Looper.getMainLooper())
+    private val imageReaderHandler: Handler = Handler(Looper.getMainLooper())
 
     init {
-        cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        cameraManager = context!!.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraIds = cameraManager.cameraIdList
         characteristics = cameraManager.getCameraCharacteristics(cameraIds[cameraId])
     }
 
-    suspend fun init(sv: SurfaceView, previewSize: Size? = null): Boolean {
+    suspend fun startCameraWithEffect(sv: SurfaceView): Boolean {
         Log.d(TAG, "init")
-        if (!checkPermission(context)) {
+        if (!checkPermission(context!!)) {
             Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "please request camera permission first")
             return false
         }
-        findSuitablePreviewSize(sv as AutoFitSurfaceView)
+
+        mCamera = openCamera(cameraManager, cameraIds[cameraId])
+        val previewSize = findSuitablePreviewSize(sv as CameraPreviewView)
+
+        Log.d(TAG, "previewSize ImageReader size ${previewSize.width}x${previewSize.height}")
+        val captureSize =
+            characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
+
+        Log.d(TAG, "captureSize ImageReader size ${captureSize.width}x${captureSize.height}")
+        mCaptureReader =
+            ImageReader.newInstance(captureSize.width, captureSize.height, ImageFormat.JPEG, 3)
+        mPreviewImageReader = ImageReader.newInstance(
+            previewSize.width,
+            previewSize.height,
+            ImageFormat.YUV_420_888,
+            3
+        )
+
+
+        captureSession =
+            createSession(mCamera, listOf(mCaptureReader.surface, mPreviewImageReader.surface))
+
+        openPreviewWithProcess(mPreviewImageReader.surface) { image: Image, data: ByteBuffer, width: Int, height: Int ->
+            previewFrameCallback?.let { it(image, data, width, height) }
+        }
+        canCapture = true
+        return true
+    }
+
+    suspend fun startCamera(sv: SurfaceView): Boolean {
+        Log.d(TAG, "init")
+        if (!checkPermission(context!!)) {
+            Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "please request camera permission first")
+            return false
+        }
+        val previewSize = findSuitablePreviewSize(sv as CameraPreviewView)
 
         mCamera = openCamera(cameraManager, cameraIds[cameraId])
         surface = sv.holder.surface
@@ -96,20 +135,28 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
                 .getOutputSizes(ImageFormat.JPEG).maxByOrNull { it.height * it.width }!!
 
         Log.d(TAG, "ImageReader size ${captureSize.width}x${captureSize.height}")
-        mReader =
+        mCaptureReader =
             ImageReader.newInstance(captureSize.width, captureSize.height, ImageFormat.JPEG, 3)
-//        mPreviewImageReader = ImageReader.newInstance(previewSize.width, previewSize.height, ImageFormat.YUV_420_888, 3)
+        mPreviewImageReader = ImageReader.newInstance(
+            previewSize.width,
+            previewSize.height,
+            ImageFormat.YUV_420_888,
+            3
+        )
 
 
         captureSession =
-            createSession(mCamera, listOf(surface, mReader.surface/*,mPreviewImageReader.surface*/))
+            createSession(
+                mCamera,
+                listOf(surface, mCaptureReader.surface, mPreviewImageReader.surface)
+            )
 
-        openPreview()
+        openPreviewWithoutProcess(surface)
         canCapture = true
         return true
     }
 
-    private fun findSuitablePreviewSize(surface: AutoFitSurfaceView): Size {
+    private fun findSuitablePreviewSize(surface: CameraPreviewView): Size {
         val previewSize = getPreviewSize(
             surface!!.display,
             characteristics,
@@ -153,6 +200,17 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
         }
     }
 
+    suspend fun closeCamera() {
+        context = null
+        captureSession.stopRepeating()
+        captureSession.close()
+
+        mCaptureReader.setOnImageAvailableListener(null, null)
+        mPreviewImageReader.setOnImageAvailableListener(null, null)
+        mCaptureReader.close()
+        mPreviewImageReader.close()
+    }
+
     @SuppressLint("MissingPermission")
     suspend fun createSession(device: CameraDevice, targets: List<Surface>): CameraCaptureSession {
         return suspendCoroutine { cont ->
@@ -176,10 +234,10 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
     * 最后通过CameraCaptureSession::setRepeatingRequest 发送预览的请求到RequestQueue中
     * */
     fun openPreview() {
-//        openPreviewWithProcess(mPreviewImageReader.surface) { data: ByteBuffer, width: Int, height: Int ->
-//            previewFrameCallback?.let { it(data, width, height) }
-//        }
-        openPreviewWithoutProcess(surface)
+        openPreviewWithProcess(mPreviewImageReader.surface) { image: Image, data: ByteBuffer, width: Int, height: Int ->
+            previewFrameCallback?.let { it(image, data, width, height) }
+        }
+//        openPreviewWithoutProcess(surface)
     }
 
     fun openPreviewWithoutProcess(surface: Surface) {
@@ -194,14 +252,18 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
 
     fun openPreviewWithProcess(
         surface: Surface,
-        callback: (data: ByteBuffer, width: Int, height: Int) -> Unit
+        callback: (image: Image, data: ByteBuffer, width: Int, height: Int) -> Unit
     ) {
         Log.d(TAG, "openPreviewWithProcess")
         mPreviewImageReader.setOnImageAvailableListener({
             val image = it.acquireLatestImage()
 //            callback(CameraUtils.YUV_420_888_dataFetch(image),image.width,image.height)
-            callback(image.planes[0].buffer, image.width, image.height)
-            image.close()
+            if (image != null) {
+
+                Log.d(TAG, "onImageAvailable ${image.planes.size}")
+                callback(image, image.planes[0].buffer, image.width, image.height)
+                image.close()
+            }
         }, cameraHandler)
 
         val captureRequest = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
@@ -213,11 +275,6 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
         )
     }
 
-
-    suspend fun closePreview() {
-        captureSession.stopRepeating()
-    }
-
     /*
     * 拍照
     *
@@ -225,11 +282,11 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
     suspend fun takePhoto(): CombinedCaptureResult = suspendCoroutine { con ->
 
         Log.d(TAG, "takePhoto")
-        while (mReader.acquireNextImage() != null) {
+        while (mCaptureReader.acquireNextImage() != null) {
         }
 
         val imageQueue = ArrayBlockingQueue<Image>(2)
-        mReader.setOnImageAvailableListener({ reader ->
+        mCaptureReader.setOnImageAvailableListener({ reader ->
             val image = reader.acquireNextImage()
             imageQueue.add(image)
         }, imageReaderHandler)
@@ -237,7 +294,7 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
 
         val captureRequest =
             captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE).apply {
-                addTarget(mReader.surface)
+                addTarget(mCaptureReader.surface)
             }.build()
 
         captureSession.capture(captureRequest, object : CameraCaptureSession.CaptureCallback() {
@@ -266,7 +323,7 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
                         if (resultTimestamp != image.timestamp) continue
 
                         imageReaderHandler.removeCallbacks(timeout)
-                        mReader.setOnImageAvailableListener(null, null)
+                        mCaptureReader.setOnImageAvailableListener(null, null)
                         while (imageQueue.size > 0) {
                             imageQueue.take().close()
                         }
@@ -279,7 +336,7 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
                                 image,
                                 result,
                                 CameraUtils.computeExifOrientation(rotation, mirrired),
-                                mReader.imageFormat
+                                mCaptureReader.imageFormat
                             )
                         )
                     }
@@ -302,7 +359,7 @@ class CameraClient(var context: Context, var cameraId: Int = 0) {
                 val buffer = result.image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
                 try {
-                    val output = CameraUtils.createFile(context.applicationContext, "jpg")
+                    val output = CameraUtils.createFile(context!!.applicationContext, "jpg")
                     output.parentFile.apply {
                         if (!exists()) {
                             mkdirs()

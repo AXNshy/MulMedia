@@ -22,7 +22,7 @@ public class SimpleRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         int[] textureHandle = new int[1];
         GLES20.glGenTextures(1, textureHandle, 0);
-        mDrawer.setTextureId(OpenGLUtils.createTextureId(1)[0]);
+        mDrawer.setTextureId(OpenGLUtils.createTextureId(1));
     }
 
     @Override

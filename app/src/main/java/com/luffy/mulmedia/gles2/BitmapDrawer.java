@@ -157,8 +157,8 @@ public class BitmapDrawer implements IDrawer {
     }
 
     @Override
-    public void setTextureId(int id) {
-        textureId = id;
+    public void setTextureId(int[] id) {
+        textureId = id[0];
     }
 
     @Override

@@ -54,7 +54,7 @@ class Square1Renderer(shader: IGLShader? = null) : BaseRenderer(shader) {
         GLES30.glDisableVertexAttribArray(1)
     }
 
-    override fun setTextureId(id: Int) {
+    override fun setTextureId(id: IntArray) {
     }
 
 

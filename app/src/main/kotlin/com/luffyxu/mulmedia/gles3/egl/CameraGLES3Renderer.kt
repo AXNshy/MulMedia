@@ -7,13 +7,11 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
 import com.luffy.mulmedia.gles2.IDrawer
-import com.luffyxu.camera.AutoFitSurfaceView
 import com.luffyxu.camera.CameraClient
-import com.luffyxu.camera.getPreviewSize
+import com.luffyxu.camera.CameraPreviewView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CameraGLES3Renderer(
     val drawers: List<IDrawer>,
@@ -23,7 +21,7 @@ class CameraGLES3Renderer(
 
     private val TAG = "GLES3Renderer"
     private val mThread: RenderThread
-    private var surfaceView: AutoFitSurfaceView? = null
+    private var surfaceView: CameraPreviewView? = null
     var holder: SurfaceHolder? = null
         private set
 
@@ -40,7 +38,7 @@ class CameraGLES3Renderer(
     }
 
     fun setSurfaceView(surfaceView: SurfaceView) {
-        this.surfaceView = surfaceView as AutoFitSurfaceView
+        this.surfaceView = surfaceView as CameraPreviewView
         surfaceView.holder.addCallback(this)
         surfaceView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(v: View) {}
@@ -52,16 +50,13 @@ class CameraGLES3Renderer(
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         this.holder = holder
+        scope.launch {
+            cameraClient.startCameraWithEffect(surfaceView as SurfaceView)
+        }
+
         mThread.surface = holder.surface
         mThread.onSurfaceCreated(holder)
 
-
-        scope.launch {
-            withContext(Dispatchers.Main) {
-                val size = findSuitablePreviewSize()
-            }
-//            cameraClient.init(holder/*,size*/)
-        }
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -78,20 +73,4 @@ class CameraGLES3Renderer(
     fun stop() {
 
     }
-
-    private fun findSuitablePreviewSize(): Size {
-        val previewSize = getPreviewSize(
-            surfaceView!!.display,
-            cameraClient.characteristics,
-            SurfaceHolder::class.java
-        )
-        Log.d(TAG, "View finder size: ${surfaceView!!.width} x ${surfaceView!!.height}")
-        Log.d(TAG, "Selected preview size: $previewSize")
-        surfaceView!!.setAspectRatio(
-            previewSize.width,
-            previewSize.height
-        )
-        return previewSize
-    }
-
 }
