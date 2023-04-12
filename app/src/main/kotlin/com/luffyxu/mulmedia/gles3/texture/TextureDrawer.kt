@@ -197,7 +197,7 @@ class TextureDrawer : IDrawer {
         vertexBuffer = buffer.asFloatBuffer()
         vertexBuffer.put(vertexCoordinate)
         vertexBuffer.position(0)
-
+        //flip must be ahead of rotate operation
         resolveFlip(textureCoordinate, Transformation.FLIP_VERTICAL);
         resolveRotate(textureCoordinate, 90)
         val buffer1 = ByteBuffer.allocateDirect(textureCoordinate.size * 4)
