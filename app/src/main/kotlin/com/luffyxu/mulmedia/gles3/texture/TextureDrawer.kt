@@ -1,14 +1,12 @@
 package com.luffyxu.mulmedia.gles3.texture
 
 import android.opengl.GLES30
-import android.opengl.Matrix
 import android.util.Log
 import com.luffy.mulmedia.gles2.IDrawer
 import com.luffy.mulmedia.gles2.IGLShader
 import com.luffy.mulmedia.utils.OpenGLUtils
 import com.luffyxu.camera.CameraClient
-import com.luffyxu.mulmedia.gles3.checkGLError
-import com.luffyxu.mulmedia.gles3.createShader
+import com.luffyxu.mulmedia.gles3.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -24,11 +22,25 @@ class TextureDrawer : IDrawer {
         1f, 1f
     )
 
+//    private val vertexCoordinate = floatArrayOf(
+//        -1f, 1f,
+//        -1f, -1f,
+//        1f, 1f,
+//        1f, -1f,
+//    )
+
+//    private val textureCoordinate = floatArrayOf(
+//        0f, 1f,
+//        1f, 1f,
+//        0f, 0f,
+//        1f, 0f
+//    )
+
     private val textureCoordinate = floatArrayOf(
+        0f, 0f,
+        1f, 0f,
         0f, 1f,
         1f, 1f,
-        0f, 0f,
-        1f, 0f
     )
 
     private var mMVPMatHandle = -1
@@ -146,6 +158,12 @@ class TextureDrawer : IDrawer {
             mImageWidth = width
             mImageHeight = height
 //            }
+            if (mMatrix == null) {
+                mMatrix = FloatArray(16)
+            }
+//            Matrix.setIdentityM(mMatrix,0)
+//            Matrix.rotateM(mMatrix,0,90f, 0f,0f,0f)
+
         }
     }
 
@@ -164,10 +182,11 @@ class TextureDrawer : IDrawer {
             bottom = -top
         }
         sizeRatio[0] = 2f
-        Matrix.orthoM(projectionMatrix, 0, -2f, 2f, bottom, top, 3f, 5f)
-        //        Matrix.orthoM(projectionMatrix, 0, -2, 2, bottom, top, 1, 2);
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5f, 0f, 0f, 0f, 0f, 1f, 0f)
-        Matrix.multiplyMM(mMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+//        Matrix.orthoM(projectionMatrix, 0, -2f, 2f, bottom, top, 3f, 5f)
+////        Matrix.rotateM(projectionMatrix,0,90f, 1f,0f,0f)
+//        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5f, 0f, 0f, 0f, 0f, 1f, 0f)
+//        Matrix.multiplyMM(mMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+
         Log.v(TAG, "initialMatrix " + Arrays.toString(mMatrix))
     }
 
@@ -178,6 +197,9 @@ class TextureDrawer : IDrawer {
         vertexBuffer = buffer.asFloatBuffer()
         vertexBuffer.put(vertexCoordinate)
         vertexBuffer.position(0)
+
+        resolveFlip(textureCoordinate, Transformation.FLIP_VERTICAL);
+        resolveRotate(textureCoordinate, 90)
         val buffer1 = ByteBuffer.allocateDirect(textureCoordinate.size * 4)
         buffer1.order(ByteOrder.nativeOrder())
         textureCoordBuffer = buffer1.asFloatBuffer()
