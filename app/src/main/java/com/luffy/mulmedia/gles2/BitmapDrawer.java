@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.IGLShader;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;

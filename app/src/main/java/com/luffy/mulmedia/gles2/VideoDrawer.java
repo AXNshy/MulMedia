@@ -6,6 +6,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.IGLShader;
+import com.luffyxu.opengles.base.egl.TextureCallback;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;

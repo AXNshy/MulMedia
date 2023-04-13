@@ -7,7 +7,6 @@
     <string name="path_egl_video">/egl/video</string>
     <string name="path_egl_filter_soul">/egl/filter/soul</string>
     <string name="path_surface_video">/surfaceview</string>
-    <string name="path_camera_base">/camera/base</string>
     <string name="path_media_info">/mediainfo</string>
     <string name="path_gles3_adpter6_lession1">/gles3/chapter6/1</string>
     <string name="path_gles3_adpter6_lession2">/gles3/chapter6/2</string>
@@ -19,7 +18,6 @@
     <string name="title_egl_video">EGL播放视频</string>
     <string name="title_egl_filter_soul">实现灵活抖动特效</string>
     <string name="title_surface_video">SurfaceView测试</string>
-    <string name="title_camera_base">相机基础</string>
     <string name="title_media_info">媒体信息</string>
 
     <string name="title_gles3_adpter6_lession1">gles3 chapter6-1</string>
@@ -36,7 +34,6 @@
         <item>@string/path_egl_filter_soul</item>
         <item>@string/path_surface_video</item>
         <item>@string/path_media_info</item>
-        <item>@string/path_camera_base</item>
         <item>@string/path_gles3_adpter6_lession1</item>
 <!--        <item>@string/path_gles3_adpter6_lession2</item>-->
     </array>
@@ -50,7 +47,6 @@
         <item>@string/title_egl_filter_soul</item>
         <item>@string/title_surface_video</item>
         <item>@string/title_media_info</item>
-        <item>@string/title_camera_base</item>
         <item>@string/title_gles3_adpter6_lession1</item>
         <!--        <item>@string/title_gles3_adpter6_lession2</item>-->
     </array>

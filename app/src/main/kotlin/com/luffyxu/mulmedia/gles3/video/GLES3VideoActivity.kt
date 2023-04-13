@@ -11,18 +11,18 @@ import com.luffy.mulmedia.codec.AudioDecoder
 import com.luffy.mulmedia.codec.DecoderStateListener
 import com.luffy.mulmedia.codec.VideoDecoder
 import com.luffy.mulmedia.databinding.ActivityGl3VideoBinding
-import com.luffy.mulmedia.gles2.TextureCallback
-import com.luffyxu.mulmedia.gles3.egl.GLES3Renderer
+import com.luffyxu.mulmedia.gles3.GLES3Renderer
 import java.io.FileDescriptor
 import java.util.concurrent.Executors
 
 class GLES3VideoActivity : BaseActivity() {
     val TAG = "GLES3VideoActivity"
     lateinit var binding: ActivityGl3VideoBinding
-//    lateinit var surfaceView: SurfaceView
+
+    //    lateinit var surfaceView: SurfaceView
 //    val thread : RenderThread = RenderThread()
-    val mVideoDrawer : VideoDrawer = VideoDrawer()
-    val mVideoRender = GLES3Renderer(listOf(mVideoDrawer),3)
+    val mVideoDrawer: VideoDrawer = VideoDrawer()
+    val mVideoRender = GLES3Renderer(listOf(mVideoDrawer), 3)
     private val mExecutor = Executors.newFixedThreadPool(2)
     var mVideoDecoder: VideoDecoder? = null
     var mAudioDecoder: AudioDecoder? = null
@@ -35,12 +35,15 @@ class GLES3VideoActivity : BaseActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_gl_3_video)
 
         mVideoDrawer.setShader(VideoShader(this))
-        mVideoDrawer.callback = TextureCallback { surface -> mSurface = Surface(surface) }
+        mVideoDrawer.callback =
+            com.luffyxu.opengles.base.egl.TextureCallback { surface ->
+                mSurface = Surface(surface)
+            }
 
         mVideoRender.setSurfaceView(binding.glSurfaceview)
 
         binding.btnPlay.setOnClickListener {
-            initPlayer(path,mSurface!!)
+            initPlayer(path, mSurface!!)
         }
     }
 

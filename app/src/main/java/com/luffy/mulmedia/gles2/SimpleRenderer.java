@@ -3,7 +3,8 @@ package com.luffy.mulmedia.gles2;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
-import com.luffy.mulmedia.utils.OpenGLUtils;
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.OpenGLUtils;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

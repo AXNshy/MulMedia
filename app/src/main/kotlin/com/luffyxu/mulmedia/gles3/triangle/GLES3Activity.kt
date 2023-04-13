@@ -1,18 +1,13 @@
 package com.luffyxu.mulmedia.gles3.triangle
 
 import android.net.Uri
-import android.opengl.GLES30
 import android.os.Bundle
-import android.util.Log
-import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.databinding.DataBindingUtil
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.activity.BaseActivity
 import com.luffy.mulmedia.databinding.ActivityGl3Binding
-import com.luffy.mulmedia.databinding.ActivityGl3VideoBinding
-import com.luffyxu.mulmedia.gles3.egl.GLES3Renderer
-import com.luffyxu.mulmedia.gles3.egl.RenderThread
+import com.luffyxu.mulmedia.gles3.GLES3Renderer
 import com.luffyxu.mulmedia.gles3.video.VideoShader
 import java.io.FileDescriptor
 
@@ -20,10 +15,9 @@ class GLES3Activity : BaseActivity() {
     val TAG = "GLES3Activity"
     lateinit var binding: ActivityGl3Binding
     lateinit var surfaceView: SurfaceView
-//    val thread : RenderThread = RenderThread()
 
-    val drawer : TriangleDrawer = TriangleDrawer()
-    val mVideoRender = GLES3Renderer(listOf(drawer),3)
+    val drawer: TriangleDrawer = TriangleDrawer()
+    val mVideoRender = GLES3Renderer(listOf(drawer), 3)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -5,15 +5,15 @@ import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.databinding.ActivityMediaInfoBinding
-import com.luffy.mulmedia.utils.FileUtils
 import com.luffyxu.mulmedia.model.MediaInfoItem
 import com.luffyxu.mulmedia.ui.adapter.MediaInfoAdapter
+import com.luffyxu.opengles.base.egl.FileUtils
 
 class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
     lateinit var recyclerView : RecyclerView
@@ -25,11 +25,13 @@ class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_media_info)
+        binding = ActivityMediaInfoBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
+//        binding = DataBindingUtil.setContentView(this, R.layout.activity_media_info)
         recyclerView = binding.rvMediaInfo
 
         filepath = intent.getParcelableExtra<Uri>("uri")
-        if (filepath == null) {
+        if (filepath != null) {
             val realPath = FileUtils.getPath(
                 applicationContext, filepath
             )

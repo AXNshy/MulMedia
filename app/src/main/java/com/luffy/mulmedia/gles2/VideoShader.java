@@ -3,7 +3,8 @@ package com.luffy.mulmedia.gles2;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.luffy.mulmedia.utils.FileUtils;
+import com.luffyxu.opengles.base.egl.FileUtils;
+import com.luffyxu.opengles.base.egl.IGLShader;
 
 public class VideoShader implements IGLShader {
     private Context context;

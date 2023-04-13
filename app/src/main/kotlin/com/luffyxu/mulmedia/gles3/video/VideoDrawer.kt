@@ -5,18 +5,14 @@ import android.opengl.GLES11Ext
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
-import com.luffy.mulmedia.gles2.IDrawer
-import com.luffy.mulmedia.gles2.IGLShader
-import com.luffy.mulmedia.gles2.TextureCallback
 import com.luffy.mulmedia.gles2.VideoDrawer
-import com.luffy.mulmedia.utils.OpenGLUtils
 import com.luffyxu.mulmedia.gles3.createShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.util.*
 
-class VideoDrawer : IDrawer {
+class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
 
     val TAG = "GLES3-Video"
     private val vertexCoordinate = floatArrayOf(
@@ -42,7 +38,7 @@ class VideoDrawer : IDrawer {
     private var mMatrixHandle = -1
     private var mTextureHandle = -1
 
-    var mGLShader: IGLShader? = null
+    var mGLShader: com.luffyxu.opengles.base.egl.IGLShader? = null
 
     var surfaceTexture: SurfaceTexture? = null
 
@@ -163,7 +159,7 @@ class VideoDrawer : IDrawer {
     private fun activeTexture() {
         Log.d(TAG, "activeTexture $textureId")
         if (textureId == -1) {
-            setTextureId(OpenGLUtils.createTextureId(1))
+            setTextureId(com.luffyxu.opengles.base.egl.OpenGLUtils.createTextureId(1))
         }
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
         GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
@@ -210,7 +206,7 @@ class VideoDrawer : IDrawer {
         }
     }
 
-    var callback: TextureCallback? = null
+    var callback: com.luffyxu.opengles.base.egl.TextureCallback? = null
         set(value) {
             field = value
             if (surfaceTexture != null && callback != null) {
@@ -221,7 +217,7 @@ class VideoDrawer : IDrawer {
 
     override fun translate(translateX: Float, translateY: Float) {}
     override fun scale(scaleX: Float, scaleY: Float) {}
-    override fun setShader(shader: IGLShader) {
+    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader) {
         mGLShader = shader
     }
 

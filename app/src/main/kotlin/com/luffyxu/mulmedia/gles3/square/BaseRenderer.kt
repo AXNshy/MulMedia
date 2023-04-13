@@ -1,19 +1,18 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
-import com.luffy.mulmedia.gles2.IDrawer
-import com.luffy.mulmedia.gles2.IGLShader
 import com.luffyxu.mulmedia.gles3.createShader
 
-abstract class BaseRenderer(val shader: IGLShader? = null) : IDrawer{
+abstract class BaseRenderer(val shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
+    com.luffyxu.opengles.base.egl.IDrawer {
 
 
-    var mProgramId : Int = -1
-    var mVertexShader : Int = -1
-    var mFragShader : Int = -1
+    var mProgramId: Int = -1
+    var mVertexShader: Int = -1
+    var mFragShader: Int = -1
 
-   abstract fun onProgramLinked()
-   abstract fun onDraw()
+    abstract fun onProgramLinked()
+    abstract fun onDraw()
 
     override fun draw() {
         createProgram()

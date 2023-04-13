@@ -15,10 +15,10 @@ import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.egl.CustomGLRender;
 import com.luffy.mulmedia.gles2.DragSurfaceView;
-import com.luffy.mulmedia.gles2.IDrawer;
 import com.luffy.mulmedia.gles2.SoulVideoDrawer;
 import com.luffy.mulmedia.gles2.SoulVideoShader;
-import com.luffy.mulmedia.gles2.TextureCallback;
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.io.FileDescriptor;
 import java.util.Arrays;
@@ -52,8 +52,8 @@ public class SoulEGLActivity extends BaseActivity {
                 mSurface = new Surface(surface);
             }
         });
-//        mVideoDrawer.setVideoSize(1920, 1080);
-        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer),2);
+        mVideoDrawer.setVideoSize(1920, 1080);
+        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer), 2);
         mVideoRender.setSurfaceView(eglSurfaceView);
 
         playBtn = findViewById(R.id.btn_file);
@@ -83,10 +83,10 @@ public class SoulEGLActivity extends BaseActivity {
         mVideoDecoder.setVideoListener(new IVideoListener() {
             @Override
             public void onVideoSizeChanged(int width, int height) {
-                mVideoDrawer.setVideoSize(width, height);
+//                mVideoDrawer.setVideoSize(width, height);
             }
         });
-//        mVideoDrawer.setVideoSize(1920, 1080);
+        mVideoDrawer.setVideoSize(1920, 1080);
 
         mAudioDecoder = new AudioDecoder(path.getPath());
         mAudioDecoder.setStateListener(new DecoderStateListener());

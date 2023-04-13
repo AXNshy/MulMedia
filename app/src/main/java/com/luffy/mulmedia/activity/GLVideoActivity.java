@@ -3,11 +3,14 @@ package com.luffy.mulmedia.activity;
 import android.database.Cursor;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.RequiresApi;
 
 import com.luffy.mulmedia.IVideoListener;
 import com.luffy.mulmedia.R;
@@ -16,9 +19,9 @@ import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.gles2.DragGLSurfaceView;
 import com.luffy.mulmedia.gles2.SimpleRenderer;
-import com.luffy.mulmedia.gles2.TextureCallback;
 import com.luffy.mulmedia.gles2.VideoDrawer;
 import com.luffy.mulmedia.gles2.VideoShader;
+import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.io.FileDescriptor;
 import java.util.concurrent.ExecutorService;
@@ -100,6 +103,7 @@ public class GLVideoActivity extends BaseActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private String findPath(Uri uri) {
         Cursor cursor = getContentResolver().query(uri, null, null, null);
         if (cursor != null) {

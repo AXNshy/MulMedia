@@ -6,7 +6,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.luffy.mulmedia.utils.OpenGLUtils;
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.IGLShader;
+import com.luffyxu.opengles.base.egl.OpenGLUtils;
+import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -53,7 +56,7 @@ public class ReliefVideoDrawer implements IDrawer {
 
     private boolean istra = false;
 
-    private int textureId;
+    private int[] textureId = {-1};
 
     private SurfaceTexture surfaceTexture;
 
@@ -174,12 +177,13 @@ public class ReliefVideoDrawer implements IDrawer {
 
     private void activeTexture() {
         Log.d(TAG, "activeTexture " + textureId);
-        if (textureId == -1) {
-            textureId = OpenGLUtils.createTextureId(1)[0];
+        if (textureId[0] == -1) {
+            textureId = OpenGLUtils.createTextureId(1);
+            setTextureId(textureId);
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId[0]);
         GLES20.glUniform1i(textureHandle, 0);
 
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
@@ -207,8 +211,8 @@ public class ReliefVideoDrawer implements IDrawer {
 
     @Override
     public void setTextureId(int[] id) {
-        textureId = id[0];
-        surfaceTexture = new SurfaceTexture(textureId);
+        textureId = id;
+        surfaceTexture = new SurfaceTexture(textureId[0]);
         if (callback != null) {
             callback.texture(surfaceTexture);
         }

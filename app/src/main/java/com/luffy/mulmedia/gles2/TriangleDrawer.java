@@ -3,6 +3,9 @@ package com.luffy.mulmedia.gles2;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.IGLShader;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;

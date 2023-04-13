@@ -2,14 +2,13 @@ package com.luffyxu.mulmedia.gles3.video
 
 import android.content.Context
 import android.text.TextUtils
-import com.luffy.mulmedia.gles2.IGLShader
-import com.luffy.mulmedia.utils.FileUtils
+import com.luffyxu.opengles.base.egl.FileUtils
 
 class VideoShader(
     var context: Context? = null,
     val vertexShader: String? = null,
     val fragShader: String? = null
-) : IGLShader {
+) : com.luffyxu.opengles.base.egl.IGLShader {
     override fun vertexShader(): String {
         return if (TextUtils.isEmpty(vertexShader)) {
             FileUtils.getStringFromAssets(context, "gles3/shader_vertex_video.glsl")

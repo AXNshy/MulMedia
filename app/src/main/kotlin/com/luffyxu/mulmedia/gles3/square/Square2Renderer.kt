@@ -1,21 +1,22 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
-import com.luffy.mulmedia.gles2.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-class Square2Renderer(shader: IGLShader? = null) : BaseRenderer(shader) {
+class Square2Renderer(shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
+    BaseRenderer(shader) {
     val VERTEX_POS_SIZE = 3
     val VERTEX_COLOR_SIZE = 2
     val VERTEX_ATTR_SIZE = VERTEX_COLOR_SIZE + VERTEX_POS_SIZE
-    //数组结构
-    val vertexBPos : FloatArray = floatArrayOf()
-    val vertexBColor : FloatArray = floatArrayOf()
 
-    var vertexBPosBuffer : FloatBuffer
-    var vertexBColorBuffer : FloatBuffer
+    //数组结构
+    val vertexBPos: FloatArray = floatArrayOf()
+    val vertexBColor: FloatArray = floatArrayOf()
+
+    var vertexBPosBuffer: FloatBuffer
+    var vertexBColorBuffer: FloatBuffer
     var vertexBPosIndex = 2
     var vertexBColorIndex = 3
     //数组结构
@@ -73,7 +74,7 @@ class Square2Renderer(shader: IGLShader? = null) : BaseRenderer(shader) {
         TODO("Not yet implemented")
     }
 
-    override fun setShader(shader: IGLShader?) {
+    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader?) {
         TODO("Not yet implemented")
     }
 }

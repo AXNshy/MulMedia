@@ -4,8 +4,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-
-import com.luffy.mulmedia.gles2.IDrawer;
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.RenderThread;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class CustomGLRender implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
 
-    public CustomGLRender(List<IDrawer> drawers,int glVersion) {
+    public CustomGLRender(List<IDrawer> drawers, int glVersion) {
         mThread = new RenderThread(glVersion);
         mThread.setDrawers(drawers);
         mThread.start();

@@ -1,21 +1,21 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
-import com.luffy.mulmedia.gles2.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-class Square1Renderer(shader: IGLShader? = null) : BaseRenderer(shader) {
+class Square1Renderer(shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
+    BaseRenderer(shader) {
     val VERTEX_POS_SIZE = 3
     val VERTEX_COLOR_SIZE = 2
     val VERTEX_ATTR_SIZE = VERTEX_COLOR_SIZE + VERTEX_POS_SIZE
 
     //结构数组
-    val  vertexAAttrs : FloatArray = floatArrayOf(
-            -1f,1f,0f,1f,0f,
-            1f,1f,0f,0f,1f,
-            0f,-1f,0f,1f,1f
+    val vertexAAttrs: FloatArray = floatArrayOf(
+        -1f, 1f, 0f, 1f, 0f,
+        1f, 1f, 0f, 0f, 1f,
+        0f, -1f, 0f, 1f, 1f
 
     )
     lateinit var vertexAAttrsBuffer : FloatBuffer
@@ -70,6 +70,6 @@ class Square1Renderer(shader: IGLShader? = null) : BaseRenderer(shader) {
     override fun scale(scaleX: Float, scaleY: Float) {
     }
 
-    override fun setShader(shader: IGLShader?) {
+    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader?) {
     }
 }

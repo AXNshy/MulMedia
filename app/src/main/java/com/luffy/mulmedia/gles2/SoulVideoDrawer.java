@@ -1,5 +1,7 @@
 package com.luffy.mulmedia.gles2;
 
+import static com.luffyxu.mulmedia.gles3.UtilsKt.createShader;
+
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11;
 import android.opengl.GLES11Ext;
@@ -7,7 +9,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.luffy.mulmedia.utils.OpenGLUtils;
+import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.egl.IGLShader;
+import com.luffyxu.opengles.base.egl.OpenGLUtils;
+import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -143,15 +148,6 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
 
-    private int createShader(int type, String code) {
-        Log.d(TAG, "createShader " + code);
-        int shader = GLES20.glCreateShader(type);
-        GLES20.glShaderSource(shader, code);
-        GLES20.glCompileShader(shader);
-        return shader;
-    }
-
-
     private void initDefMatrix() {
         if (mVideoMatrix != null) {
             return;
@@ -179,7 +175,7 @@ public class SoulVideoDrawer implements IDrawer {
 
     @Override
     public void draw() {
-        if (textureId != -1) {
+//        if (textureId != -1) {
             initDefMatrix();
 
             createGLPro();
@@ -193,12 +189,14 @@ public class SoulVideoDrawer implements IDrawer {
             updateTexture();
 
             doDraw();
-        }
+//        }
     }
 
     private void createGLPro() {
         if (mProgramId == -1) {
-            int vertexShader = createShader(GLES20.GL_VERTEX_SHADER, getVertexShaderCode());
+            Log.d(TAG, "createGLPro");
+
+            int vertexShader = createShader(GLES20.GL_VERTEX_SHADER, mGLShader.vertexShader());
             int fragShader = createShader(GLES20.GL_FRAGMENT_SHADER, mGLShader.fragmentShader());
 
             mProgramId = GLES20.glCreateProgram();
@@ -214,6 +212,8 @@ public class SoulVideoDrawer implements IDrawer {
             mSoulTextureHandler = GLES20.glGetUniformLocation(mProgramId, "uSoulTexture");
             mProgressHandler = GLES20.glGetUniformLocation(mProgramId, "progress");
             mDrawFBOHandler = GLES20.glGetUniformLocation(mProgramId, "drawFbo");
+
+            setTextureId(OpenGLUtils.createTextureId(1));
         }
         GLES20.glUseProgram(mProgramId);
     }
@@ -277,9 +277,9 @@ public class SoulVideoDrawer implements IDrawer {
     }
 
     private void activeDefTexture() {
-        if (textureId == -1) {
-            textureId = OpenGLUtils.createTextureId(1)[0];
-        }
+//        if (textureId == -1) {
+//            textureId = OpenGLUtils.createTextureId(1)[0];
+//        }
         activeTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId, 0, textureHandler);
     }
 
@@ -378,104 +378,4 @@ public class SoulVideoDrawer implements IDrawer {
 //        Log.d(TAG,"videoSizeChangeMatrix " + Arrays.toString(videoSizeChangeMatrix));
         Log.v(TAG, "transformScaleMatrix :" + Arrays.toString(mVideoMatrix));
     }
-
-    private String getVertexShaderCode() {
-        return "attribute vec4 aPosition;" +
-                "precision mediump float;" +
-                "uniform mat4 uMatrix;" +
-                "attribute vec2 aCoordinate;" +
-                "varying vec2 vCoordinate;" +
-                "attribute float alpha;" +
-                "varying float inAlpha;" +
-                "void main() {" +
-                "    gl_Position = uMatrix*aPosition;" +
-                "    vCoordinate = aCoordinate;" +
-                "    inAlpha = alpha;" +
-                "}";
-
-    }
-
-    private String getFragmentShader() {
-//        return "#extension GL_OES_EGL_image_external : require\n" +
-//                "precision mediump float;" +
-//                "varying vec2 vCoordinate;" +
-//                "varying float inAlpha;" +
-//                "uniform samplerExternalOES uTexture;" +
-//                "uniform float progress;" +
-//                "uniform int drawFbo;" +
-//                "uniform sampler2D uSoulTexture;" +
-//                "void main(){" +
-////                "    float alpha = 0.6 * (1.0-progress);" +
-////                "    float scale = 1.0 + (1.5 - 1.0) * progress;" +
-////                "    float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;" +
-////                "    float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;" +
-////                "    vec2 soulTextureCoors = vec2(soulX,soulY);" +
-////                "    vec4 soulMask = texture2D(uSoulTexture,soulTextureCoors);" +
-////                "    vec4 color = texture2D(uTexture,vCoordinate);" +
-////                "    if(drawFbo == 0){" +
-//////                "        gl_FragColor = color * (1.0-alpha);" +
-////                "        gl_FragColor = soulMask * alpha;" +
-//////                "        gl_FragColor = color * (1.0-alpha) + soulMask * alpha;" +
-////                "    }else{" +
-////                "        gl_FragColor = vec4(color.r,color.g,color.b,inAlpha);" +
-////                "    }" +
-////                "void main() {" +
-//                // 透明度[0,0.4]
-//                "float alpha = 0.6 * (1.0 - progress);" +
-//                // 缩放比例[1.0,1.8]
-//                "float scale = 1.0 + (1.5 - 1.0) * progress;" +
-//
-//                // 放大纹理坐标
-//                // 根据放大比例，得到放大纹理坐标 [0,0],[0,1],[1,1],[1,0]
-//                "float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;\n" +
-//                "float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;\n" +
-//                "vec2 soulTextureCoords = vec2(soulX, soulY);" +
-//                // 获取对应放大纹理坐标下的纹素(颜色值rgba)
-//                "vec4 soulMask = texture2D(uSoulTexture, soulTextureCoords);" +
-//
-//                "vec4 color = texture2D(uTexture, vCoordinate);" +
-//
-//                "if (drawFbo == 0) {" +
-//                // 颜色混合 默认颜色混合方程式 = mask * (1.0-alpha) + weakMask * alpha
-////                "    gl_FragColor = soulMask * alpha;" +
-//                "    gl_FragColor = color * (1.0 - alpha) + soulMask * alpha;" +
-//                "} else {" +
-//                "   gl_FragColor = vec4(color.r, color.g, color.b, inAlpha);" +
-//                "}" +
-//                "}";
-        return "#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;" +
-                "varying vec2 vCoordinate;" +
-                "varying float inAlpha;" +
-                "uniform samplerExternalOES uTexture;" +
-                "uniform float progress;" +
-                "uniform int drawFbo;" +
-                "uniform sampler2D uSoulTexture;" +
-                "void main() {" +
-                // 透明度[0,0.4]
-                "float alpha = 0.6 * (1.0 - progress);" +
-                // 缩放比例[1.0,1.8]
-                "float scale = 1.0 + (1.5 - 1.0) * progress;" +
-
-                // 放大纹理坐标
-                // 根据放大比例，得到放大纹理坐标 [0,0],[0,1],[1,1],[1,0]
-                "float soulX = 0.5 + (vCoordinate.x - 0.5) / scale;\n" +
-                "float soulY = 0.5 + (vCoordinate.y - 0.5) / scale;\n" +
-                "vec2 soulTextureCoords = vec2(soulX, soulY);" +
-                // 获取对应放大纹理坐标下的纹素(颜色值rgba)
-                "vec4 soulMask = texture2D(uSoulTexture, soulTextureCoords);" +
-
-                "vec4 color = texture2D(uTexture, vCoordinate);" +
-
-                "if (drawFbo == 0) {" +
-                // 颜色混合 默认颜色混合方程式 = mask * (1.0-alpha) + weakMask * alpha
-//                "    gl_FragColor = color * (1.0 - alpha);" +
-//                "    gl_FragColor = soulMask * alpha;" +
-                "    gl_FragColor = color * (1.0 - alpha) + soulMask * alpha;" +
-                "} else {" +
-                "   gl_FragColor = vec4(color.r, color.g, color.b, inAlpha);" +
-                "}" +
-                "}";
-    }
-
 }

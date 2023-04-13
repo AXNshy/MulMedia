@@ -2,23 +2,21 @@ package com.luffyxu.mulmedia.gles3.triangle
 
 import android.opengl.GLES30
 import android.util.Log
-import com.luffy.mulmedia.gles2.IDrawer
-import com.luffy.mulmedia.gles2.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-class TriangleDrawer : IDrawer {
+class TriangleDrawer : com.luffyxu.opengles.base.egl.IDrawer {
 
     val TAG = "GLRenderer"
     private val vertexCoordinate = floatArrayOf(
-        -1f, -1f,0.0f,
-        1f, -1f,0.0f,
-        0f, 1f,0.0f,
+        -1f, -1f, 0.0f,
+        1f, -1f, 0.0f,
+        0f, 1f, 0.0f,
     )
 
     private val color = floatArrayOf(
-        1f, 0f, 0f, 1f,1f,1f
+        1f, 0f, 0f, 1f, 1f, 1f
     )
 
 
@@ -122,7 +120,7 @@ class TriangleDrawer : IDrawer {
 
     override fun translate(translateX: Float, translateY: Float) {}
     override fun scale(scaleX: Float, scaleY: Float) {}
-    override fun setShader(shader: IGLShader) {}
+    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader) {}
     override fun release() {
     }
 

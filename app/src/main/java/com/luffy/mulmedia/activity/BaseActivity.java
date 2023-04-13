@@ -8,7 +8,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.luffy.mulmedia.utils.FileUtils;
+import com.luffyxu.opengles.base.egl.FileUtils;
 
 import java.io.FileDescriptor;
 
