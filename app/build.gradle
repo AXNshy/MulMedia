@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     compileSdk Versions.compileSdk
@@ -44,7 +45,7 @@ dependencies {
     implementation Libs.viewpager2
     implementation project(path: ':nativelib')
     implementation project(path: ':opengles-base')
-//    implementation project(path: ':camera')
+    implementation Libs.lifecycle_viewmodel_ktx
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

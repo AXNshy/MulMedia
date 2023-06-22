@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -47,6 +48,7 @@ dependencies {
     implementation Libs.kotlin_stdlib
     implementation Libs.viewpager2
     implementation project(path: ':opengles-base')
+    implementation Libs.lifecycle_viewmodel_ktx
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

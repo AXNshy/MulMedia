@@ -3,7 +3,7 @@ object Versions {
     const val minSdk = 24
     const val targetSdk = 30
 
-    const val kotlin = "1.6.10"
+    const val kotlin = "1.8.20"
 }
 
 object Libs {
@@ -16,4 +16,5 @@ object Libs {
     const val kotlin_stdlib_jdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val kotlinx_coroutines_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
     const val material = "com.google.android.material:material:1.3.0"
+    const val lifecycle_viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 }

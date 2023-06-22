@@ -17,6 +17,7 @@ class RenderThread(val glVersion: Int = 2) : Thread() {
     private var width = 0
     private var height = 0
 
+
     fun holdOn() {
         Log.d(TAG, "holdOn")
         synchronized(waitLock) {
@@ -28,6 +29,7 @@ class RenderThread(val glVersion: Int = 2) : Thread() {
         }
     }
 
+    @Synchronized
     fun notifyGo() {
         Log.d(TAG, "notifyGo")
         synchronized(waitLock) { waitLock.notify() }

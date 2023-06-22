@@ -95,7 +95,6 @@ class RenderThread2 : Thread("GL3-RenderThread") {
             Log.d(TAG, "eglGetDisplay fail $egldisplay")
             return false
         }
-
         if(!EGL14.eglInitialize( egldisplay,versions,0,versions,1)){
             Log.d(TAG, "eglInitialize fail $egldisplay")
             return false
