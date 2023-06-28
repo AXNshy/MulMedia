@@ -1,5 +1,5 @@
 include ':app'
 rootProject.name = "MulMedia"
-include ':nativelib'
+include ':ffmpegPlayer'
 include ':camera'
 include ':opengles-base'

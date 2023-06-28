@@ -11,10 +11,10 @@
 #include "RenderState.h"
 
 
-
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
-
+#include <EGL/eglplatform.h>
+#include <EGL/egl.h>
 
 
 //
@@ -81,7 +81,7 @@ public:
 
 protected:
 
-    char* TAG = "GLES_RENDERER";
+    const char* TAG = "GLES_RENDERER";
     int width = -1;
     int height= -1;
     RenderEGLContext eglContext;

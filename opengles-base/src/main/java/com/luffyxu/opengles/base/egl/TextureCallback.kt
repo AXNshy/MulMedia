@@ -1,7 +1,7 @@
-package com.luffyxu.opengles.base.egl;
+package com.luffyxu.opengles.base.egl
 
-import android.graphics.SurfaceTexture;
+import android.graphics.SurfaceTexture
 
-public interface TextureCallback {
-    void texture(SurfaceTexture surface);
+interface TextureCallback {
+    fun texture(surface: SurfaceTexture?)
 }

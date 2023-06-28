@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdkVersion Versions.compileSdk
+    ndkVersion Versions.ndkVersion
+
+    defaultConfig {
+        minSdk Versions.minSdk
+        targetSdk Versions.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.22.1"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    sourceSets {
+        main {
+            // The libs directory contains prebuilt libraries that are used by the
+            // app's library defined in CMakeLists.txt via an IMPORTED target.
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    namespace "com.luffy.nativelib"
+}
+
+dependencies {
+
+    implementation Libs.core_ktx
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}

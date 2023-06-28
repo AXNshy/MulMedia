@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.activity.BaseActivity
 import com.luffy.mulmedia.databinding.ActivitySurfaceBinding
-import com.xzq.nativelib.FFmpegPlayer
+import com.luffyxu.ffmpeg.FFmpegPlayer
 import java.io.FileDescriptor
 
 class SurfaceViewVideoActivity :BaseActivity(){

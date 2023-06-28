@@ -1,19 +1,12 @@
-package com.luffyxu.opengles.base.egl;
+package com.luffyxu.opengles.base.egl
 
-public interface IDrawer {
-    void draw();
-
-    void setTextureId(int[] id);
-
-    void release();
-
-    void setSurfaceSize(int w, int h);
-
-    void setVideoSize(int w, int h);
-
-    void translate(float translateX, float translateY);
-
-    void scale(float scaleX, float scaleY);
-
-    void setShader(IGLShader shader);
+interface IDrawer {
+    fun draw()
+    fun setTextureId(id: IntArray)
+    fun release()
+    fun setSurfaceSize(w: Int, h: Int)
+    fun setVideoSize(w: Int, h: Int)
+    fun translate(translateX: Float, translateY: Float)
+    fun scale(scaleX: Float, scaleY: Float)
+    fun setShader(shader: IGLShader)
 }

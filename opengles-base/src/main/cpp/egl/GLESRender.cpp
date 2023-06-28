@@ -2,7 +2,6 @@
 // Created by Luffy on 2023/4/17.
 //
 
-#include <EGL/egl.h>
 #include "GLESRender.h"
 #include "../utils/logger.h"
 
@@ -48,7 +47,7 @@ EGLint configAttribe[] = {
 bool GLESRender::init() {
     EGLDisplay eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(eglDisplay == EGL_NO_DISPLAY){
-        LOGE(TAG, "eglGetDisplay fail %d",eglDisplay)
+        LOGE(TAG, "eglGetDisplay fail")
         return false;
     }
     eglContext.display = eglDisplay;

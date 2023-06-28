@@ -1,50 +1,50 @@
-package com.luffyxu.opengles.base.egl;
+package com.luffyxu.opengles.base.egl
 
-import android.opengl.EGLContext;
-import android.opengl.EGLSurface;
+import android.opengl.EGLContext
+import android.opengl.EGLSurface
 
-public class EGLSurfaceHolder {
-    public static final String TAG = "EGLSurfaceHolder";
-
-    private EGLCore mEGLCore = null;
-
-    private EGLSurface mEGLSurface = null;
-
-    public void init(EGLContext context, int flags,int glVersion) {
-        mEGLCore = new EGLCore();
-        mEGLCore.init(context, flags,glVersion);
+class EGLSurfaceHolder {
+    private var mEGLCore: EGLCore? = null
+    private var mEGLSurface: EGLSurface? = null
+    fun init(context: EGLContext?, flags: Int, glVersion: Int) {
+        mEGLCore = EGLCore()
+        mEGLCore!!.init(context, flags, glVersion)
     }
 
-    public void createEGLSurface(Object surface, int width, int height) {
-        if (surface != null) {
-            mEGLSurface = mEGLCore.createWindowSurface(surface);
+    fun createEGLSurface(surface: Any?, width: Int, height: Int) {
+        mEGLSurface = if (surface != null) {
+            mEGLCore!!.createWindowSurface(surface)
         } else {
-            mEGLSurface = mEGLCore.createOffScreenSurface(width, height);
+            mEGLCore!!.createOffScreenSurface(width, height)
         }
     }
 
-    public void swapBuffer() {
+    fun swapBuffer() {
         if (mEGLSurface != null) {
-            mEGLCore.swapBuffers(mEGLSurface);
+            mEGLCore!!.swapBuffers(mEGLSurface)
         }
     }
 
-    public void makeCurrent() {
+    fun makeCurrent() {
         if (mEGLSurface != null) {
-            mEGLCore.makeCurrent(mEGLSurface);
+            mEGLCore!!.makeCurrent(mEGLSurface)
         }
     }
 
-    public void destroyEGLSurface() {
+    fun destroyEGLSurface() {
         if (mEGLCore != null) {
-            mEGLCore.destroySurface(mEGLSurface);
-            mEGLSurface = null;
+            mEGLCore!!.destroySurface(mEGLSurface)
+            mEGLSurface = null
         }
     }
 
-    public void release() {
+    fun release() {
         if (mEGLCore != null) {
-            mEGLCore.release();
+            mEGLCore!!.release()
         }
+    }
+
+    companion object {
+        const val TAG = "EGLSurfaceHolder"
     }
 }

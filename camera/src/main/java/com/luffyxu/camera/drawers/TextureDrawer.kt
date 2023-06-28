@@ -424,7 +424,7 @@ class TextureDrawer : com.luffyxu.opengles.base.egl.IDrawer {
     override fun translate(translateX: Float, translateY: Float) {}
 
     override fun scale(scaleX: Float, scaleY: Float) {}
-    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader?) {
+    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader) {
         mShader = shader
     }
 }

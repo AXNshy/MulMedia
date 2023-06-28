@@ -28,13 +28,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         dataBinding true
         viewBinding true
     }
+    namespace "com.luffy.mulmedia"
 }
 
 dependencies {
@@ -43,7 +44,7 @@ dependencies {
     implementation Libs.recyclerview
     implementation Libs.constraintlayout
     implementation Libs.viewpager2
-    implementation project(path: ':nativelib')
+    implementation project(path: ':ffmpegPlayer')
     implementation project(path: ':opengles-base')
     implementation Libs.lifecycle_viewmodel_ktx
     testImplementation 'junit:junit:4.12'

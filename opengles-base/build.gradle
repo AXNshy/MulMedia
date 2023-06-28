@@ -1,24 +1,25 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
     id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    compileSdk Versions.compileSdk
+    compileSdkVersion Versions.compileSdk
+    ndkVersion Versions.ndkVersion
 
     defaultConfig {
         minSdk Versions.minSdk
         targetSdk Versions.targetSdk
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags '-std=c++17'
-                arguments '-DANDROID_TOOLCHAIN=clang',
-                        '-DANDROID_STL=c++_static'
-
+                cppFlags ""
+            }
+            ndk {
+                abiFilters "armeabi-v7a"
             }
         }
 
@@ -31,19 +32,27 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     externalNativeBuild{
         cmake{
-            version '3.10.2'
-            path './src/main/cpp/CMakeLists.txt'
+            version '3.22.1'
+            path 'src/main/cpp/CMakeLists.txt'
         }
     }
 
+    sourceSets {
+        main {
+            // The libs directory contains prebuilt libraries that are used by the
+            // app's library defined in CMakeLists.txt via an IMPORTED target.
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    namespace "com.luffy.mulmedia"
 }
 
 dependencies {

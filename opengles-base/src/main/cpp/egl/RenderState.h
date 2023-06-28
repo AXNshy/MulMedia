@@ -12,7 +12,7 @@ enum RenderState {
     RENDERING,
     SURFACE_DESTROY,
     STOP
-}
+};
 
 #endif //MULMEDIA_RENDERSTATE_H
 

@@ -1,7 +1,6 @@
-package com.luffyxu.opengles.base.egl;
+package com.luffyxu.opengles.base.egl
 
-public interface IGLShader {
-    String vertexShader();
-
-    String fragmentShader();
+interface IGLShader {
+    fun vertexShader(): String
+    fun fragmentShader(): String
 }
