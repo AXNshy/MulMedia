@@ -7,3 +7,11 @@
 void IDrawer::release() {
 
 }
+
+void IDrawer::draw() {
+
+}
+
+void IDrawer::setShader(IShader shader) {
+
+}

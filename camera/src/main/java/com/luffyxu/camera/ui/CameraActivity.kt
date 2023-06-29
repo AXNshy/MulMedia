@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.luffyxu.camera.databinding.ActivityCameraBinding
 import com.luffyxu.camera.ui.fragment.CameraFragment
+import com.luffyxu.camera.ui.fragment.CameraNativeFragment
 
 class CameraActivity : CameraBaseActivity() {
 
@@ -22,12 +23,14 @@ class CameraActivity : CameraBaseActivity() {
 //        viewBinding.viewPager
         viewBinding.viewPager.adapter = object : FragmentStateAdapter(this){
             override fun getItemCount(): Int {
-                return 1
+                return 3
             }
 
             override fun createFragment(position: Int): Fragment {
-                return when(position){
-                    1 -> CameraFragment()
+                return when (position) {
+                    0 -> CameraNativeFragment()
+//                    2 -> Camera2Fragment()
+//                    3 -> CameraNativeFragment()
                     else -> CameraFragment()
                 }
             }

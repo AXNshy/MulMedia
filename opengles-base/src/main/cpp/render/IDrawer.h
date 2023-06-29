@@ -6,9 +6,15 @@
 #define MULMEDIA_IDRAWER_H
 
 
+#include "IShader.h"
+
 class IDrawer {
 public:
     void release();
+
+    void draw();
+
+    void setShader(IShader shader);
 };
 
 

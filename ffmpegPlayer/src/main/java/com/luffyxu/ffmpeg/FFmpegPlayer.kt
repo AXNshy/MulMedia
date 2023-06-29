@@ -8,7 +8,7 @@ class FFmpegPlayer(var path:String?) {
     companion object{
         val TAG = "FFmpegPlayer"
         init {
-            System.loadLibrary("nativelib")
+            System.loadLibrary("NPlayer")
         }
     }
 

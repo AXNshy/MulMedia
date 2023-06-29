@@ -15,8 +15,11 @@
 #include <android/native_window_jni.h>
 #include <EGL/eglplatform.h>
 #include <EGL/egl.h>
+#include <GLES3/gl3.h>
 
+using namespace std;
 
+#include <thread>
 //
 //const int NO_SURFACE = 0x00;
 //const int FRESH_SURFACE = 0x01;
@@ -31,19 +34,14 @@ struct RenderEGLContext{
     EGLDisplay display;
     EGLConfig config;
     EGLSurface surface;
+    EGLContext context;
 } ;
 
 
 class GLESRender {
 public:
-    int current_state = 0;
-    bool is_egl_created = false;
-    bool is_egl_binded = false;
-    int *lock = nullptr;
 
-    IDrawer* drawer;
-
-    GLESRender();
+    GLESRender(JNIEnv *env);
 
     virtual ~GLESRender();
 
@@ -51,13 +49,17 @@ public:
 
     void notifyGo();
 
-    void onSurfaceCreate(ANativeWindow* surface);
+    void onSurfaceCreate(ANativeWindow *surface);
 
-    void onSurfaceChanged(ANativeWindow* surface,int width, int height);
+    void onSurfaceChanged(ANativeWindow *surface, int width, int height);
 
     void onSurfaceDestroyed();
 
-    void run();
+    void start();
+
+    static void run(std::shared_ptr<GLESRender>);
+
+    void loopRender();
 
     bool init();
 
@@ -80,12 +82,28 @@ public:
     }
 
 protected:
-
-    const char* TAG = "GLES_RENDERER";
     int width = -1;
-    int height= -1;
+    int height = -1;
     RenderEGLContext eglContext;
+
+
     virtual void thread_launch();
+
+private:
+    const char *TAG = "GLES_RENDERER";
+
+    JavaVM *m_jvm_for_thread;
+
+    ANativeWindow *nativeWindow;
+
+    pthread_mutex_t m_mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_cond_t m_cont = PTHREAD_COND_INITIALIZER;
+
+    bool is_egl_create = false;
+
+    int current_state = 0;
+
+    IDrawer *drawer;
 };
 
 #endif //MULMEDIA_GLESRENDER_H

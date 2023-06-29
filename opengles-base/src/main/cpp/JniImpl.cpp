@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-const char* const RENDER_CLASS_NAME = "com/luffyxu/opengles/base/egl/NativeRenderThread";
+const char *const RENDER_CLASS_NAME = "com/luffyxu/opengles/base/egl/NativeRender";
 
 void native_surface_create(JNIEnv *env, jobject thiz, jint render,jobject surface) {
     GLESRender* nativeRender = reinterpret_cast<GLESRender*>(render);
@@ -34,24 +34,24 @@ void native_surface_destroyed(JNIEnv *env, jobject thiz,jint render) {
 
 
 jint native_create_renderer(JNIEnv *env, jobject thiz) {
-    GLESRender* nativeRender = new GLESRender();
+    GLESRender *nativeRender = new GLESRender(env);
     return reinterpret_cast<jint>(nativeRender);
 }
 
 void native_run(JNIEnv *env, jobject thiz,jint render) {
     GLESRender* nativeRender = reinterpret_cast<GLESRender*>(render);
-    nativeRender->run();
+    nativeRender->start();
 }
 
 
 
 static JNINativeMethod gMethod[] = {
-        {"onSurfaceCreate", "(ILandroid/view/Surface;)V",                        (void *) (native_surface_create)},
-        {"onSurfaceChanged", "(ILandroid/view/Surface;II)V",                     (void *) (native_surface_change)},
-        {"onSurfaceDestroyed",         "(I)V",                                   (void *) (native_surface_destroyed)},
-        {"nativeCreateRenderer",         "()I",                                  (void *) (native_create_renderer)},
-        {"nativeRun",         "(I)V",                                            (void *) (native_run)},
-        };
+        {"onSurfaceCreated",     "(ILandroid/view/Surface;)V",   (void *) (native_surface_create)},
+        {"onSurfaceChanged",     "(ILandroid/view/Surface;II)V", (void *) (native_surface_change)},
+        {"onSurfaceDestroyed",   "(I)V",                         (void *) (native_surface_destroyed)},
+        {"nativeCreateRenderer", "()I",                          (void *) (native_create_renderer)},
+        {"nativeRun",            "(I)V",                         (void *) (native_run)},
+};
 
 
 jint regist_jni_method(JNIEnv *env) {
