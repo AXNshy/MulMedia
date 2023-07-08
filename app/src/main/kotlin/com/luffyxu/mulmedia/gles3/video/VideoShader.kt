@@ -5,7 +5,7 @@ import android.text.TextUtils
 import com.luffyxu.opengles.base.egl.FileUtils
 
 class VideoShader(
-    var context: Context? = null,
+    var context: Context,
     val vertexShader: String? = null,
     val fragShader: String? = null
 ) : com.luffyxu.opengles.base.egl.IGLShader {

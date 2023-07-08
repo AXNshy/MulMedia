@@ -1,5 +1,6 @@
 package com.luffyxu.mulmedia.gles3.video
 
+import android.graphics.SurfaceTexture
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
@@ -12,6 +13,7 @@ import com.luffy.mulmedia.codec.DecoderStateListener
 import com.luffy.mulmedia.codec.VideoDecoder
 import com.luffy.mulmedia.databinding.ActivityGl3VideoBinding
 import com.luffyxu.mulmedia.gles3.GLES3Renderer
+import com.luffyxu.opengles.base.egl.TextureCallback
 import java.io.FileDescriptor
 import java.util.concurrent.Executors
 
@@ -36,8 +38,10 @@ class GLES3VideoActivity : BaseActivity() {
 
         mVideoDrawer.setShader(VideoShader(this))
         mVideoDrawer.callback =
-            com.luffyxu.opengles.base.egl.TextureCallback { surface ->
-                mSurface = Surface(surface)
+            object : TextureCallback {
+                override fun texture(surface: SurfaceTexture) {
+                    mSurface = Surface(surface)
+                }
             }
 
         mVideoRender.setSurfaceView(binding.glSurfaceview)

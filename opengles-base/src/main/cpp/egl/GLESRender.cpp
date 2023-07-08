@@ -4,13 +4,16 @@
 
 #include "GLESRender.h"
 #include "../utils/logger.h"
+#include "../render/drawer/TextureDrawer.h"
 
 
 GLESRender::GLESRender(JNIEnv *env) {
     LOGD(TAG, "GLESRender constructor")
     env->GetJavaVM(&m_jvm_for_thread);
-}
 
+    IDrawer *d = new TextureDrawer();
+    setDrawer(d);
+}
 
 GLESRender::~GLESRender() {
 
@@ -29,14 +32,14 @@ void GLESRender::notifyGo() {
 }
 
 void GLESRender::onSurfaceCreate(ANativeWindow* surface) {
-    LOGD(TAG, "onSurfaceCreate %s", surface)
+    LOGD(TAG, "onSurfaceCreate")
     nativeWindow = surface;
     current_state = FRESH_SURFACE;
     notifyGo();
 }
 
 void GLESRender::onSurfaceChanged(ANativeWindow* surface,int width, int height) {
-    LOGD(TAG, "onSurfaceChanged %s, width:%d,height:%d", surface, width, height)
+    LOGD(TAG, "onSurfaceChanged width:%d,height:%d", width, height)
     this->width = width;
     this->height = height;
     current_state = SURFACE_CHANGE;
@@ -63,7 +66,7 @@ EGLint configAttribe[] = {
 bool GLESRender::init() {
     LOGD(TAG, "init")
     EGLDisplay eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    if(eglDisplay == EGL_NO_DISPLAY){
+    if (eglDisplay == EGL_NO_DISPLAY) {
         LOGE(TAG, "eglGetDisplay fail")
         return false;
     }
@@ -73,9 +76,10 @@ bool GLESRender::init() {
         LOGE(TAG, "eglInitialize fail")
         return false;
     }
+    LOGE(TAG, "eglVersion %d.%d", ver[0], ver[1]);
     eglContext.versions = ver;
     EGLConfig *config = new EGLConfig[1];
-    EGLint *numConfig;
+    EGLint numConfig[] = {EGL_NONE};
 
     if (eglChooseConfig(eglDisplay, configAttribe, config, 1, numConfig) == EGL_FALSE) {
         LOGE(TAG, "eglChooseConfig fail")
@@ -118,21 +122,29 @@ void GLESRender::createEglSurfaceFirst() {
     if (!is_egl_create) {
         is_egl_create = true;
         createEglSurface();
+//        drawer->init();
     }
 }
 
 void GLESRender::createEglSurface() {
+    LOGE(TAG, "createEglSurface")
+    if (nativeWindow == NULL) {
+        LOGE(TAG, "nativeWindow is null")
+        return;
+    }
     EGLSurface surface;
+    int attris[] = {EGL_NONE};
     surface = eglCreateWindowSurface(eglContext.display, eglContext.config, nativeWindow,
-                                     configAttribe);
+                                     attris);
     if (surface == EGL_NO_SURFACE) {
         LOGE(TAG, "eglCreateWindowSurface fail")
         return;
     }
     eglContext.surface = surface;
 
+    int contextAttris[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
     EGLContext context;
-    context = eglCreateContext(eglContext.display, eglContext.config, nullptr, configAttribe);
+    context = eglCreateContext(eglContext.display, eglContext.config, nullptr, contextAttris);
     if (context == EGL_NO_CONTEXT) {
         LOGE(TAG, "eglCreateContext fail")
         return;
@@ -151,7 +163,14 @@ void GLESRender::destroyEGLSurface() {
 }
 
 void GLESRender::releaseEGL() {
-
+    eglMakeCurrent(eglContext.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglDestroyContext(eglContext.display, eglContext.context);
+    eglReleaseThread();
+    eglTerminate(eglContext.display);
+    eglContext.display = EGL_NO_DISPLAY;
+    eglContext.context = EGL_NO_CONTEXT;
+    eglContext.surface = EGL_NO_SURFACE;
+    is_egl_create = false;
 }
 
 void GLESRender::draw() {
@@ -160,11 +179,7 @@ void GLESRender::draw() {
 }
 
 void GLESRender::configWorldSize() {
-
-}
-
-void GLESRender::thread_launch() {
-
+    drawer->setViewSize(width, height);
 }
 
 void GLESRender::start() {
@@ -208,3 +223,23 @@ void GLESRender::loopRender() {
     LOGD(TAG, "GLESRender release")
 }
 
+void GLESRender::updateImageBuffer(AHardwareBuffer *buffer) {
+    LOGD(TAG, "updateImageBuffer")
+    createEglKHRTexture(buffer);
+}
+
+void GLESRender::createEglKHRTexture(AHardwareBuffer *buffer) {
+    LOGD(TAG, "createEglKHRTexture")
+    EGLint eglImgAttrs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE};
+    EGLImageKHR eglImageKhr = eglCreateImageKHR(eglContext.display, eglContext.context,
+                                                EGL_NATIVE_BUFFER_ANDROID,
+                                                eglGetNativeClientBufferANDROID(buffer),
+                                                eglImgAttrs);
+    drawer->setEGLImage(eglImageKhr);
+}
+
+void GLESRender::checkEglError(char *msg) {
+    int error = eglGetError();
+    LOGE(TAG, "%s getError is %d", msg, error);
+
+}

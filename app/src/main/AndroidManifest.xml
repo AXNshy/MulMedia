@@ -20,96 +20,125 @@
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.NavigationActivity">
+        <activity
+            android:name=".activity.NavigationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MediaCodecTestActivity"
+        <activity
+            android:name=".activity.MediaCodecTestActivity"
+            android:exported="true"
             android:supportsPictureInPicture="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_mediacodec"/>
+                    android:path="@string/path_mediacodec" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.GLVideoActivity">
+        <activity
+            android:name=".activity.GLVideoActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_gl_video"/>
+                    android:path="@string/path_gl_video" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.EGLVideoActivity">
+        <activity
+            android:name=".activity.EGLVideoActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_egl_video"/>
+                    android:path="@string/path_egl_video" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SoulEGLActivity">
+        <activity
+            android:name=".activity.SoulEGLActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_egl_filter_soul"/>
+                    android:path="@string/path_egl_filter_soul" />
             </intent-filter>
         </activity>
-        <activity android:name="com.luffyxu.mulmedia.activity.MediaInfoActivity">
+        <activity
+            android:name="com.luffyxu.mulmedia.activity.MediaInfoActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_media_info"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name="com.luffyxu.mulmedia.activity.SurfaceViewVideoActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
-                    android:scheme="xzq"
-                    android:path="@string/path_surface_video"/>
-            </intent-filter>
-        </activity>
-        <activity android:name="com.luffyxu.mulmedia.gles3.video.GLES3VideoActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
-                    android:scheme="xzq"
-                    android:path="@string/path_gles3_video"/>
+                    android:path="@string/path_media_info" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.luffyxu.mulmedia.gles3.triangle.GLES3Activity">
+        <activity
+            android:name="com.luffyxu.mulmedia.activity.SurfaceViewVideoActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_gles3"/>
+                    android:path="@string/path_surface_video" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.luffyxu.mulmedia.gles3.video.GLES3VideoActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_gles3_video" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.luffyxu.mulmedia.gles3.square.SquareActivity">
+        <activity
+            android:name="com.luffyxu.mulmedia.gles3.triangle.GLES3Activity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="navigate"
+                <data
+                    android:host="navigate"
                     android:scheme="xzq"
-                    android:path="@string/path_gles3_adpter6_lession1"/>
+                    android:path="@string/path_gles3" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.luffyxu.mulmedia.gles3.square.SquareActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="navigate"
+                    android:scheme="xzq"
+                    android:path="@string/path_gles3_adpter6_lession1" />
             </intent-filter>
         </activity>
     </application>

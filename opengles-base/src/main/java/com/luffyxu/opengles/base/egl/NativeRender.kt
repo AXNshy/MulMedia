@@ -1,5 +1,7 @@
 package com.luffyxu.opengles.base.egl
 
+import android.annotation.SuppressLint
+import android.hardware.HardwareBuffer
 import android.view.Surface
 
 class NativeRender {
@@ -47,4 +49,20 @@ class NativeRender {
     }
 
     private external fun onSurfaceDestroyed(native_render: Int)
+
+    @SuppressLint("SoonBlockedPrivateApi")
+    fun updateImageBuffer(buffer: HardwareBuffer) {
+        updateImageBuffer(native_renderer, buffer)
+
+
+//        nativeObject.let {
+//            it.isAccessible = true
+//            Log.d(TAG, "updateImageBuffer $buffer")
+//            updateImageBuffer(native_renderer,
+//                it.get(buffer) as Long
+//            )
+//        }
+    }
+
+    private external fun updateImageBuffer(native_render: Int, buffer: HardwareBuffer)
 }

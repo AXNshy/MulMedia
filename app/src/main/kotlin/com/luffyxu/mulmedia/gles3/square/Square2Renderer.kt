@@ -1,6 +1,7 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
+import com.luffyxu.opengles.base.egl.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -74,7 +75,6 @@ class Square2Renderer(shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
         TODO("Not yet implemented")
     }
 
-    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader?) {
-        TODO("Not yet implemented")
+    override fun setShader(shader: IGLShader) {
     }
 }

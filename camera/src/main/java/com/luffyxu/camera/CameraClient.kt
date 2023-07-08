@@ -65,8 +65,9 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
 
     var previewView: CameraPreviewView? = null
 
-    var previewFrameCallback: ((image: Image, data: ByteBuffer, width: Int, height: Int) -> Unit)? =
-        null
+    var previewFrameCallback: ((image: Image, data: ByteBuffer, width: Int, height: Int) -> Unit) =
+        { _, _, _, _ -> }
+
 
     //用来直接读取图像像素数据
     private lateinit var mCaptureReader: ImageReader
@@ -113,7 +114,7 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
             createSession(mCamera, listOf(mCaptureReader.surface, mPreviewImageReader.surface))
 
         openPreviewWithProcess(mPreviewImageReader.surface) { image: Image, data: ByteBuffer, width: Int, height: Int ->
-            previewFrameCallback?.let { it(image, data, width, height) }
+            previewFrameCallback.let { it(image, data, width, height) }
         }
         canCapture = true
         return true

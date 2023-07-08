@@ -1,5 +1,6 @@
 package com.luffyxu.camera
 
+import android.hardware.HardwareBuffer
 import android.opengl.GLES30
 import android.util.Log
 import android.util.Size
@@ -23,9 +24,7 @@ class CameraNativeRender(val cameraClient: CameraClient) : SurfaceHolder.Callbac
     var size: Size? = null
 
     init {
-
         internalRender = NativeRender()
-        internalRender.run()
     }
 
     fun setSurfaceView(surfaceView: SurfaceView) {
@@ -43,6 +42,7 @@ class CameraNativeRender(val cameraClient: CameraClient) : SurfaceHolder.Callbac
         scope.launch {
             cameraClient.startCameraWithEffect(surfaceView as SurfaceView)
         }
+        internalRender.run()
         internalRender.onSurfaceCreated(holder.surface)
     }
 
@@ -56,5 +56,13 @@ class CameraNativeRender(val cameraClient: CameraClient) : SurfaceHolder.Callbac
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceChanged")
         internalRender.onSurfaceDestroyed()
+    }
+
+    fun updateImageBuffer(buffer: HardwareBuffer?) {
+        Log.d(TAG, "updateImageBuffer $buffer")
+        if (buffer == null) {
+            return
+        }
+        internalRender.updateImageBuffer(buffer)
     }
 }

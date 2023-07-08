@@ -1,6 +1,7 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
+import com.luffyxu.opengles.base.egl.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -70,6 +71,6 @@ class Square1Renderer(shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
     override fun scale(scaleX: Float, scaleY: Float) {
     }
 
-    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader?) {
+    override fun setShader(shader: IGLShader) {
     }
 }

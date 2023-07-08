@@ -32,9 +32,7 @@ class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
 
         filepath = intent.getParcelableExtra<Uri>("uri")
         if (filepath != null) {
-            val realPath = FileUtils.getPath(
-                applicationContext, filepath
-            )
+            val realPath = FileUtils.getPath(applicationContext, filepath!!)
             filepath = Uri.parse(realPath)
             initData()
         }

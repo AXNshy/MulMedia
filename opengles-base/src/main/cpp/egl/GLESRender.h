@@ -5,17 +5,21 @@
 #ifndef MULMEDIA_GLESRENDER_H
 #define MULMEDIA_GLESRENDER_H
 
-
+#define GL_GLEXT_PROTOTYPES
+#define EGL_NATIVE_BUFFER_ANDROID 0x3140
+#define EGL_IMAGE_PRESERVED_KHR   0x30D2
+#define EGL_EGLEXT_PROTOTYPES
 
 #include "../render/IDrawer.h"
 #include "RenderState.h"
 
-
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
-#include <EGL/eglplatform.h>
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
+#include <GLES2/gl2ext.h>
+
 
 using namespace std;
 
@@ -40,7 +44,6 @@ struct RenderEGLContext{
 
 class GLESRender {
 public:
-
     GLESRender(JNIEnv *env);
 
     virtual ~GLESRender();
@@ -77,24 +80,25 @@ public:
 
     void configWorldSize();
 
-    void setDrawer(IDrawer drawer1){
-        drawer = &drawer1;
+    void updateImageBuffer(AHardwareBuffer *buffer);
+
+    void setDrawer(IDrawer *drawer1) {
+        drawer = drawer1;
     }
+
+    void createEglKHRTexture(AHardwareBuffer *buffer);
 
 protected:
     int width = -1;
     int height = -1;
     RenderEGLContext eglContext;
 
-
-    virtual void thread_launch();
-
 private:
     const char *TAG = "GLES_RENDERER";
 
     JavaVM *m_jvm_for_thread;
 
-    ANativeWindow *nativeWindow;
+    ANativeWindow *nativeWindow = NULL;
 
     pthread_mutex_t m_mutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_cond_t m_cont = PTHREAD_COND_INITIALIZER;
@@ -104,6 +108,8 @@ private:
     int current_state = 0;
 
     IDrawer *drawer;
+
+    void checkEglError(char *msg);
 };
 
 #endif //MULMEDIA_GLESRENDER_H

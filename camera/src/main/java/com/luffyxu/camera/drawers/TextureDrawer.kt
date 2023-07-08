@@ -7,11 +7,12 @@ import com.luffyxu.mulmedia.gles3.checkGLError
 import com.luffyxu.mulmedia.gles3.createShader
 import com.luffyxu.mulmedia.gles3.resolveFlip
 import com.luffyxu.mulmedia.gles3.resolveRotate
+import com.luffyxu.opengles.base.egl.OpenGLUtils
 import com.luffyxu.opengles.base.egl.Transformation
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
-import java.util.*
+import java.util.Arrays
 
 class TextureDrawer : com.luffyxu.opengles.base.egl.IDrawer {
     private var textureIds: IntArray? = null
@@ -294,7 +295,7 @@ class TextureDrawer : com.luffyxu.opengles.base.egl.IDrawer {
         if (yTextureId == -1 || uTextureId == -1 || vTextureId == -1) {
 
             checkGLError("GLES30_createTextureId")
-            textureIds = com.luffyxu.opengles.base.egl.OpenGLUtils.GLES30_createTextureId(3)
+            textureIds = OpenGLUtils.GLES30_createTextureId(3)
             yTextureId = textureIds!![0]
             uTextureId = textureIds!![1]
             vTextureId = textureIds!![2]

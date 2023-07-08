@@ -19,8 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import com.luffyxu.camera.CameraClient
 import com.luffyxu.camera.CameraNativeRender
 import com.luffyxu.camera.databinding.FragmentCameraBinding
-import com.luffyxu.camera.drawers.TextureDrawer
-import com.luffyxu.camera.drawers.TextureShader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -36,9 +34,6 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
     var surface: Surface? = null
 
     val previewSize: Size? = null
-
-    val textureDrawer: TextureDrawer = TextureDrawer()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,11 +61,13 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
         }
         cameraClient = CameraClient(requireContext(), cameraId)
 
-        textureDrawer.setupCameraClient(cameraClient)
-        textureDrawer.setVideoSize(1920, 1080)
-        textureDrawer.setShader(TextureShader(requireContext()))
         val render = CameraNativeRender(cameraClient)
         render.setSurfaceView(viewBinding.surfacePreview)
+
+        cameraClient.previewFrameCallback = { image, data, width, height ->
+            render.updateImageBuffer(image.hardwareBuffer)
+            image.close()
+        }
     }
 
     private fun galleryAddPic(image: File) {

@@ -1,7 +1,15 @@
 //
 // Created by Luffy on 2023/4/17.
 //
-
+#ifndef EGL_NATIVE_BUFFER_ANDROID 0x3140
+#define EGL_NATIVE_BUFFER_ANDROID 0x3140
+#endif
+#ifndef EGL_IMAGE_PRESERVED_KHR   0x30D2
+#define EGL_IMAGE_PRESERVED_KHR   0x30D2
+#endif
+#ifndef EGL_EGLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#endif
 
 #include <jni.h>
 #include <string>
@@ -9,6 +17,7 @@
 #include "egl/GLESRender.h"
 #include <EGL/egl.h>
 #include <android/native_window_jni.h>
+#include <android/hardware_buffer_jni.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,14 +52,19 @@ void native_run(JNIEnv *env, jobject thiz,jint render) {
     nativeRender->start();
 }
 
-
+void nativeUpdateImageBuffer(JNIEnv *env, jobject thiz, jint native_render, jobject nativeObject) {
+    AHardwareBuffer *aHardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, nativeObject);
+    GLESRender *nativeRender = reinterpret_cast<GLESRender *>(native_render);
+    nativeRender->updateImageBuffer(aHardwareBuffer);
+}
 
 static JNINativeMethod gMethod[] = {
-        {"onSurfaceCreated",     "(ILandroid/view/Surface;)V",   (void *) (native_surface_create)},
-        {"onSurfaceChanged",     "(ILandroid/view/Surface;II)V", (void *) (native_surface_change)},
-        {"onSurfaceDestroyed",   "(I)V",                         (void *) (native_surface_destroyed)},
-        {"nativeCreateRenderer", "()I",                          (void *) (native_create_renderer)},
-        {"nativeRun",            "(I)V",                         (void *) (native_run)},
+        {"onSurfaceCreated",     "(ILandroid/view/Surface;)V",            (void *) (native_surface_create)},
+        {"onSurfaceChanged",     "(ILandroid/view/Surface;II)V",          (void *) (native_surface_change)},
+        {"onSurfaceDestroyed",   "(I)V",                                  (void *) (native_surface_destroyed)},
+        {"nativeCreateRenderer", "()I",                                   (void *) (native_create_renderer)},
+        {"nativeRun",            "(I)V",                                  (void *) (native_run)},
+        {"updateImageBuffer",    "(ILandroid/hardware/HardwareBuffer;)V", (void *) (nativeUpdateImageBuffer)},
 };
 
 
@@ -63,7 +77,7 @@ jint regist_jni_method(JNIEnv *env) {
 
     printf("FindClass");
 
-    if (env->RegisterNatives(clazz, gMethod, 5) < 0) {
+    if (env->RegisterNatives(clazz, gMethod, 6) < 0) {
         return -1;
     }
 

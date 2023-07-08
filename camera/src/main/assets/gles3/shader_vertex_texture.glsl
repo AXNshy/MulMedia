@@ -7,4 +7,3 @@ void main(){
     v_texCoord = a_texCoord;
     gl_Position = vPosition;
 }
-

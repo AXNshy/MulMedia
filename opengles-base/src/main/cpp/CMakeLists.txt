@@ -22,8 +22,12 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         egl/GLESRender.cpp
         egl/RenderState.h
-        render/IDrawer.cpp
         utils/logger.h
+        render/IDrawer.cpp
+        render/IShader.h
+        render/drawer/TextureDrawer.cpp
+        render/shader/CameraYUVShader.cpp
+        render/shader/CameraYUVShader.h
         JniImpl.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

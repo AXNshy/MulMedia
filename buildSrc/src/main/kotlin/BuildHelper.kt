@@ -1,6 +1,6 @@
 object Versions {
     const val compileSdk = 31
-    const val minSdk = 24
+    const val minSdk = 28
     const val targetSdk = 31
     const val ndkVersion = "25.1.8937393"
 
@@ -18,4 +18,7 @@ object Libs {
     const val kotlinx_coroutines_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
     const val material = "com.google.android.material:material:1.3.0"
     const val lifecycle_viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+
+
+    const val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:1.4.20"
 }

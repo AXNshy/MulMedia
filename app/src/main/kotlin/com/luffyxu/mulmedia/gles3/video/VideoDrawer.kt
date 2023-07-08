@@ -7,10 +7,11 @@ import android.opengl.Matrix
 import android.util.Log
 import com.luffy.mulmedia.gles2.VideoDrawer
 import com.luffyxu.mulmedia.gles3.createShader
+import com.luffyxu.opengles.base.egl.TextureCallback
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
-import java.util.*
+import java.util.Arrays
 
 class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
 
@@ -141,7 +142,6 @@ class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
 
         GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
         GLES30.glUniform1i(mTextureHandle, 0)
-
         GLES30.glEnableVertexAttribArray(0)
         GLES30.glEnableVertexAttribArray(1)
 
@@ -202,15 +202,15 @@ class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
         textureId = id[0]
         surfaceTexture = SurfaceTexture(textureId)
         if (callback != null) {
-            callback!!.texture(surfaceTexture)
+            callback!!.texture(surfaceTexture!!)
         }
     }
 
-    var callback: com.luffyxu.opengles.base.egl.TextureCallback? = null
+    var callback: TextureCallback? = null
         set(value) {
             field = value
             if (surfaceTexture != null && callback != null) {
-                value?.texture(surfaceTexture)
+                value?.texture(surfaceTexture!!)
             }
         }
 
