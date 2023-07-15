@@ -44,6 +44,9 @@ struct RenderEGLContext{
 
 class GLESRender {
 public:
+
+    IDrawer *drawer = NULL;
+
     GLESRender(JNIEnv *env);
 
     virtual ~GLESRender();
@@ -70,7 +73,7 @@ public:
 
     void createEglSurfaceFirst();
 
-    void createEglSurface();
+    bool createEglSurface();
 
     void destroyEGLSurface();
 
@@ -91,12 +94,12 @@ public:
 protected:
     int width = -1;
     int height = -1;
-    RenderEGLContext eglContext;
+    RenderEGLContext *eglContext = NULL;
 
 private:
     const char *TAG = "GLES_RENDERER";
 
-    JavaVM *m_jvm_for_thread;
+    JavaVM *m_jvm_for_thread = NULL;
 
     ANativeWindow *nativeWindow = NULL;
 
@@ -107,7 +110,8 @@ private:
 
     int current_state = 0;
 
-    IDrawer *drawer;
+
+    AHardwareBuffer *buffer = NULL;
 
     void checkEglError(char *msg);
 };

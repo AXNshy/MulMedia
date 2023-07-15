@@ -27,12 +27,6 @@ GLuint IDrawer::LoadShader(GLenum type, const char *shaderStr) {
     return shader;
 }
 
-void IDrawer::setShader(IShader *shader) {
-    shaderFactory = shader;
-    vShaderStr = shaderFactory->vertexShader();
-    fShaderStr = shaderFactory->fragmentShader();
-}
-
 void IDrawer::init() {
     LOGD(getDrawerType(), "init")
     initProgram();
@@ -40,40 +34,39 @@ void IDrawer::init() {
 }
 
 void IDrawer::initProgram() {
+    programId = glCreateProgram();
+    LOGD(getDrawerType(), "initProgram %d", programId);
     if (programId == 0) {
-        programId = glCreateProgram();
-        LOGD(getDrawerType(), "initProgram %d", programId);
-        if (programId == 0) {
-            return;
-        }
-        GLuint shaderVertexId = LoadShader(GL_VERTEX_SHADER, vShaderStr);
-        GLuint shaderFragId = LoadShader(GL_FRAGMENT_SHADER, fShaderStr);
-
-        glAttachShader(programId, shaderVertexId);
-        glAttachShader(programId, shaderFragId);
-
-        glLinkProgram(programId);
-
-        GLint linked;
-
-        glGetProgramiv(programId, GL_LINK_STATUS, &linked);
-        if (!linked) {
-            GLint infoLen = 0;
-            glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char *infoLog = static_cast<char *>(malloc(sizeof(char) * infoLen));
-                glGetProgramInfoLog(programId, infoLen, NULL, infoLog);
-                LOGE(getDrawerType(), "Error linking program \n%s\n", infoLog);
-                free(infoLog);
-            }
-            glDeleteProgram(programId);
-            return;
-        }
-        glClearColor(0, 0, 0, 0);
+        return;
     }
+    GLuint shaderVertexId = LoadShader(GL_VERTEX_SHADER, vShaderStr);
+    GLuint shaderFragId = LoadShader(GL_FRAGMENT_SHADER, fShaderStr);
+
+    glAttachShader(programId, shaderVertexId);
+    glAttachShader(programId, shaderFragId);
+
+    glLinkProgram(programId);
+
+    GLint linked;
+
+    glGetProgramiv(programId, GL_LINK_STATUS, &linked);
+    if (!linked) {
+        GLint infoLen = 0;
+        glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLen);
+        if (infoLen > 1) {
+            char *infoLog = static_cast<char *>(malloc(sizeof(char) * infoLen));
+            glGetProgramInfoLog(programId, infoLen, NULL, infoLog);
+            LOGE(getDrawerType(), "Error linking program \n%s\n", infoLog);
+            free(infoLog);
+        }
+        glDeleteProgram(programId);
+        return;
+    }
+    glClearColor(0, 0, 0, 0);
 }
 
 void IDrawer::setViewSize(int width, int height) {
+    LOGD(getDrawerType(), "setViewSize width:%d,height:%d", width, height)
     this->width = width;
     this->height = height;
 }
@@ -90,4 +83,10 @@ IDrawer::IDrawer() {
 
 void IDrawer::release() {
 
+}
+
+void IDrawer::setShader(char *vShaderStr, char *fShaderStr) {
+    LOGD(getDrawerType(), "setShader vShaderStr:%s,fShaderStr:%s", vShaderStr, fShaderStr)
+    this->vShaderStr = vShaderStr;
+    this->fShaderStr = fShaderStr;
 };

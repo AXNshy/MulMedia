@@ -1,7 +1,7 @@
 package com.luffyxu.camera
 
+import android.content.Context
 import android.hardware.HardwareBuffer
-import android.opengl.GLES30
 import android.util.Log
 import android.util.Size
 import android.view.SurfaceHolder
@@ -12,7 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CameraNativeRender(val cameraClient: CameraClient) : SurfaceHolder.Callback {
+class CameraNativeRender(context: Context, val cameraClient: CameraClient) :
+    SurfaceHolder.Callback {
 
     private val TAG = "CameraNativeRender"
     private val internalRender: NativeRender
@@ -24,7 +25,7 @@ class CameraNativeRender(val cameraClient: CameraClient) : SurfaceHolder.Callbac
     var size: Size? = null
 
     init {
-        internalRender = NativeRender()
+        internalRender = NativeRender(context)
     }
 
     fun setSurfaceView(surfaceView: SurfaceView) {
@@ -48,8 +49,6 @@ class CameraNativeRender(val cameraClient: CameraClient) : SurfaceHolder.Callbac
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         Log.d(TAG, "surfaceChanged")
-        GLES30.glClearColor(1f, 1f, 1f, 1f)
-        GLES30.glClearDepthf(0f)
         internalRender.onSurfaceChanged(holder.surface, width, height)
     }
 

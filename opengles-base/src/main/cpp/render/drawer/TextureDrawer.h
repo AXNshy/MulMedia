@@ -52,6 +52,10 @@ private:
 
     GLint oesTexture = 0;
 
+    GLuint Tmp_Framebuffer = 0;
+
+    void getGLError(const char *tag);
+
 protected:
     const char *getDrawerType() override;
 };

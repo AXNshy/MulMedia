@@ -1,10 +1,11 @@
 package com.luffyxu.opengles.base.egl
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.hardware.HardwareBuffer
 import android.view.Surface
 
-class NativeRender {
+class NativeRender(context: Context) {
     var native_renderer: Int = -1;
 
     companion object {
@@ -17,6 +18,8 @@ class NativeRender {
 
     init {
         native_renderer = nativeCreateRenderer()
+        val shader = NativeShader(context)
+        nativeInitShader(native_renderer, shader.vertexShader(), shader.fragmentShader())
     }
 
 
@@ -26,6 +29,12 @@ class NativeRender {
 
 
     private external fun nativeCreateRenderer(): Int
+    private external fun nativeInitShader(
+        native_render: Int,
+        vertexShaderStr: String,
+        fragShaderStr: String
+    )
+
     private external fun nativeRun(native_render: Int)
 
     fun onSurfaceCreated(surface: Surface) {

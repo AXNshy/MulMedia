@@ -48,7 +48,7 @@ jint native_create_renderer(JNIEnv *env, jobject thiz) {
 }
 
 void native_run(JNIEnv *env, jobject thiz,jint render) {
-    GLESRender* nativeRender = reinterpret_cast<GLESRender*>(render);
+    GLESRender *nativeRender = reinterpret_cast<GLESRender *>(render);
     nativeRender->start();
 }
 
@@ -58,13 +58,29 @@ void nativeUpdateImageBuffer(JNIEnv *env, jobject thiz, jint native_render, jobj
     nativeRender->updateImageBuffer(aHardwareBuffer);
 }
 
+char *convertShaderString(JNIEnv *env, jstring str) {
+    int length = env->GetStringUTFLength(str);
+    const char *cStr = env->GetStringUTFChars(str, JNI_FALSE);
+    char *buf = static_cast<char *>(malloc(length + 1));
+    memcpy(buf, cStr, length + 1);
+    return buf;
+}
+
+void nativeInitShader(JNIEnv *env, jobject thiz, jint native_render, jstring vertexShaderStr,
+                      jstring fragShaderStr) {
+    GLESRender *nativeRender = reinterpret_cast<GLESRender *>(native_render);
+    nativeRender->drawer->setShader(convertShaderString(env, vertexShaderStr),
+                                    convertShaderString(env, fragShaderStr));
+}
+
 static JNINativeMethod gMethod[] = {
-        {"onSurfaceCreated",     "(ILandroid/view/Surface;)V",            (void *) (native_surface_create)},
-        {"onSurfaceChanged",     "(ILandroid/view/Surface;II)V",          (void *) (native_surface_change)},
-        {"onSurfaceDestroyed",   "(I)V",                                  (void *) (native_surface_destroyed)},
-        {"nativeCreateRenderer", "()I",                                   (void *) (native_create_renderer)},
-        {"nativeRun",            "(I)V",                                  (void *) (native_run)},
-        {"updateImageBuffer",    "(ILandroid/hardware/HardwareBuffer;)V", (void *) (nativeUpdateImageBuffer)},
+        {"onSurfaceCreated",     "(ILandroid/view/Surface;)V",               (void *) (native_surface_create)},
+        {"onSurfaceChanged",     "(ILandroid/view/Surface;II)V",             (void *) (native_surface_change)},
+        {"onSurfaceDestroyed",   "(I)V",                                     (void *) (native_surface_destroyed)},
+        {"nativeCreateRenderer", "()I",                                      (void *) (native_create_renderer)},
+        {"nativeRun",            "(I)V",                                     (void *) (native_run)},
+        {"updateImageBuffer",    "(ILandroid/hardware/HardwareBuffer;)V",    (void *) (nativeUpdateImageBuffer)},
+        {"nativeInitShader",     "(ILjava/lang/String;Ljava/lang/String;)V", (void *) (nativeInitShader)},
 };
 
 
@@ -77,7 +93,7 @@ jint regist_jni_method(JNIEnv *env) {
 
     printf("FindClass");
 
-    if (env->RegisterNatives(clazz, gMethod, 6) < 0) {
+    if (env->RegisterNatives(clazz, gMethod, 7) < 0) {
         return -1;
     }
 

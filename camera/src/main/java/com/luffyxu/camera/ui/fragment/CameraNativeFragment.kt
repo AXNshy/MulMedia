@@ -8,10 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
-import android.view.Surface
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -28,12 +25,6 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
     lateinit var viewBinding: FragmentCameraBinding
 
     lateinit var cameraClient: CameraClient
-
-    var surfaceHolder: SurfaceHolder? = null
-
-    var surface: Surface? = null
-
-    val previewSize: Size? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +52,7 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
         }
         cameraClient = CameraClient(requireContext(), cameraId)
 
-        val render = CameraNativeRender(cameraClient)
+        val render = CameraNativeRender(requireContext(), cameraClient)
         render.setSurfaceView(viewBinding.surfacePreview)
 
         cameraClient.previewFrameCallback = { image, data, width, height ->

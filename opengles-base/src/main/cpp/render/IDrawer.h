@@ -21,7 +21,6 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-#include "IShader.h"
 #include "stdlib.h"
 
 class IDrawer {
@@ -40,14 +39,12 @@ public:
 
     virtual void draw() = 0;
 
-    void setShader(IShader *shader);
+    void setShader(char *vShaderStr, char *fShaderStr);
 
     void setViewSize(int width, int height);
 
     void setEGLImage(EGLImageKHR eglImageKhr);
 
-private:
-    IShader *shaderFactory = NULL;
 protected:
     GLuint programId = 0;
 

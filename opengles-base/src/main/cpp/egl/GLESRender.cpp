@@ -65,19 +65,20 @@ EGLint configAttribe[] = {
 
 bool GLESRender::init() {
     LOGD(TAG, "init")
+    eglContext = new RenderEGLContext();
     EGLDisplay eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (eglDisplay == EGL_NO_DISPLAY) {
         LOGE(TAG, "eglGetDisplay fail")
         return false;
     }
-    eglContext.display = eglDisplay;
+    eglContext->display = eglDisplay;
     EGLint *ver = new EGLint[2];
     if (!eglInitialize(eglDisplay, &ver[0], &ver[1])) {
         LOGE(TAG, "eglInitialize fail")
         return false;
     }
     LOGE(TAG, "eglVersion %d.%d", ver[0], ver[1]);
-    eglContext.versions = ver;
+    eglContext->versions = ver;
     EGLConfig *config = new EGLConfig[1];
     EGLint numConfig[] = {EGL_NONE};
 
@@ -90,7 +91,7 @@ bool GLESRender::init() {
         LOGE(TAG, "eglConfig is null")
         return false;
     }
-    eglContext.config = config[0];
+    eglContext->config = config[0];
     return true;
 }
 
@@ -123,59 +124,73 @@ void GLESRender::createEglSurfaceFirst() {
         is_egl_create = true;
         createEglSurface();
 //        drawer->init();
+        drawer->init();
     }
 }
 
-void GLESRender::createEglSurface() {
+bool GLESRender::createEglSurface() {
     LOGE(TAG, "createEglSurface")
-    if (nativeWindow == NULL) {
+    if (nativeWindow == nullptr) {
         LOGE(TAG, "nativeWindow is null")
-        return;
+        return false;
     }
     EGLSurface surface;
     int attris[] = {EGL_NONE};
-    surface = eglCreateWindowSurface(eglContext.display, eglContext.config, nativeWindow,
+    surface = eglCreateWindowSurface(eglContext->display, eglContext->config, nativeWindow,
                                      attris);
     if (surface == EGL_NO_SURFACE) {
         LOGE(TAG, "eglCreateWindowSurface fail")
-        return;
+        return false;
     }
-    eglContext.surface = surface;
+    eglContext->surface = surface;
 
     int contextAttris[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
     EGLContext context;
-    context = eglCreateContext(eglContext.display, eglContext.config, nullptr, contextAttris);
+    context = eglCreateContext(eglContext->display, eglContext->config, nullptr, contextAttris);
     if (context == EGL_NO_CONTEXT) {
         LOGE(TAG, "eglCreateContext fail")
-        return;
+        return false;
     }
-    eglContext.context = context;
-    if (!eglMakeCurrent(eglContext.display, eglContext.surface, eglContext.surface,
-                        eglContext.context)) {
+    eglContext->context = context;
+    if (!eglMakeCurrent(eglContext->display, eglContext->surface, eglContext->surface,
+                        eglContext->context)) {
         LOGE(TAG, "eglMakeCurrent fail")
-        return;
+        return false;
     }
+    return true;
 }
 
 void GLESRender::destroyEGLSurface() {
-    eglMakeCurrent(eglContext.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglMakeCurrent(eglContext->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     is_egl_create = false;
 }
 
 void GLESRender::releaseEGL() {
-    eglMakeCurrent(eglContext.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-    eglDestroyContext(eglContext.display, eglContext.context);
+    LOGE(TAG, "releaseEGL")
+    eglMakeCurrent(eglContext->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglDestroyContext(eglContext->display, eglContext->context);
     eglReleaseThread();
-    eglTerminate(eglContext.display);
-    eglContext.display = EGL_NO_DISPLAY;
-    eglContext.context = EGL_NO_CONTEXT;
-    eglContext.surface = EGL_NO_SURFACE;
+    eglTerminate(eglContext->display);
+    eglContext->display = EGL_NO_DISPLAY;
+    eglContext->context = EGL_NO_CONTEXT;
+    eglContext->surface = EGL_NO_SURFACE;
     is_egl_create = false;
 }
 
 void GLESRender::draw() {
+    LOGD(TAG, "draw %p", eglContext->context)
+    EGLint eglImgAttrs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE};
+    EGLClientBuffer eglClientBuffer = eglGetNativeClientBufferANDROID(buffer);
+    checkEglError("eglGetNativeClientBufferANDROID");
+    EGLImageKHR eglImageKhr = eglCreateImageKHR(eglContext->display, eglContext->context,
+                                                EGL_NATIVE_BUFFER_ANDROID,
+                                                eglClientBuffer,
+                                                eglImgAttrs);
+    checkEglError("eglCreateImageKHR");
+    drawer->setEGLImage(eglImageKhr);
+
     drawer->draw();
-    eglSwapBuffers(eglContext.display, eglContext.surface);
+    eglSwapBuffers(eglContext->display, eglContext->surface);
 }
 
 void GLESRender::configWorldSize() {
@@ -230,16 +245,12 @@ void GLESRender::updateImageBuffer(AHardwareBuffer *buffer) {
 
 void GLESRender::createEglKHRTexture(AHardwareBuffer *buffer) {
     LOGD(TAG, "createEglKHRTexture")
-    EGLint eglImgAttrs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE};
-    EGLImageKHR eglImageKhr = eglCreateImageKHR(eglContext.display, eglContext.context,
-                                                EGL_NATIVE_BUFFER_ANDROID,
-                                                eglGetNativeClientBufferANDROID(buffer),
-                                                eglImgAttrs);
-    drawer->setEGLImage(eglImageKhr);
+    this->buffer = buffer;
 }
 
 void GLESRender::checkEglError(char *msg) {
     int error = eglGetError();
-    LOGE(TAG, "%s getError is %d", msg, error);
-
+    if (error != EGL_SUCCESS) {
+        LOGE(TAG, "%s getError is %d", msg, error);
+    }
 }

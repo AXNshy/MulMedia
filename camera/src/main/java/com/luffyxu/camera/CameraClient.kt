@@ -90,7 +90,6 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
             Log.d(TAG, "please request camera permission first")
             return false
         }
-
         mCamera = openCamera(cameraManager, cameraIds[cameraId])
         val previewSize = findSuitablePreviewSize(sv as CameraPreviewView)
 
