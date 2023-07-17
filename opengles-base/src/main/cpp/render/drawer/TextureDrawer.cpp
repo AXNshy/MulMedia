@@ -23,15 +23,16 @@ void TextureDrawer::draw() {
 
     GLfloat vVertexData[] = {
             -1.0, -1.0, 0.0,
-            -1.0, 1.0, 0.0,
             1.0, -1.0, 0.0,
+            -1.0, 1.0, 0.0,
             1.0, 1.0, 0.0
     };
+
     GLfloat vTextureData[] = {
-            0.0, 0.0,
-            0.0, 1.0,
-            1.0, 0.0,
             1.0, 1.0,
+            1.0, 0.0,
+            0.0, 1.0,
+            0.0, 0.0,
     };
 
     glUseProgram(programId);
@@ -124,10 +125,6 @@ TextureDrawer::~TextureDrawer() = default;
 
 const char *TextureDrawer::getDrawerType() {
     return TAG;
-}
-
-void TextureDrawer::updateImageBuffer(AHardwareBuffer *buffer) {
-
 }
 
 TextureDrawer::TextureDrawer() {

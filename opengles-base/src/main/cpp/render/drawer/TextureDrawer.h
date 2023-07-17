@@ -27,9 +27,6 @@ public:
     virtual void draw() override;
 
     void initParams() override;
-
-    void updateImageBuffer(AHardwareBuffer *buffer);
-
 private:
     const char *TAG = "TextureDrawer";
 
