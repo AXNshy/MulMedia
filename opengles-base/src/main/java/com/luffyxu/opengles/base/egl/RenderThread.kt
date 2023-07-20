@@ -4,6 +4,7 @@ import android.opengl.EGLExt
 import android.opengl.GLES20
 import android.util.Log
 import android.view.SurfaceHolder
+import com.luffyxu.opengles.base.drawer.IDrawer
 import java.lang.ref.WeakReference
 
 class RenderThread(val glVersion: Int = 2) : Thread() {

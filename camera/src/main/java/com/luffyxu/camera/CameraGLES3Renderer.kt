@@ -6,7 +6,7 @@ import android.util.Size
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
-import com.luffyxu.opengles.base.egl.IDrawer
+import com.luffyxu.opengles.base.drawer.IDrawer
 import com.luffyxu.opengles.base.egl.RenderThread2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

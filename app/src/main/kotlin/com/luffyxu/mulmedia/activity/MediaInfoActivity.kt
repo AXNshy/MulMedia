@@ -13,7 +13,7 @@ import com.luffy.mulmedia.R
 import com.luffy.mulmedia.databinding.ActivityMediaInfoBinding
 import com.luffyxu.mulmedia.model.MediaInfoItem
 import com.luffyxu.mulmedia.ui.adapter.MediaInfoAdapter
-import com.luffyxu.opengles.base.egl.FileUtils
+import com.luffyxu.opengles.base.utils.FileUtils
 
 class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
     lateinit var recyclerView : RecyclerView

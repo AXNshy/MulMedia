@@ -7,14 +7,16 @@ import com.luffyxu.mulmedia.gles3.checkGLError
 import com.luffyxu.mulmedia.gles3.createShader
 import com.luffyxu.mulmedia.gles3.resolveFlip
 import com.luffyxu.mulmedia.gles3.resolveRotate
-import com.luffyxu.opengles.base.egl.OpenGLUtils
+import com.luffyxu.opengles.base.drawer.IDrawer
 import com.luffyxu.opengles.base.egl.Transformation
+import com.luffyxu.opengles.base.shader.IGLShader
+import com.luffyxu.opengles.base.utils.OpenGLUtils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.util.Arrays
 
-class TextureDrawer : com.luffyxu.opengles.base.egl.IDrawer {
+class TextureDrawer : IDrawer {
     private var textureIds: IntArray? = null
     val TAG = "TextureDrawer"
     private val vertexCoordinate = floatArrayOf(
@@ -71,7 +73,7 @@ class TextureDrawer : com.luffyxu.opengles.base.egl.IDrawer {
     private var vTextureWidth = -1
     private var vTextureHeight = -1
 
-    var mShader: com.luffyxu.opengles.base.egl.IGLShader? = null
+    var mShader: IGLShader? = null
 
     private var mSurfaceWidth = 1
     private var mSurfaceHeight = 1
@@ -425,7 +427,7 @@ class TextureDrawer : com.luffyxu.opengles.base.egl.IDrawer {
     override fun translate(translateX: Float, translateY: Float) {}
 
     override fun scale(scaleX: Float, scaleY: Float) {}
-    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader) {
+    override fun setShader(shader: IGLShader) {
         mShader = shader
     }
 }

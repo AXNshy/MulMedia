@@ -17,7 +17,7 @@ import com.luffy.mulmedia.egl.CustomGLRender;
 import com.luffy.mulmedia.gles2.DragSurfaceView;
 import com.luffy.mulmedia.gles2.SoulVideoDrawer;
 import com.luffy.mulmedia.gles2.SoulVideoShader;
-import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.drawer.IDrawer;
 import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.io.FileDescriptor;

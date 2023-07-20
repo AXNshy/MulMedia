@@ -2,8 +2,8 @@ package com.luffy.mulmedia.gles2;
 
 import android.content.Context;
 
-import com.luffyxu.opengles.base.egl.FileUtils;
-import com.luffyxu.opengles.base.egl.IGLShader;
+import com.luffyxu.opengles.base.shader.IGLShader;
+import com.luffyxu.opengles.base.utils.FileUtils;
 
 public class ReliefFilter implements IGLShader {
     private Context context;

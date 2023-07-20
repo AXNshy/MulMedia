@@ -7,13 +7,16 @@ import android.opengl.Matrix
 import android.util.Log
 import com.luffy.mulmedia.gles2.VideoDrawer
 import com.luffyxu.mulmedia.gles3.createShader
+import com.luffyxu.opengles.base.drawer.IDrawer
 import com.luffyxu.opengles.base.egl.TextureCallback
+import com.luffyxu.opengles.base.shader.IGLShader
+import com.luffyxu.opengles.base.utils.OpenGLUtils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.util.Arrays
 
-class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
+class VideoDrawer : IDrawer {
 
     val TAG = "GLES3-Video"
     private val vertexCoordinate = floatArrayOf(
@@ -39,7 +42,7 @@ class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
     private var mMatrixHandle = -1
     private var mTextureHandle = -1
 
-    var mGLShader: com.luffyxu.opengles.base.egl.IGLShader? = null
+    var mGLShader: IGLShader? = null
 
     var surfaceTexture: SurfaceTexture? = null
 
@@ -159,7 +162,7 @@ class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
     private fun activeTexture() {
         Log.d(TAG, "activeTexture $textureId")
         if (textureId == -1) {
-            setTextureId(com.luffyxu.opengles.base.egl.OpenGLUtils.createTextureId(1))
+            setTextureId(OpenGLUtils.createTextureId(1))
         }
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
         GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
@@ -217,7 +220,7 @@ class VideoDrawer : com.luffyxu.opengles.base.egl.IDrawer {
 
     override fun translate(translateX: Float, translateY: Float) {}
     override fun scale(scaleX: Float, scaleY: Float) {}
-    override fun setShader(shader: com.luffyxu.opengles.base.egl.IGLShader) {
+    override fun setShader(shader: IGLShader) {
         mGLShader = shader
     }
 

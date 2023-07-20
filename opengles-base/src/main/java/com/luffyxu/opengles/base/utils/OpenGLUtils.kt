@@ -1,4 +1,4 @@
-package com.luffyxu.opengles.base.egl
+package com.luffyxu.opengles.base.utils
 
 import android.opengl.GLES20
 import android.opengl.GLES30

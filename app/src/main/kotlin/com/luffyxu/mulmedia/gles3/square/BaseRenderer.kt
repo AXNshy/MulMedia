@@ -2,9 +2,11 @@ package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
 import com.luffyxu.mulmedia.gles3.createShader
+import com.luffyxu.opengles.base.drawer.IDrawer
+import com.luffyxu.opengles.base.shader.IGLShader
 
-abstract class BaseRenderer(val shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
-    com.luffyxu.opengles.base.egl.IDrawer {
+abstract class BaseRenderer(val shader: IGLShader? = null) :
+    IDrawer {
 
 
     var mProgramId: Int = -1

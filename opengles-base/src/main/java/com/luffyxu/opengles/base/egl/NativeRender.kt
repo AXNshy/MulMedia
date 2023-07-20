@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.HardwareBuffer
 import android.view.Surface
+import com.luffyxu.opengles.base.shader.NativeShader
 
 class NativeRender(context: Context) {
     var native_renderer: Int = -1;

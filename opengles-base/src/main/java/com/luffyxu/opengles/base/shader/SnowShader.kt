@@ -1,9 +1,10 @@
-package com.luffyxu.opengles.base.egl
+package com.luffyxu.opengles.base.shader
 
 import android.content.Context
 import android.text.TextUtils
+import com.luffyxu.opengles.base.utils.FileUtils
 
-class NativeShader(
+class SnowShader(
     var context: Context? = null,
     val vertexShader: String? = null,
     val fragShader: String? = null
@@ -16,7 +17,7 @@ class NativeShader(
 
     override fun fragmentShader(): String {
         return if (TextUtils.isEmpty(fragShader)) {
-            FileUtils.getStringFromAssets(context!!, "native_gles3/shader_frag_texture.glsl")
+            FileUtils.getStringFromAssets(context!!, "native_gles3/filter/shader_frag_snow.glsl")
         } else fragShader!!
     }
 }

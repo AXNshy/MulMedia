@@ -1,4 +1,4 @@
-package com.luffyxu.opengles.base.egl
+package com.luffyxu.opengles.base.shader
 
 interface IGLShader {
     fun vertexShader(): String

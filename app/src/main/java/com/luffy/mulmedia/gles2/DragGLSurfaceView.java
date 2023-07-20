@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.luffyxu.opengles.base.egl.IDrawer;
+import com.luffyxu.opengles.base.drawer.IDrawer;
 
 public class DragGLSurfaceView extends GLSurfaceView {
     IDrawer drawer;

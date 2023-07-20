@@ -1,12 +1,12 @@
 package com.luffyxu.mulmedia.gles3.square
 
 import android.opengl.GLES30
-import com.luffyxu.opengles.base.egl.IGLShader
+import com.luffyxu.opengles.base.shader.IGLShader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-class Square1Renderer(shader: com.luffyxu.opengles.base.egl.IGLShader? = null) :
+class Square1Renderer(shader: IGLShader? = null) :
     BaseRenderer(shader) {
     val VERTEX_POS_SIZE = 3
     val VERTEX_COLOR_SIZE = 2

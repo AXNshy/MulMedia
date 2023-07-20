@@ -1,4 +1,6 @@
-package com.luffyxu.opengles.base.egl
+package com.luffyxu.opengles.base.drawer
+
+import com.luffyxu.opengles.base.shader.IGLShader
 
 interface IDrawer {
     fun draw()

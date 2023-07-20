@@ -1,4 +1,4 @@
-package com.luffyxu.opengles.base.egl
+package com.luffyxu.opengles.base.utils
 
 import android.content.ContentUris
 import android.content.Context
