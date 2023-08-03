@@ -2,13 +2,10 @@ package com.luffyxu.camera.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.luffyxu.base.ActivityBase
 import com.luffyxu.camera.databinding.ActivityCameraBinding
-import com.luffyxu.camera.ui.fragment.CameraFragment
-import com.luffyxu.camera.ui.fragment.CameraNativeFragment
 
-class CameraActivity : CameraBaseActivity() {
+class CameraActivity : ActivityBase() {
 
     lateinit var viewBinding: ActivityCameraBinding
 
@@ -16,29 +13,5 @@ class CameraActivity : CameraBaseActivity() {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(LayoutInflater.from(this))
         setContentView(viewBinding.root)
-        checkCameraPermissions()
-    }
-
-    override fun onCameraAvailable(immiadate: Boolean) {
-//        viewBinding.viewPager
-        viewBinding.viewPager.adapter = object : FragmentStateAdapter(this){
-            override fun getItemCount(): Int {
-                return 3
-            }
-
-            override fun createFragment(position: Int): Fragment {
-                return when (position) {
-                    0 -> CameraNativeFragment()
-//                    2 -> Camera2Fragment()
-//                    3 -> CameraNativeFragment()
-                    else -> CameraFragment()
-                }
-            }
-
-        }
-    }
-
-    override fun onCameraUnavailable(msg: String) {
-        TODO("Not yet implemented")
     }
 }

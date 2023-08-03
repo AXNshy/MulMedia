@@ -10,45 +10,50 @@ void AudioDecoder::InitSwr() {
     m_swr = swr_alloc();
     struct AVChannelLayout oh = AV_CHANNEL_LAYOUT_STEREO;
 
-    swr_alloc_set_opts2(&m_swr, &oh,GetSampleFmt(),GetSampleRate(codec_ct->sample_rate),&codec_ct->ch_layout,codec_ct->sample_fmt,codec_ct->sample_rate,0,nullptr);
+    swr_alloc_set_opts2(&m_swr, &oh, GetSampleFmt(), GetSampleRate(codec_ct->sample_rate),
+                        &codec_ct->ch_layout, codec_ct->sample_fmt, codec_ct->sample_rate, 0,
+                        nullptr);
 //    av_opt_set_int(m_swr,"in_channel_layout",codec_ct->channel_layout,0);
 //    av_opt_set_int(m_swr,"out_channel_layout",ENCODE_AUDIO_DEST_CHANNEL_LAYOUT     ,0);
 //    av_opt_set_int(m_swr,"in_sample_rate",codec_ct->sample_rate,0);
 //    av_opt_set_int(m_swr,"out_sample_rate",GetSampleRate(codec_ct->sample_rate),0);
 
-    av_opt_set_sample_fmt(m_swr,"in_sample_fmt",codec_ct->sample_fmt,0);
-    av_opt_set_sample_fmt(m_swr,"out_sample_fmt",GetSampleFmt(),0);
+    av_opt_set_sample_fmt(m_swr, "in_sample_fmt", codec_ct->sample_fmt, 0);
+    av_opt_set_sample_fmt(m_swr, "out_sample_fmt", GetSampleFmt(), 0);
     swr_init(m_swr);
 
     LOGI(TAG, "sample rate: %d, channel: %d, format: %d, frame_size: %d, layout: %lld",
-         codec_ct->sample_rate, codec_ct->channels, codec_ct->sample_fmt, codec_ct->frame_size,codec_ct->channel_layout)
+         codec_ct->sample_rate, codec_ct->channels, codec_ct->sample_fmt, codec_ct->frame_size,
+         codec_ct->channel_layout)
 
 }
 
 void AudioDecoder::CalculateSampleArgs() {
-    m_dst_nb_sample =av_rescale_rnd(ACC_NB_SAMPLES,GetSampleRate(codec_ctx()->sample_rate),codec_ctx()->sample_rate,AV_ROUND_UP);
+    m_dst_nb_sample = av_rescale_rnd(ACC_NB_SAMPLES, GetSampleRate(codec_ctx()->sample_rate),
+                                     codec_ctx()->sample_rate, AV_ROUND_UP);
 
-    m_dst_sample_size =av_samples_get_buffer_size(nullptr,ENCODE_AUDIO_DEST_CHANNEL_COUNTS,m_dst_nb_sample,GetSampleFmt(),1);
+    m_dst_sample_size = av_samples_get_buffer_size(nullptr, ENCODE_AUDIO_DEST_CHANNEL_COUNTS,
+                                                   m_dst_nb_sample, GetSampleFmt(), 1);
 }
 
 void AudioDecoder::InitOutputBuffer() {
-    if(ForSynthesizer()){
+    if (ForSynthesizer()) {
         m_out_buffer[0] = static_cast<uint8_t *>(malloc(m_dst_sample_size / 2));
         m_out_buffer[1] = static_cast<uint8_t *>(malloc(m_dst_sample_size / 2));
-    } else{
+    } else {
         m_out_buffer[0] = static_cast<uint8_t *>(malloc(m_dst_sample_size));
     }
 
 }
 
 void AudioDecoder::InitRender() {
-    if(m_render != nullptr){
+    if (m_render != nullptr) {
         m_render->InitRender(nullptr);
     }
 }
 
 void AudioDecoder::ReleaseOutputBuffer() {
-    if(m_out_buffer[0] != nullptr){
+    if (m_out_buffer[0] != nullptr) {
         free(m_out_buffer[0]);
         m_out_buffer[0] = nullptr;
     }
@@ -77,19 +82,17 @@ void AudioDecoder::Prepare(JNIEnv *env) {
 void AudioDecoder::Render(AVFrame *frame) {
     InitOutputBuffer();
 
-    int ret = swr_convert(m_swr, m_out_buffer,m_dst_sample_size/2,
-                         (const uint8_t **)(frame->data), frame->nb_samples);
+    int ret = swr_convert(m_swr, m_out_buffer, m_dst_sample_size / ENCODE_AUDIO_DEST_CHANNEL_COUNTS,
+                          (const uint8_t **) (frame->data), frame->nb_samples);
 
-    if(ret > 0) {
+    if (ret > 0) {
         if (ForSynthesizer()) {
-//            if(m_state_cb != nullptr){
-//
-//            }
-        } else{
-            LOGD(TAG,"data : size[%d]",m_dst_sample_size);
+
+        } else {
+            LOGD(TAG, "data : size[%d]", m_dst_sample_size);
 
 
-            if(m_render != nullptr) {
+            if (m_render != nullptr) {
                 m_render->Render(m_out_buffer[0], (size_t) m_dst_sample_size);
             }
         }

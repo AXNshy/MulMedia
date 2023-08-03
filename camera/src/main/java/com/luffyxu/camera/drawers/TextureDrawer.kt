@@ -1,5 +1,6 @@
 package com.luffyxu.camera.drawers
 
+import android.media.Image
 import android.opengl.GLES30
 import android.util.Log
 import com.luffyxu.camera.CameraClient
@@ -96,79 +97,84 @@ class TextureDrawer : IDrawer {
         cameraClient.previewFrameCallback = { image, data, width, height ->
 //            if(yTexBuffer== null) {
             Log.d(TAG, "previewFrameCallback 1 image.size:  ${image.planes.size}")
-//            val bytes = CameraUtils.YUV_420_888_dataFetch(image)
-            val ybytes =
-                image.planes[0].buffer
-            val ubytes =
-                image.planes[1].buffer
-            val vbytes =
-                image.planes[2].buffer
 
-            yTexBuffer = ybytes
-
-            val ub = ByteArray(ubytes.limit() - ubytes.position())
-            val vb = ByteArray(vbytes.limit() - vbytes.position())
-            ubytes.get(ub)
-            vbytes.get(vb)
-
-
-            val uplane = image.planes[1]
-            Log.d(TAG, "uplane.pixelStride ${uplane.pixelStride}")
-
-            if (uplane.pixelStride == 1) {
-                uTexBuffer = ByteBuffer.wrap(ub)
-                vTexBuffer = ByteBuffer.wrap(vb)
-            } else {
-                val temp_u = ByteArray((ub.size + 1) / 2)
-                val temp_v = ByteArray((vb.size + 1) / 2)
-
-                var index_u = 0;
-                var index_v = 0
-                for (i in 0 until ub.size) {
-                    if (i % 2 == 0) {
-                        temp_u[index_u] = ub[i]
-                        index_u++
-                    }
-                }
-                for (i in 0 until vb.size) {
-                    if (i % 2 == 0) {
-                        temp_v[index_v] = vb[i]
-                        index_v++
-                    }
-                }
-
-                uTexBuffer = ByteBuffer.wrap(temp_u)
-                vTexBuffer = ByteBuffer.wrap(temp_v)
-            }
-            Log.d(
-                TAG,
-                "previewFrameCallback2 ${yTexBuffer?.remaining()} ${uTexBuffer?.remaining()} ${vTexBuffer?.remaining()}"
-            )
+            val yuvDatas = retrieveDataFromImage(image)
+            yTexBuffer = ByteBuffer.wrap(yuvDatas[0])
+            uTexBuffer = ByteBuffer.wrap(yuvDatas[1])
+            vTexBuffer = ByteBuffer.wrap(yuvDatas[2])
 
             yTextureWidth = width
             yTextureHeight = height
 
             uTextureWidth = width / 2
             uTextureHeight = height / 2
-//            uTextureHeight = height
-//            uTextureHeight = height
-//
+
             vTextureHeight = height / 2
             vTextureWidth = width / 2
-//
-//            vTextureHeight = height
-//            vTextureWidth = height
 
             mImageWidth = width
             mImageHeight = height
-//            }
+
             if (mMatrix == null) {
                 mMatrix = FloatArray(16)
             }
-//            Matrix.setIdentityM(mMatrix,0)
-//            Matrix.rotateM(mMatrix,0,90f, 0f,0f,0f)
-
         }
+    }
+
+    fun retrieveDataFromImage(image: Image): Array<ByteArray> {
+        val yuvBytes: Array<ByteArray> = arrayOf(byteArrayOf(), byteArrayOf(), byteArrayOf())
+
+        val ybytes =
+            image.planes[0].buffer
+        val ubytes =
+            image.planes[1].buffer
+        val vbytes =
+            image.planes[2].buffer
+
+        yuvBytes[0] = ybytes.array()
+
+        val ub = ByteArray(ubytes.limit() - ubytes.position())
+        val vb = ByteArray(vbytes.limit() - vbytes.position())
+        ubytes.get(ub)
+        vbytes.get(vb)
+
+
+        val uplane = image.planes[1]
+        Log.d(TAG, "uplane.pixelStride ${uplane.pixelStride}")
+
+        //像素步长为1，说明相邻的U或者V分量都是紧挨着排列的，直接取ub，vb的数据为U/V分量数据即可
+        if (uplane.pixelStride == 1) {
+            uTexBuffer = ByteBuffer.wrap(ub)
+            vTexBuffer = ByteBuffer.wrap(vb)
+        } else {
+            //像素步长不为1，说明相邻的UV分量都是交替排列的
+            val temp_u = ByteArray((ub.size + 1) / 2)
+            val temp_v = ByteArray((vb.size + 1) / 2)
+
+            var index_u = 0;
+            var index_v = 0
+            for (i in 0 until ub.size) {
+                if (i % 2 == 0) {
+                    temp_u[index_u] = ub[i]
+                    index_u++
+                }
+            }
+            for (i in 0 until vb.size) {
+                if (i % 2 == 0) {
+                    temp_v[index_v] = vb[i]
+                    index_v++
+                }
+            }
+
+            yuvBytes[1] = temp_u
+            yuvBytes[2] = temp_v
+        }
+
+        Log.d(
+            TAG,
+            "previewFrameCallback2 ${yTexBuffer?.remaining()} ${uTexBuffer?.remaining()} ${vTexBuffer?.remaining()}"
+        )
+        return yuvBytes
     }
 
     private fun initialMatrix() {

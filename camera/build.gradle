@@ -1,14 +1,24 @@
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'org.jetbrains.kotlin.android'
+if (openMerge.toBoolean() == true) {
+    apply plugin: 'com.android.library'
+    apply plugin: 'kotlin-android'
+    apply plugin: 'org.jetbrains.kotlin.android'
+} else {
+    apply plugin: 'com.android.application'
+    apply plugin: 'kotlin-android'
+    apply plugin: 'org.jetbrains.kotlin.android'
 }
 
 android {
     compileSdk Versions.compileSdk
 
+//    if (openMerge.toBoolean() == false) {
+    namespace "com.luffyxu.camera"
+//    }
+
     defaultConfig {
-        applicationId "com.luffyxu.camera"
+        if (openMerge.toBoolean() == false) {
+            applicationId "com.luffyxu.camera"
+        }
         minSdk Versions.minSdk
         targetSdk Versions.targetSdk
         versionCode 1
@@ -41,7 +51,23 @@ android {
         dataBinding true
         viewBinding true
     }
-    namespace "com.luffyxu.camera"
+
+
+    if (openMerge.toBoolean() == true) {
+        sourceSets {
+            main {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }
+        }
+    } else {
+        sourceSets {
+            main {
+                manifest.srcFile 'src/main/module/AndroidManifest.xml'
+            }
+        }
+    }
+
+
 }
 
 dependencies {
@@ -53,7 +79,10 @@ dependencies {
     implementation Libs.core_ktx
     implementation Libs.kotlin_stdlib
     implementation Libs.viewpager2
+    implementation Libs.navigation_fragment
+    implementation Libs.navigation_ui
     implementation project(path: ':opengles-base')
+    implementation project(path: ':base')
     compileOnly Libs.lifecycle_viewmodel_ktx
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

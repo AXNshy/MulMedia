@@ -10,8 +10,8 @@ android {
         applicationId "com.luffy.mulmedia"
         minSdk Versions.minSdk
         targetSdk Versions.targetSdk
-        versionCode 1
-        versionName "1.0"
+        versionCode Versions.VERSION_CODE
+        versionName Versions.VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -35,6 +35,7 @@ android {
         dataBinding true
         viewBinding true
     }
+
     namespace "com.luffy.mulmedia"
 }
 
@@ -46,6 +47,8 @@ dependencies {
     implementation Libs.viewpager2
     implementation project(path: ':ffmpegPlayer')
     implementation project(path: ':opengles-base')
+    implementation project(path: ':camera')
+    implementation project(path: ':base')
     compileOnly Libs.lifecycle_viewmodel_ktx
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

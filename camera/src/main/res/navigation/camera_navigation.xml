@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/camera_navigation"
+    app:startDestination="@id/permissionFragment">
+
+    <fragment
+        android:id="@+id/cameraNativeFragment"
+        android:name="com.luffyxu.camera.ui.fragment.CameraNativeFragment"
+        android:label="CameraNativeFragment" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.luffyxu.camera.ui.fragment.CameraFragment"
+        android:label="CameraFragment" />
+    <fragment
+        android:id="@+id/cameraNavigationFragment"
+        android:name="com.luffyxu.camera.ui.fragment.CameraNavigationFragment"
+        android:label="CameraNavigationFragment">
+        <action
+            android:id="@+id/action_cameraNavigationFragment_to_cameraNativeFragment"
+            app:destination="@id/cameraNativeFragment" />
+        <action
+            android:id="@+id/action_cameraNavigationFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/permissionFragment"
+        android:name="com.luffyxu.camera.ui.fragment.PermissionFragment"
+        android:label="PermissionFragment">
+        <action
+            android:id="@+id/action_permissionFragment_to_cameraNavigationFragment"
+            app:destination="@id/cameraNavigationFragment" />
+    </fragment>
+</navigation>

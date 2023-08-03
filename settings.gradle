@@ -3,3 +3,4 @@ rootProject.name = "MulMedia"
 include ':ffmpegPlayer'
 include ':camera'
 include ':opengles-base'
+include ':base'

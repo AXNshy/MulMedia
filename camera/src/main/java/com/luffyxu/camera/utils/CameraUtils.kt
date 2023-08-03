@@ -22,7 +22,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 object CameraUtils {
 
@@ -199,5 +199,6 @@ object CameraUtils {
             }
         }
     }
+
 
 }

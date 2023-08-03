@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.luffyxu.base.ActivityBase;
 import com.luffyxu.opengles.base.utils.FileUtils;
 
 import java.io.FileDescriptor;
 
-public abstract class BaseActivity  extends AppCompatActivity {
+public abstract class BaseActivity extends ActivityBase {
     private static final String TAG = "BaseActivity";
     protected Uri path;
     protected FileDescriptor fileDescriptor;
