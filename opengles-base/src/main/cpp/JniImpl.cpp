@@ -25,34 +25,35 @@ extern "C" {
 
 const char *const RENDER_CLASS_NAME = "com/luffyxu/opengles/base/egl/NativeRender";
 
-void native_surface_create(JNIEnv *env, jobject thiz, jint render,jobject surface) {
-    GLESRender* nativeRender = reinterpret_cast<GLESRender*>(render);
-    ANativeWindow* window = ANativeWindow_fromSurface(env,surface);
+void native_surface_create(JNIEnv *env, jobject thiz, jlong render, jobject surface) {
+    GLESRender *nativeRender = reinterpret_cast<GLESRender *>(render);
+    ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     nativeRender->onSurfaceCreate(window);
 }
-void native_surface_change(JNIEnv *env, jobject thiz, jint render,jobject surface,jint width,jint height) {
-    GLESRender* nativeRender = reinterpret_cast<GLESRender*>(render);
-    ANativeWindow* window = ANativeWindow_fromSurface(env,surface);
-    nativeRender->onSurfaceChanged(window,width,height);
+void native_surface_change(JNIEnv *env, jobject thiz, jlong render, jobject surface, jint width,
+                           jint height) {
+    GLESRender *nativeRender = reinterpret_cast<GLESRender *>(render);
+    ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
+    nativeRender->onSurfaceChanged(window, width, height);
 }
 
-void native_surface_destroyed(JNIEnv *env, jobject thiz,jint render) {
-    GLESRender* nativeRender = reinterpret_cast<GLESRender*>(render);
+void native_surface_destroyed(JNIEnv *env, jobject thiz, jlong render) {
+    GLESRender *nativeRender = reinterpret_cast<GLESRender *>(render);
     nativeRender->onSurfaceDestroyed();
 }
 
 
-jint native_create_renderer(JNIEnv *env, jobject thiz) {
+jlong native_create_renderer(JNIEnv *env, jobject thiz) {
     GLESRender *nativeRender = new GLESRender(env);
-    return reinterpret_cast<jint>(nativeRender);
+    return reinterpret_cast<jlong>(nativeRender);
 }
 
-void native_run(JNIEnv *env, jobject thiz,jint render) {
+void native_run(JNIEnv *env, jobject thiz, jlong render) {
     GLESRender *nativeRender = reinterpret_cast<GLESRender *>(render);
     nativeRender->start();
 }
 
-void nativeUpdateImageBuffer(JNIEnv *env, jobject thiz, jint native_render, jobject nativeObject) {
+void nativeUpdateImageBuffer(JNIEnv *env, jobject thiz, jlong native_render, jobject nativeObject) {
     AHardwareBuffer *aHardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, nativeObject);
     GLESRender *nativeRender = reinterpret_cast<GLESRender *>(native_render);
     nativeRender->updateImageBuffer(aHardwareBuffer);
@@ -66,7 +67,7 @@ char *convertShaderString(JNIEnv *env, jstring str) {
     return buf;
 }
 
-void nativeInitShader(JNIEnv *env, jobject thiz, jint native_render, jstring vertexShaderStr,
+void nativeInitShader(JNIEnv *env, jobject thiz, jlong native_render, jstring vertexShaderStr,
                       jstring fragShaderStr) {
     GLESRender *nativeRender = reinterpret_cast<GLESRender *>(native_render);
     nativeRender->drawer->setShader(convertShaderString(env, vertexShaderStr),
@@ -74,13 +75,13 @@ void nativeInitShader(JNIEnv *env, jobject thiz, jint native_render, jstring ver
 }
 
 static JNINativeMethod gMethod[] = {
-        {"onSurfaceCreated",     "(ILandroid/view/Surface;)V",               (void *) (native_surface_create)},
-        {"onSurfaceChanged",     "(ILandroid/view/Surface;II)V",             (void *) (native_surface_change)},
-        {"onSurfaceDestroyed",   "(I)V",                                     (void *) (native_surface_destroyed)},
-        {"nativeCreateRenderer", "()I",                                      (void *) (native_create_renderer)},
-        {"nativeRun",            "(I)V",                                     (void *) (native_run)},
-        {"updateImageBuffer",    "(ILandroid/hardware/HardwareBuffer;)V",    (void *) (nativeUpdateImageBuffer)},
-        {"nativeInitShader",     "(ILjava/lang/String;Ljava/lang/String;)V", (void *) (nativeInitShader)},
+        {"onSurfaceCreated",     "(JLandroid/view/Surface;)V",               (void *) (native_surface_create)},
+        {"onSurfaceChanged",     "(JLandroid/view/Surface;II)V",             (void *) (native_surface_change)},
+        {"onSurfaceDestroyed",   "(J)V",                                     (void *) (native_surface_destroyed)},
+        {"nativeCreateRenderer", "()J",                                      (void *) (native_create_renderer)},
+        {"nativeRun",            "(J)V",                                     (void *) (native_run)},
+        {"updateImageBuffer",    "(JLandroid/hardware/HardwareBuffer;)V",    (void *) (nativeUpdateImageBuffer)},
+        {"nativeInitShader",     "(JLjava/lang/String;Ljava/lang/String;)V", (void *) (nativeInitShader)},
 };
 
 

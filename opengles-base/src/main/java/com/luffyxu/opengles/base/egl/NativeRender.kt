@@ -7,7 +7,7 @@ import android.view.Surface
 import com.luffyxu.opengles.base.shader.NativeShader
 
 class NativeRender(context: Context) {
-    var native_renderer: Int = -1;
+    var native_renderer: Long = -1
 
     companion object {
         val TAG = "NativeRender"
@@ -29,26 +29,26 @@ class NativeRender(context: Context) {
     }
 
 
-    private external fun nativeCreateRenderer(): Int
+    private external fun nativeCreateRenderer(): Long
     private external fun nativeInitShader(
-        native_render: Int,
+        native_render: Long,
         vertexShaderStr: String,
         fragShaderStr: String
     )
 
-    private external fun nativeRun(native_render: Int)
+    private external fun nativeRun(native_render: Long)
 
     fun onSurfaceCreated(surface: Surface) {
         onSurfaceCreated(native_renderer, surface)
     }
 
-    private external fun onSurfaceCreated(native_render: Int, surface: Surface)
+    private external fun onSurfaceCreated(native_render: Long, surface: Surface)
     fun onSurfaceChanged(surface: Surface, width: Int, height: Int) {
         onSurfaceChanged(native_renderer, surface, width, height)
     }
 
     private external fun onSurfaceChanged(
-        native_render: Int,
+        native_render: Long,
         surface: Surface,
         width: Int,
         height: Int
@@ -58,7 +58,7 @@ class NativeRender(context: Context) {
         onSurfaceDestroyed(native_renderer)
     }
 
-    private external fun onSurfaceDestroyed(native_render: Int)
+    private external fun onSurfaceDestroyed(native_render: Long)
 
     @SuppressLint("SoonBlockedPrivateApi")
     fun updateImageBuffer(buffer: HardwareBuffer) {
@@ -74,5 +74,5 @@ class NativeRender(context: Context) {
 //        }
     }
 
-    private external fun updateImageBuffer(native_render: Int, buffer: HardwareBuffer)
+    private external fun updateImageBuffer(native_render: Long, buffer: HardwareBuffer)
 }

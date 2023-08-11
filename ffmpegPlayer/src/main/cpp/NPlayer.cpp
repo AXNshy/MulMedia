@@ -17,7 +17,7 @@ jstring native_ffmpegInfo(JNIEnv *env, jobject thiz) {
 jint native_createPlayer(JNIEnv *env, jobject thiz, jstring path,
                   jobject surface) {
     FFmpegPlayer *player = new FFmpegPlayer(env, path, surface);
-    return reinterpret_cast<jint>(player);
+    return reinterpret_cast<jlong>(player);
 }
 
 //JNIEXPORT jint JNICALL

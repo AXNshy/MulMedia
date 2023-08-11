@@ -2,9 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/sakura"
-    android:fitsSystemWindows="true"
-    android:paddingTop="48dp">
+    android:background="@mipmap/sakura">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/LessonListView"

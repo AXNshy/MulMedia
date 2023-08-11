@@ -4,7 +4,7 @@ object Versions {
     const val targetSdk = 31
     const val ndkVersion = "25.1.8937393"
 
-    const val kotlin = "1.8.20"
+    const val kotlin = "1.7.20"
 
     const val VERSION_NAME = "1.0.0"
     const val VERSION_CODE = 1
