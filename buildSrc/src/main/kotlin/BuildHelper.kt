@@ -1,7 +1,7 @@
 object Versions {
-    const val compileSdk = 31
-    const val minSdk = 28
-    const val targetSdk = 31
+    const val compileSdk = 35
+    const val minSdk = 31
+    const val targetSdk = 33
     const val ndkVersion = "25.1.8937393"
 
     const val kotlin = "1.7.20"

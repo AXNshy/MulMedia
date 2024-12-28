@@ -18,14 +18,14 @@ import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.egl.CustomGLRender;
-import com.luffy.mulmedia.gles2.DragSurfaceView;
-import com.luffy.mulmedia.gles2.ReliefFilter;
-import com.luffy.mulmedia.gles2.ReliefVideoDrawer;
-import com.luffyxu.opengles.base.drawer.IDrawer;
+import com.luffyxu.base.activity.BaseActivity;
+import com.luffyxu.gles2.DragSurfaceView;
+import com.luffyxu.gles2.ReliefFilter;
+import com.luffyxu.gles2.ReliefVideoDrawer;
 import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.io.FileDescriptor;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,7 +36,7 @@ public class EGLVideoActivity extends BaseActivity {
     private Button playBtn;
     private DragSurfaceView eglSurfaceView;
     private Surface mSurface;
-    private ExecutorService mExecutor = Executors.newFixedThreadPool(2);
+    private final ExecutorService mExecutor = Executors.newFixedThreadPool(2);
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     private CustomGLRender mVideoRender;
@@ -58,7 +58,7 @@ public class EGLVideoActivity extends BaseActivity {
                 mSurface = new Surface(surface);
             }
         });
-        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer),2);
+        mVideoRender = new CustomGLRender(Collections.singletonList(mVideoDrawer), 2);
         mVideoRender.setSurfaceView(eglSurfaceView);
 
         playBtn = findViewById(R.id.btn_file);

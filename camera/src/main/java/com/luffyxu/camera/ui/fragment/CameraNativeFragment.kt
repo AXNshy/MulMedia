@@ -30,7 +30,7 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewBinding = FragmentCameraBinding.inflate(inflater)
         return viewBinding.root
     }
@@ -71,7 +71,7 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
         bitmap.compress(
             Bitmap.CompressFormat.JPEG,
             100,
-            requireContext().contentResolver.openOutputStream(insertUri)
+            requireContext().contentResolver.openOutputStream(insertUri)!!
         )
         requireContext().sendBroadcast(
             Intent(
@@ -87,7 +87,7 @@ class CameraNativeFragment(val cameraId: Int = 0) : Fragment() {
 
     override fun onDestroyView() {
         lifecycleScope.launch {
-            cameraClient?.closeCamera()
+            cameraClient.closeCamera()
         }
         super.onDestroyView()
     }

@@ -14,14 +14,14 @@ import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.egl.CustomGLRender;
-import com.luffy.mulmedia.gles2.DragSurfaceView;
-import com.luffy.mulmedia.gles2.SoulVideoDrawer;
-import com.luffy.mulmedia.gles2.SoulVideoShader;
-import com.luffyxu.opengles.base.drawer.IDrawer;
+import com.luffyxu.base.activity.BaseActivity;
+import com.luffyxu.gles2.DragSurfaceView;
+import com.luffyxu.gles2.SoulVideoDrawer;
+import com.luffyxu.gles2.SoulVideoShader;
 import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.io.FileDescriptor;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +30,7 @@ public class SoulEGLActivity extends BaseActivity {
     private Button playBtn;
     private DragSurfaceView eglSurfaceView;
     private Surface mSurface;
-    private ExecutorService mExecutor = Executors.newFixedThreadPool(2);
+    private final ExecutorService mExecutor = Executors.newFixedThreadPool(2);
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     private CustomGLRender mVideoRender;
@@ -53,7 +53,7 @@ public class SoulEGLActivity extends BaseActivity {
             }
         });
         mVideoDrawer.setVideoSize(1920, 1080);
-        mVideoRender = new CustomGLRender(Arrays.<IDrawer>asList(mVideoDrawer), 2);
+        mVideoRender = new CustomGLRender(Collections.singletonList(mVideoDrawer), 2);
         mVideoRender.setSurfaceView(eglSurfaceView);
 
         playBtn = findViewById(R.id.btn_file);

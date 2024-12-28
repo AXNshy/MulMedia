@@ -2,7 +2,7 @@ package com.luffyxu.opengles.base.shader
 
 import android.content.Context
 import android.text.TextUtils
-import com.luffyxu.opengles.base.utils.FileUtils
+import com.luffyxu.base.utils.FileUtils
 
 class NativeShader(
     var context: Context? = null,

@@ -19,6 +19,7 @@ import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
 import com.luffy.mulmedia.utils.Mp4Repack;
+import com.luffyxu.base.activity.BaseActivity;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -32,7 +33,7 @@ public class MediaCodecTestActivity extends BaseActivity {
     private TextView fileTv;
     private SurfaceView view;
     private Surface mSurface;
-    private ExecutorService mExecutor = Executors.newFixedThreadPool(2);
+    private final ExecutorService mExecutor = Executors.newFixedThreadPool(2);
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     @Override
@@ -103,7 +104,7 @@ public class MediaCodecTestActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
                 Uri uri = data.getData();
-                Log.d("tag", "文件路径：" + uri.getPath().toString());
+                Log.d("tag", "文件路径：" + uri.getPath());
                 fileTv.setText(uri.toString());
                 initPlayer(path);
             }

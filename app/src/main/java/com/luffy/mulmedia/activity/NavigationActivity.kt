@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.consts.Consts.titleArray
 import com.luffy.mulmedia.databinding.ActivityNavigationBinding
+import com.luffyxu.base.activity.BaseActivity
 import com.luffyxu.mulmedia.model.NavItem
 import com.luffyxu.mulmedia.ui.adapter.NavItemAdapter
 import java.io.FileDescriptor
@@ -93,10 +94,6 @@ class NavigationActivity : BaseActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     private fun createNavList(): MutableList<NavItem> {
         val pathArrays = resources.getStringArray(R.array.media_lesson_path_collection)
         val titleArrays = titleArray()
@@ -115,6 +112,7 @@ class NavigationActivity : BaseActivity() {
         val path = mLessonPaths[position].path
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("xzq://navigate$path"))
         intent.putExtra("uri", selectUri)
+        Log.d(TAG, "navigate ${intent.data}")
         startActivity(intent)
     }
 

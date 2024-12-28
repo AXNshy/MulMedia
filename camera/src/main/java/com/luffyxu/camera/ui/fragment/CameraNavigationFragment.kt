@@ -7,16 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import com.luffyxu.camera.R
 import com.luffyxu.camera.databinding.FragmentNavigateBinding
-import com.luffyxu.camera.ui.adapter.GenericListAdapter
-import kotlinx.coroutines.launch
 
 class CameraNavigationFragment : Fragment() {
+
+    companion object {
+        const val TAG = "CameraNavigationFragment"
+    }
 
     lateinit var binding: FragmentNavigateBinding
 
@@ -31,20 +31,26 @@ class CameraNavigationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated")
         binding.rvUseCases.apply {
-            lifecycleScope.launch {
-                val cameraManager =
-                    requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                val ids = cameraManager.cameraIdList
-                adapter =
-                    GenericListAdapter(ids.toList(), R.layout.item_usecase, onBind = { v, i, p ->
-                        Log.d("GenericListAdapter", "onBind position($p), data:${i}")
-                        val text = v.findViewById<TextView>(R.id.nav_item_title) as TextView
-                        text.text = i.toString()
-                    })
-                layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            }
+            val cameraManager =
+                requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
+            val ids = cameraManager.cameraIdList
+            Log.d(TAG, "ids ${ids.toList()}")
+            findNavController().navigate(R.id.action_cameraNavigationFragment_to_cameraNativeFragment)
+
+//            adapter =
+//                GenericListAdapter(ids.toList(), R.layout.item_usecase, onBind = { v, i, p ->
+//                    Log.d(TAG, "onBind position($p), data:${i}")
+//                    val text = v.findViewById<TextView>(R.id.nav_item_title) as TextView
+//                    text.text = i.toString()
+//                    v.setOnClickListener {
+//                    }
+//                })
+//            layoutManager =
+//                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
     }
+
+
 }

@@ -104,7 +104,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.luffyxu.mulmedia.gles3.video.GLES3VideoActivity"
+            android:name="com.luffyxu.mulmedia.activity.gles3.VideoActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -117,7 +117,7 @@
         </activity>
 
         <activity
-            android:name="com.luffyxu.mulmedia.gles3.triangle.GLES3Activity"
+            android:name="com.luffyxu.mulmedia.activity.gles3.TriangleActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -130,7 +130,7 @@
         </activity>
 
         <activity
-            android:name="com.luffyxu.mulmedia.gles3.square.SquareActivity"
+            android:name="com.luffyxu.mulmedia.activity.gles3.SquareActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

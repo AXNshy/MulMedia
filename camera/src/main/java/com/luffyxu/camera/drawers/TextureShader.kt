@@ -2,8 +2,8 @@ package com.luffyxu.camera.drawers
 
 import android.content.Context
 import android.text.TextUtils
+import com.luffyxu.base.utils.FileUtils
 import com.luffyxu.opengles.base.shader.IGLShader
-import com.luffyxu.opengles.base.utils.FileUtils
 
 class TextureShader(
     var context: Context? = null,

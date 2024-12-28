@@ -50,6 +50,8 @@ dependencies {
     implementation project(path: ':opengles-base')
     implementation project(path: ':camera')
     implementation project(path: ':base')
+    implementation project(path: ':gles2')
+    implementation project(path: ':gles3')
     compileOnly Libs.lifecycle_viewmodel_ktx
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

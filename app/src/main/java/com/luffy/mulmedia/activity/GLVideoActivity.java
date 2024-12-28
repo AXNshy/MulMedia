@@ -17,10 +17,11 @@ import com.luffy.mulmedia.R;
 import com.luffy.mulmedia.codec.AudioDecoder;
 import com.luffy.mulmedia.codec.DecoderStateListener;
 import com.luffy.mulmedia.codec.VideoDecoder;
-import com.luffy.mulmedia.gles2.DragGLSurfaceView;
-import com.luffy.mulmedia.gles2.SimpleRenderer;
-import com.luffy.mulmedia.gles2.VideoDrawer;
-import com.luffy.mulmedia.gles2.VideoShader;
+import com.luffyxu.base.activity.BaseActivity;
+import com.luffyxu.gles2.DragGLSurfaceView;
+import com.luffyxu.gles2.SimpleRenderer;
+import com.luffyxu.gles2.VideoDrawer;
+import com.luffyxu.gles2.VideoShader;
 import com.luffyxu.opengles.base.egl.TextureCallback;
 
 import java.io.FileDescriptor;
@@ -31,7 +32,7 @@ public class GLVideoActivity extends BaseActivity {
 
     private Button playBtn;
     private DragGLSurfaceView glSurfaceView;
-    private ExecutorService mExecutor = Executors.newFixedThreadPool(2);
+    private final ExecutorService mExecutor = Executors.newFixedThreadPool(2);
     VideoDecoder mVideoDecoder;
     AudioDecoder mAudioDecoder;
     private Surface mSurface;

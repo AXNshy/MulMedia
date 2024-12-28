@@ -9,14 +9,18 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Surface
+import android.view.SurfaceHolder
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.luffyxu.camera.CameraClient
-import com.luffyxu.camera.CameraGLES3Renderer
 import com.luffyxu.camera.databinding.FragmentCameraBinding
 import com.luffyxu.camera.drawers.TextureDrawer
 import com.luffyxu.camera.drawers.TextureShader
+import com.luffyxu.camera.gles3.CameraGLES3Renderer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -40,7 +44,7 @@ class CameraFragment(val cameraId: Int = 0) : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewBinding = FragmentCameraBinding.inflate(inflater)
         return viewBinding.root
     }
@@ -122,7 +126,7 @@ class CameraFragment(val cameraId: Int = 0) : Fragment() {
         bitmap.compress(
             Bitmap.CompressFormat.JPEG,
             100,
-            requireContext().contentResolver.openOutputStream(insertUri)
+            requireContext().contentResolver.openOutputStream(insertUri)!!
         )
         requireContext().sendBroadcast(
             Intent(
@@ -138,7 +142,7 @@ class CameraFragment(val cameraId: Int = 0) : Fragment() {
 
     override fun onDestroyView() {
         lifecycleScope.launch {
-            cameraClient?.closeCamera()
+            cameraClient.closeCamera()
         }
         super.onDestroyView()
     }

@@ -158,13 +158,13 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
 
     private fun findSuitablePreviewSize(surface: CameraPreviewView): Size {
         val previewSize = getPreviewSize(
-            surface!!.display,
+            surface.display,
             characteristics,
             SurfaceHolder::class.java
         )
-        Log.d(TAG, "View finder size: ${surface!!.width} x ${surface!!.height}")
+        Log.d(TAG, "View finder size: ${surface.width} x ${surface.height}")
         Log.d(TAG, "Selected preview size: $previewSize")
-        surface!!.setAspectRatio(
+        surface.setAspectRatio(
             previewSize.width,
             previewSize.height
         )
@@ -235,7 +235,7 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
     * */
     fun openPreview() {
         openPreviewWithProcess(mPreviewImageReader.surface) { image: Image, data: ByteBuffer, width: Int, height: Int ->
-            previewFrameCallback?.let { it(image, data, width, height) }
+            previewFrameCallback.let { it(image, data, width, height) }
         }
 //        openPreviewWithoutProcess(surface)
     }
@@ -298,14 +298,6 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
             }.build()
 
         captureSession.capture(captureRequest, object : CameraCaptureSession.CaptureCallback() {
-            override fun onCaptureStarted(
-                session: CameraCaptureSession,
-                request: CaptureRequest,
-                timestamp: Long,
-                frameNumber: Long
-            ) {
-                super.onCaptureStarted(session, request, timestamp, frameNumber)
-            }
 
             override fun onCaptureCompleted(
                 session: CameraCaptureSession,
@@ -343,13 +335,6 @@ class CameraClient(var context: Context? = null, var cameraId: Int = 0) {
                 }
             }
 
-            override fun onCaptureFailed(
-                session: CameraCaptureSession,
-                request: CaptureRequest,
-                failure: CaptureFailure
-            ) {
-                super.onCaptureFailed(session, request, failure)
-            }
         }, cameraHandler)
     }
 

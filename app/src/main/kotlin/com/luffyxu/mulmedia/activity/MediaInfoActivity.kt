@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.luffy.mulmedia.R
 import com.luffy.mulmedia.databinding.ActivityMediaInfoBinding
+import com.luffyxu.base.utils.FileUtils
 import com.luffyxu.mulmedia.model.MediaInfoItem
 import com.luffyxu.mulmedia.ui.adapter.MediaInfoAdapter
-import com.luffyxu.opengles.base.utils.FileUtils
 
 class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
     lateinit var recyclerView : RecyclerView
@@ -40,14 +40,14 @@ class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
 
     fun initData(){
         adapter = MediaInfoAdapter()
-        recyclerView.addItemDecoration( object :RecyclerView.ItemDecoration() {
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
                 super.getItemOffsets(outRect, itemPosition, parent)
                 outRect.left = 20
                 outRect.right = 20
                 outRect.bottom = 20
             }
-        });
+        })
         recyclerView.layoutManager = LinearLayoutManager(this,RecyclerView.VERTICAL,false)
 
         startParseMediaInfo()
@@ -72,11 +72,11 @@ class MediaInfoActivity : AppCompatActivity(R.layout.activity_media_info) {
                     }
                     for(k in keys){
 
-                        val v : String= when(getValueTypeForKey(k)) {
+                        val v: String = when (getValueTypeForKey(k)) {
                             MediaFormat.TYPE_STRING -> getString(k) ?: ""
-                            MediaFormat.TYPE_INTEGER -> getInteger(k,0).toString() ?: ""
-                            MediaFormat.TYPE_LONG -> getLong(k,0).toString() ?: ""
-                            MediaFormat.TYPE_FLOAT -> getFloat(k,0f).toString() ?: ""
+                            MediaFormat.TYPE_INTEGER -> getInteger(k, 0).toString()
+                            MediaFormat.TYPE_LONG -> getLong(k, 0).toString()
+                            MediaFormat.TYPE_FLOAT -> getFloat(k, 0f).toString()
                             else -> "unknown"
                         }
                         mediaInfos.add(MediaInfoItem(k,v))

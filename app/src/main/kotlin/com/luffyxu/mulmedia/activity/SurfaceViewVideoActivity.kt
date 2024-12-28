@@ -7,18 +7,18 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.databinding.DataBindingUtil
 import com.luffy.mulmedia.R
-import com.luffy.mulmedia.activity.BaseActivity
 import com.luffy.mulmedia.databinding.ActivitySurfaceBinding
+import com.luffyxu.base.activity.BaseActivity
 import com.luffyxu.ffmpeg.FFmpegPlayer
 import java.io.FileDescriptor
 
-class SurfaceViewVideoActivity :BaseActivity(){
+class SurfaceViewVideoActivity : BaseActivity() {
     val TAG = "SurfaceViewVideoActivity"
     lateinit var surfaceHolder: SurfaceHolder
-    lateinit var surfaceView : SurfaceView
-    lateinit var binding : ActivitySurfaceBinding
+    lateinit var surfaceView: SurfaceView
+    lateinit var binding: ActivitySurfaceBinding
 
-    var mediaPlayer : FFmpegPlayer? = null
+    var mediaPlayer: FFmpegPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

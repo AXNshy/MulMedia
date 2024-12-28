@@ -81,6 +81,7 @@ dependencies {
     implementation Libs.viewpager2
     implementation Libs.navigation_fragment
     implementation Libs.navigation_ui
+    implementation project(path: ':gles3')
     implementation project(path: ':opengles-base')
     implementation project(path: ':base')
     compileOnly Libs.lifecycle_viewmodel_ktx

@@ -37,7 +37,6 @@ fun <T>getPreviewSize(display:Display,characteristics: CameraCharacteristics,tar
 
     val validSize = allSize.sortedWith(
         compareBy { it.width * it.height }
-    ).map { SmartSize(it.width,it.height) }.reversed()
-
+    ).map { SmartSize(it.width, it.height) }.asReversed()
     return validSize.first { it.long <= maxSize.long && it.short <= maxSize.short }.size
 }
